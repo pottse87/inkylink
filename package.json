@@ -1,0 +1,22 @@
+
+{
+  "name": "inkylink",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "framer-motion": "^10.16.1",
+    "next": "14.2.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1",
+    "autoprefixer": "^10.4.15",
+    "postcss": "^8.4.25"
+  }
+}
