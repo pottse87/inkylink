@@ -5,6 +5,7 @@ export default function IntakeForm() {
   const router = useRouter();
   const { bundles } = router.query;
 
+  const [parsedBundles, setParsedBundles] = useState([]);
   const [formData, setFormData] = useState({
     productName: "",
     features: "",
@@ -15,10 +16,26 @@ export default function IntakeForm() {
   });
 
   useEffect(() => {
-    if (!bundles || bundles.length === 0) {
+    if (!router.isReady) return;
+
+    try {
+      if (!bundles) {
+        router.replace("/pricing");
+        return;
+      }
+
+      const decoded = JSON.parse(decodeURIComponent(bundles));
+      if (!Array.isArray(decoded) || decoded.length === 0) {
+        router.replace("/pricing");
+        return;
+      }
+
+      setParsedBundles(decoded);
+    } catch (err) {
+      console.error("Error decoding bundles:", err);
       router.replace("/pricing");
     }
-  }, [bundles]);
+  }, [router.isReady, bundles]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,18 +53,17 @@ export default function IntakeForm() {
       answers: formData.answers.split("\n").map((a) => a.trim()),
       customer_email: formData.customer_email,
       submitted_at: new Date().toISOString(),
-      bundle_ids: JSON.parse(bundles),
+      bundle_ids: parsedBundles.map((b) => b.id),
     };
 
-    const res = await fetch("/api/saveForm", {
+    const res = await fetch("/api/save-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
     if (res.ok) {
-      alert("Form submitted successfully!");
-      router.push("/thank-you");
+      router.push("/thankyou");
     } else {
       alert("Submission failed.");
     }

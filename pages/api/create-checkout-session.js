@@ -4,8 +4,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).end("Method Not Allowed");
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).json({ error: "Method Not Allowed" });
   }
 
   try {
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No bundles provided" });
     }
 
-    // Map the bundles to line_items for Stripe Checkout
+    // Validate bundles array contents
     const line_items = bundles.map((bundle) => ({
       price_data: {
         currency: "usd",
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
           name: bundle.name,
           description: bundle.description,
         },
-        unit_amount: Math.round(bundle.price * 100), // Stripe expects cents
+        unit_amount: Math.round(bundle.price * 100),
         recurring: recurring
           ? {
               interval: "month",
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       payment_method_types: ["card"],
       mode: recurring ? "subscription" : "payment",
       line_items,
-      success_url: `${req.headers.origin}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${req.headers.origin}/thankyou?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.origin}/pricing`,
     });
 

@@ -1,73 +1,34 @@
 import React, { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import ROIcalculator from "../components/ROIcalculator";
-import Logo from "../public/logo.png";
+import BundleCard from "../components/BundleCard";
 
 export default function Pricing() {
   const router = useRouter();
   const [showROI, setShowROI] = useState(false);
   const [billingFrequency, setBillingFrequency] = useState("monthly");
 
-  // Track which one-time bundles are selected as recurring
-  const [selectedRecurringBundles, setSelectedRecurringBundles] = useState([]);
-
-  // Toggle recurring bundles selection
-  const toggleRecurringBundle = (bundleId) => {
-    setSelectedRecurringBundles((prev) =>
-      prev.includes(bundleId)
-        ? prev.filter((id) => id !== bundleId)
-        : [...prev, bundleId]
-    );
-  };
-
-  // Calculate total price of recurring bundles
-  const recurringTotal = selectedRecurringBundles.reduce((total, id) => {
-    const bundle = oneTimeBundles.find((b) => b.id === id);
-    return total + (bundle?.price || 0);
-  }, 0);
-
   const handleBundleCheckout = (bundle) => {
-    const bundles = [
-      {
-        id: bundle.id,
-        name: bundle.title,
-        description: bundle.description,
-        price: bundle.price,
-        icon: bundle.icon,
-        recurring: false, // mark as one-time
-      },
-    ];
+    const bundles = [{
+      id: bundle.id,
+      name: bundle.title,
+      description: bundle.description,
+      price: bundle.price,
+      icon: bundle.icon
+    }];
     const encoded = encodeURIComponent(JSON.stringify(bundles));
     router.push(`/confirmation?bundles=${encoded}`);
   };
 
   const handlePlanCheckout = (plan) => {
-    // Include recurring bundles as part of subscription plan checkout
-    const recurringBundlesObjects = selectedRecurringBundles.map((id) => {
-      const bundle = oneTimeBundles.find((b) => b.id === id);
-      return {
-        id: bundle.id,
-        name: bundle.title,
-        description: bundle.description,
-        price: bundle.price,
-        icon: bundle.icon,
-        recurring: true,
-      };
-    });
-
-    const planBundle = {
+    const bundle = {
       id: plan.id,
       name: plan.name,
       description: plan.description,
-      price:
-        billingFrequency === "monthly" ? plan.priceMonthly : plan.priceYearly,
-      icon: `/icons/${plan.id}.png`,
-      recurring: true,
+      price: billingFrequency === "monthly" ? plan.priceMonthly : plan.priceYearly,
+      icon: `/icons/${plan.id}.png`
     };
-
-    const allBundles = [planBundle, ...recurringBundlesObjects];
-    const encoded = encodeURIComponent(JSON.stringify(allBundles));
+    const encoded = encodeURIComponent(JSON.stringify([bundle]));
     router.push(`/confirmation?bundles=${encoded}`);
   };
 
@@ -167,21 +128,21 @@ export default function Pricing() {
       title: "Bullet Point Rewrite",
       price: 29,
       description: "Let us polish and optimize your feature bullets.",
-      icon: "/icons/bullet point rewrite.png",
+      icon: "/icons/bullet-point-rewrite.png",
     },
     {
       id: "faq-section",
       title: "FAQ Section",
       price: 29,
       description: "We’ll craft a useful and buyer-focused FAQ section.",
-      icon: "/icons/faq section.png",
+      icon: "/icons/faq-section.png",
     },
     {
       id: "comparison-table",
       title: "Comparison Table",
       price: 39,
       description: "Give customers a clean, visual way to compare options.",
-      icon: "/icons/comparison table.png",
+      icon: "/icons/comparison-table.png",
     },
     {
       id: "seo-titles-metadata",
@@ -193,30 +154,30 @@ export default function Pricing() {
     {
       id: "full-site-audit",
       title: "Full Site Audit",
-      price: 199,
+      price: 149,
       description: "We’ll review your store and provide clear, actionable feedback.",
-      icon: "/icons/full site audit.png",
+      icon: "/icons/full-site-audit.png",
     },
     {
       id: "launch-kit",
       title: "Launch Kit",
-      price: 169,
+      price: 149,
       description: "Everything you need to kickstart your store.",
-      icon: "/icons/launch kit.png",
+      icon: "/icons/launch-kit.png",
     },
     {
       id: "expansion-kit",
       title: "Expansion Kit",
       price: 199,
       description: "Bulk product descriptions and SEO setup.",
-      icon: "/icons/expansion kit.png",
+      icon: "/icons/expansion-kit.png",
     },
     {
       id: "conversion-booster",
       title: "Conversion Booster",
       price: 129,
       description: "Improve trust and conversions fast.",
-      icon: "/icons/conversion booster.png",
+      icon: "/icons/conversion-booster.png",
     },
   ];
 
@@ -238,7 +199,7 @@ export default function Pricing() {
           marginBottom: "2rem",
         }}
       >
-        <Image src={Logo} alt="Inkylink Logo" width={100} height={100} />
+        <img src="/logo.png" alt="Inkylink Logo" width={100} height={100} />
         <h1 style={{ fontSize: "5rem", marginLeft: "1rem" }}>Inkylink</h1>
       </header>
 
@@ -252,17 +213,9 @@ export default function Pricing() {
           paddingLeft: "2rem",
         }}
       >
-        <li style={{ marginBottom: "1rem" }}>
-          Choose the plan or build your own bundle from the options below
-        </li>
-        <li style={{ marginBottom: "1rem" }}>
-          We craft the content using state-of-the-art SEO optimization theory and
-          advanced AI integration
-        </li>
-        <li style={{ marginBottom: "1rem" }}>
-          Once the work is completed, it is sent to you via email. You can review
-          and revise, or accept and deploy it instantly
-        </li>
+        <li style={{ marginBottom: "1rem" }}>Choose the plan or build your own bundle from the options below</li>
+        <li style={{ marginBottom: "1rem" }}>We craft the content using state-of-the-art SEO optimization theory and advanced AI integration</li>
+        <li style={{ marginBottom: "1rem" }}>Once the work is completed, it is sent to you via email. You can review and revise, or accept and deploy it instantly</li>
       </ul>
 
       <h2 style={{ fontSize: "2rem", marginBottom: "2rem" }}>Choose Your Plan</h2>
@@ -409,7 +362,7 @@ export default function Pricing() {
         >
           💡
         </div>
-        {showROI && <ROIcalculator />}
+        {showROI && <ROIcalculator key="roi-widget" />}
       </div>
 
       <div
@@ -463,7 +416,7 @@ export default function Pricing() {
             <h3 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>{bundle.title}</h3>
             <img
               src={bundle.icon}
-              alt={bundle.title}
+              alt={`${bundle.title} icon`}
               style={{ width: "60px", height: "60px", objectFit: "contain" }}
             />
             <p style={{ marginTop: "0.5rem", fontSize: "1rem" }}>{bundle.description}</p>

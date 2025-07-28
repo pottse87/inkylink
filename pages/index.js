@@ -1,8 +1,5 @@
-// pages/index.js
-
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import Head from "next/head";
 
 export default function Home() {
@@ -31,13 +28,14 @@ export default function Home() {
           gap: "1rem",
           marginBottom: "2rem"
         }}>
-          <Image
+          <img
             src="/logo.png"
             alt="Inkylink Logo"
-            width={150}
-            height={150}
+            width="150"
+            height="150"
+            style={{ display: "block" }}
           />
-          <h1 style={{ fontSize: "8rem", margin: 0 }}>Inkylink</h1>
+          <h1 style={{ fontSize: "clamp(2rem, 10vw, 8rem)", margin: 0 }}>Inkylink</h1>
         </div>
 
         <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>
