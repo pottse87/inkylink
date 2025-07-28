@@ -1,47 +1,145 @@
-// pages/build-a-bundle.js
-
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import Logo from "../public/logo.png";
+import Image from "next/image";
+
+const bundles = [
+  {
+    id: "product-description",
+    title: "Product Description",
+    price: 39,
+    description: "Get a compelling and SEO-optimized product description.",
+    icon: "/icons/desc.png",
+  },
+  {
+    id: "product-overview",
+    title: "Product Overview",
+    price: 39,
+    description: "Summarize your product in a short, scannable overview.",
+    icon: "/icons/overview.png",
+  },
+  {
+    id: "welcome-email",
+    title: "Welcome Email",
+    price: 49,
+    description: "A warm, professional welcome for new customers.",
+    icon: "/icons/welcome.png",
+  },
+  {
+    id: "product-drop-email",
+    title: "Product Drop Email",
+    price: 49,
+    description: "Announce a new product drop with energy and style.",
+    icon: "/icons/drop.png",
+  },
+  {
+    id: "seo-blog-post",
+    title: "SEO-Optimized Blog Post",
+    price: 79,
+    description: "A helpful blog post written to rank and convert.",
+    icon: "/icons/blog.png",
+  },
+  {
+    id: "bullet-point-rewrite",
+    title: "Bullet Point Rewrite",
+    price: 29,
+    description: "Let us polish and optimize your feature bullets.",
+    icon: "/icons/bullet point rewrite.png",
+  },
+  {
+    id: "faq-section",
+    title: "FAQ Section",
+    price: 29,
+    description: "We’ll craft a useful and buyer-focused FAQ section.",
+    icon: "/icons/faq section.png",
+  },
+  {
+    id: "comparison-table",
+    title: "Comparison Table",
+    price: 39,
+    description: "Give customers a clean, visual way to compare options.",
+    icon: "/icons/comparison table.png",
+  },
+  {
+    id: "seo-titles-metadata",
+    title: "SEO Titles & Metadata",
+    price: 29,
+    description: "Get clean, optimized titles and metadata that rank.",
+    icon: "/icons/seo.png",
+  },
+  {
+    id: "full-site-audit",
+    title: "Full Site Audit",
+    price: 149,
+    description: "We’ll review your store and provide clear, actionable feedback.",
+    icon: "/icons/full site audit.png",
+  },
+  {
+    id: "launch-kit",
+    title: "Launch Kit",
+    price: 149,
+    description: "Everything you need to kickstart your store.",
+    icon: "/icons/launch kit.png",
+  },
+  {
+    id: "expansion-kit",
+    title: "Expansion Kit",
+    price: 199,
+    description: "Bulk product descriptions and SEO setup.",
+    icon: "/icons/expansion kit.png",
+  },
+  {
+    id: "conversion-booster",
+    title: "Conversion Booster",
+    price: 129,
+    description: "Improve trust and conversions fast.",
+    icon: "/icons/conversion booster.png",
+  },
+];
 
 export default function BuildABundle() {
   const router = useRouter();
 
-  const bundles = [
-    { id: "desc", name: "Full Product Writeup", price: 25, description: "One SEO-optimized, conversion-ready description.", icon: "🛍️" },
-    { id: "overview", name: "Quick Overview Summary", price: 25, description: "Summarize features and benefits at a glance.", icon: "📦" },
-    { id: "welcome", name: "Welcome Email", price: 29, description: "A warm, brand-building email to greet new customers.", icon: "📬" },
-    { id: "drop", name: "Launch Announcement", price: 29, description: "Announce new arrivals in style and drive conversions.", icon: "📢" },
-    { id: "blog", name: "SEO Blog Article", price: 39, description: "Educate and engage while driving organic traffic.", icon: "✍️" },
-    { id: "bullets", name: "Bullet Rewrite Boost", price: 10, description: "Clear, scannable bullets that sell benefits fast.", icon: "📌" },
-    { id: "faq", name: "FAQ Builder", price: 20, description: "Answer top customer concerns with clarity and trust.", icon: "❓" },
-    { id: "compare", name: "Feature Comparison Table", price: 20, description: "Highlight what makes you better than the competition.", icon: "📊" },
-    { id: "metadata", name: "SEO Titles & Metadata", price: 12, description: "Boost visibility with search-friendly tags and titles.", icon: "🔖" },
-  ];
+  const [quantities, setQuantities] = useState(
+    bundles.reduce((acc, b) => ({ ...acc, [b.id]: 0 }), {})
+  );
 
-  const [selected, setSelected] = useState([]);
+  const [isRecurring, setIsRecurring] = useState(false);
 
-  const toggleBundle = (id) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+  const totalPrice = bundles.reduce(
+    (total, bundle) => total + bundle.price * (quantities[bundle.id] || 0),
+    0
+  );
+
+  const handleQuantityChange = (id, newQty) => {
+    if (newQty < 0) return;
+    setQuantities((prev) => ({ ...prev, [id]: newQty }));
   };
 
-  const total = bundles
-    .filter((b) => selected.includes(b.id))
-    .reduce((sum, b) => sum + b.price, 0);
-
   const handleCheckout = () => {
-    const selectedItems = bundles
-      .filter((b) => selected.includes(b.id))
+    const selectedBundles = bundles
+      .filter((b) => quantities[b.id] > 0)
       .map((b) => ({
         id: b.id,
-        name: b.name,
+        name: b.title,
+        description: b.description,
         price: b.price,
-        quantity: 1, // Default quantity
+        quantity: quantities[b.id],
+        icon: b.icon,
       }));
 
-    const query = encodeURIComponent(JSON.stringify({ items: selectedItems }));
-    router.push(`/confirmation?data=${query}`);
+    if (selectedBundles.length === 0) {
+      alert("Please select at least one bundle with quantity > 0.");
+      return;
+    }
+
+    const data = {
+      bundles: selectedBundles,
+      recurring: isRecurring,
+    };
+
+    const encoded = encodeURIComponent(JSON.stringify(data));
+    router.push(`/confirmation?data=${encoded}`);
   };
 
   return (
@@ -50,94 +148,170 @@ export default function BuildABundle() {
         backgroundColor: "#f1f8fc",
         fontFamily: "Lato, sans-serif",
         padding: "2rem",
-        textAlign: "center",
         minHeight: "100vh",
+        maxWidth: "960px",
+        margin: "0 auto",
       }}
     >
-      <h1 style={{ fontSize: "3rem", marginBottom: "2rem" }}>Build Your Own Bundle</h1>
+      <header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          marginBottom: "2rem",
+          justifyContent: "center",
+        }}
+      >
+        <Image src={Logo} alt="Inkylink Logo" width={80} height={80} />
+        <h1 style={{ fontSize: "3.5rem", margin: 0 }}>Build a Bundle</h1>
+      </header>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <label
+          style={{
+            fontSize: "1.2rem",
+            fontWeight: "bold",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            cursor: "pointer",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={isRecurring}
+            onChange={() => setIsRecurring(!isRecurring)}
+          />
+          Recurring Monthly Subscription
+        </label>
+      </div>
 
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
           gap: "1.5rem",
-          justifyItems: "center",
+          marginBottom: "2rem",
         }}
       >
         {bundles.map((bundle) => (
-          <label
+          <div
             key={bundle.id}
             style={{
               backgroundColor: "#fff",
+              borderRadius: "8px",
+              boxShadow: "0 3px 6px rgba(0,0,0,0.1)",
               padding: "1rem",
-              borderRadius: "1rem",
-              width: "220px",
-              minHeight: "260px",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               textAlign: "center",
-              cursor: "pointer",
-              border: selected.includes(bundle.id)
-                ? "2px solid #28a745"
-                : "2px solid transparent",
             }}
           >
-            <div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>{bundle.icon}</div>
-            <h3 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>{bundle.name}</h3>
-            <p style={{ fontSize: "0.95rem", marginBottom: "1rem" }}>{bundle.description}</p>
-            <p style={{ fontWeight: "bold", fontSize: "1.1rem" }}>${bundle.price}</p>
-            <input
-              type="checkbox"
-              checked={selected.includes(bundle.id)}
-              onChange={() => toggleBundle(bundle.id)}
-              style={{ marginTop: "1rem" }}
+            <img
+              src={bundle.icon}
+              alt={bundle.title}
+              style={{ width: "60px", height: "60px", objectFit: "contain" }}
             />
-          </label>
-        ))}
-      </div>
+            <h3 style={{ marginTop: "1rem", marginBottom: "0.5rem" }}>
+              {bundle.title}
+            </h3>
+            <p style={{ fontSize: "0.9rem", fontStyle: "italic", marginBottom: "1rem" }}>
+              {bundle.description}
+            </p>
+            <p style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
+              ${bundle.price} each
+            </p>
 
-      <div style={{ marginTop: "3rem", fontSize: "1.5rem", fontWeight: "bold" }}>
-        Total: ${total}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                marginTop: "auto",
+              }}
+            >
+              <button
+                onClick={() =>
+                  handleQuantityChange(bundle.id, (quantities[bundle.id] || 0) - 1)
+                }
+                disabled={(quantities[bundle.id] || 0) <= 0}
+                style={{
+                  padding: "0.3rem 0.7rem",
+                  fontSize: "1.2rem",
+                  cursor: "pointer",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                  backgroundColor: "#fff",
+                }}
+                aria-label={`Decrease quantity of ${bundle.title}`}
+              >
+                –
+              </button>
+              <input
+                type="number"
+                min="0"
+                value={quantities[bundle.id]}
+                onChange={(e) =>
+                  handleQuantityChange(bundle.id, Math.max(0, Number(e.target.value)))
+                }
+                style={{
+                  width: "50px",
+                  textAlign: "center",
+                  fontSize: "1rem",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                }}
+                aria-label={`Quantity of ${bundle.title}`}
+              />
+              <button
+                onClick={() =>
+                  handleQuantityChange(bundle.id, (quantities[bundle.id] || 0) + 1)
+                }
+                style={{
+                  padding: "0.3rem 0.7rem",
+                  fontSize: "1.2rem",
+                  cursor: "pointer",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                  backgroundColor: "#fff",
+                }}
+                aria-label={`Increase quantity of ${bundle.title}`}
+              >
+                +
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div
         style={{
-          marginTop: "2rem",
-          display: "flex",
-          justifyContent: "center",
-          gap: "1rem",
+          fontSize: "1.4rem",
+          fontWeight: "bold",
+          marginBottom: "2rem",
+          textAlign: "right",
         }}
       >
-        <button
-          onClick={() => router.push("/pricing")}
-          style={{
-            padding: "0.75rem 1.5rem",
-            fontSize: "1rem",
-            backgroundColor: "#000",
-            color: "#fff",
-            border: "none",
-            borderRadius: "0.5rem",
-            cursor: "pointer",
-          }}
-        >
-          ← Back to Pricing
-        </button>
+        Total: ${totalPrice}
+        {isRecurring ? " / month" : ""}
+      </div>
+
+      <div style={{ textAlign: "right" }}>
         <button
           onClick={handleCheckout}
-          disabled={selected.length === 0}
           style={{
-            padding: "0.75rem 1.5rem",
-            fontSize: "1rem",
-            backgroundColor: selected.length > 0 ? "#007f00" : "#ccc",
+            padding: "0.75rem 2rem",
+            fontSize: "1.1rem",
+            backgroundColor: "#007f00",
             color: "#fff",
             border: "none",
-            borderRadius: "0.5rem",
-            cursor: selected.length > 0 ? "pointer" : "not-allowed",
+            borderRadius: "6px",
+            cursor: "pointer",
           }}
+          aria-label="Proceed to checkout"
         >
-          Checkout →
+          Proceed to Checkout
         </button>
       </div>
     </main>

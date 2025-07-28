@@ -1,43 +1,42 @@
 // pages/404.js
 
+import React from "react";
 import Link from "next/link";
 
 export default function Custom404() {
   return (
     <div
       style={{
+        backgroundColor: "#fff3e0",
         minHeight: "100vh",
-        backgroundColor: "#fff4f4",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center",
         alignItems: "center",
+        justifyContent: "center",
         fontFamily: "Lato, sans-serif",
         textAlign: "center",
         padding: "2rem",
       }}
     >
-      <h1 style={{ fontSize: "5rem", marginBottom: "1rem" }}>404</h1>
-      <p style={{ fontSize: "1.5rem", marginBottom: "2rem" }}>
-        Oops! The page you're looking for doesn't exist.
+      <h1 style={{ fontSize: "3rem", color: "#ef6c00", marginBottom: "1rem" }}>
+        ⚠️ 404: Page Not Found
+      </h1>
+      <p style={{ fontSize: "1.25rem", maxWidth: "600px", marginBottom: "2rem" }}>
+        Oops! The page you're looking for doesn't exist. Maybe it moved — or maybe it never existed at all.
       </p>
-
-      <Link href="/">
+      <Link href="/" passHref>
         <button
           style={{
+            backgroundColor: "#fb8c00",
+            color: "#fff",
             padding: "0.75rem 1.5rem",
             fontSize: "1rem",
-            borderRadius: "8px",
-            backgroundColor: "#0070f3",
-            color: "white",
             border: "none",
+            borderRadius: "8px",
             cursor: "pointer",
-            transition: "background-color 0.3s ease",
           }}
-          onMouseOver={(e) => (e.target.style.backgroundColor = "#005ac1")}
-          onMouseOut={(e) => (e.target.style.backgroundColor = "#0070f3")}
         >
-          Back to Home
+          ← Back to Homepage
         </button>
       </Link>
     </div>

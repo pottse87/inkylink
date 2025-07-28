@@ -1,40 +1,49 @@
-// pages/api/create-checkout-session.js
-
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    res.setHeader("Allow", "POST");
+    return res.status(405).end("Method Not Allowed");
   }
 
   try {
-    const { bundles } = req.body;
+    const { bundles, recurring } = req.body;
 
-    const line_items = bundles.map(bundle => ({
+    if (!bundles || bundles.length === 0) {
+      return res.status(400).json({ error: "No bundles provided" });
+    }
+
+    // Map the bundles to line_items for Stripe Checkout
+    const line_items = bundles.map((bundle) => ({
       price_data: {
         currency: "usd",
         product_data: {
           name: bundle.name,
-          images: [`https://inkylink.com/icons/${bundle.id}.png`],
+          description: bundle.description,
         },
-        unit_amount: bundle.price * 100,
+        unit_amount: Math.round(bundle.price * 100), // Stripe expects cents
+        recurring: recurring
+          ? {
+              interval: "month",
+            }
+          : undefined,
       },
-      quantity: 1,
+      quantity: bundle.quantity || 1,
     }));
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
+      mode: recurring ? "subscription" : "payment",
       line_items,
-      mode: "payment",
-      success_url: `${req.headers.origin}/thankyou`,
-      cancel_url: `${req.headers.origin}/confirmation`,
+      success_url: `${req.headers.origin}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}/pricing`,
     });
 
-    res.status(200).json({ sessionId: session.id });
+    return res.status(200).json({ url: session.url });
   } catch (err) {
-    console.error("Stripe error:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error creating Stripe checkout session:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }

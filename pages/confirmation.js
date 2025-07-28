@@ -1,198 +1,114 @@
-// pages/confirmation.js
-
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function Confirmation() {
   const router = useRouter();
-  const [selectedBundles, setSelectedBundles] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [orderData, setOrderData] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    let incoming = [];
+    if (!router.isReady) return; // wait for router to be ready
 
-    if (router.query.bundles) {
-      try {
-        const parsed = JSON.parse(router.query.bundles);
-        incoming = parsed.map((item) => ({
-          ...item,
-          quantity: item.quantity || 1,
-        }));
-      } catch (err) {
-        console.error("Error parsing bundles:", err);
-      }
+    const { data } = router.query;
+
+    if (!data) {
+      setError("No order data found in URL.");
+      return;
     }
 
-    if (router.query.data) {
-      try {
-        const parsed = JSON.parse(decodeURIComponent(router.query.data));
-        const formatted = parsed.items.map((item) => ({
-          ...item,
-          quantity: item.quantity || 1,
-        }));
-        incoming = [...incoming, ...formatted];
-      } catch (err) {
-        console.error("Error parsing data:", err);
-      }
-    }
-
-    setSelectedBundles(incoming);
-  }, [router.query]);
-
-  const updateQuantity = (id, newQty) => {
-    setSelectedBundles((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, parseInt(newQty || 1)) }
-          : item
-      )
-    );
-  };
-
-  const getTotal = () =>
-    selectedBundles.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-
-  const handleProceed = async () => {
-    setLoading(true);
     try {
-      const res = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bundles: selectedBundles }),
-      });
-
-      const data = await res.json();
-
-      if (data.sessionId) {
-        const stripe = await loadStripe(
-          process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-        );
-        await stripe.redirectToCheckout({ sessionId: data.sessionId });
-      } else {
-        alert("Something went wrong.");
-        setLoading(false);
-      }
+      // Decode URI component and parse JSON string
+      const parsedData = JSON.parse(decodeURIComponent(data));
+      setOrderData(parsedData);
     } catch (err) {
-      console.error("Checkout error:", err);
-      alert("There was a problem. Please try again.");
-      setLoading(false);
+      console.error("Error parsing order data:", err);
+      setError("Failed to parse order data.");
     }
-  };
+  }, [router.isReady, router.query]);
 
-  const loadStripe = async (key) => {
-    if (!window.Stripe) {
-      const stripeJs = await import("@stripe/stripe-js");
-      return stripeJs.loadStripe(key);
-    }
-    return window.Stripe(key);
-  };
+  if (error) {
+    return <div style={{ padding: "2rem", fontFamily: "Lato, sans-serif" }}>
+      <h1>Error</h1>
+      <p>{error}</p>
+      <button onClick={() => router.push("/pricing")} style={{
+        padding: "0.5rem 1rem",
+        fontSize: "1rem",
+        cursor: "pointer"
+      }}>Go Back to Pricing</button>
+    </div>;
+  }
+
+  if (!orderData) {
+    return <div style={{ padding: "2rem", fontFamily: "Lato, sans-serif" }}>
+      <h1>Loading Order Details...</h1>
+    </div>;
+  }
+
+  const totalPrice = orderData.bundles.reduce(
+    (sum, b) => sum + (b.price * (b.quantity || 1)),
+    0
+  );
 
   return (
-    <main
-      style={{
-        fontFamily: "Lato, sans-serif",
-        minHeight: "100vh",
-        backgroundColor: "#fdf6ec",
-        padding: "2rem",
-        textAlign: "center",
-      }}
-    >
-      <h1 style={{ fontSize: "3rem", marginBottom: "1rem" }}>
-        Review Your Bundle
-      </h1>
-      <p style={{ marginBottom: "2rem" }}>Here’s what you’ve selected:</p>
+    <main style={{
+      padding: "2rem",
+      fontFamily: "Lato, sans-serif",
+      maxWidth: "700px",
+      margin: "0 auto"
+    }}>
+      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>Order Confirmation</h1>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-          gap: "1.5rem",
-          justifyItems: "center",
-          maxWidth: "1000px",
-          margin: "0 auto 3rem",
-        }}
-      >
-        {selectedBundles.map((bundle) => (
-          <div
-            key={bundle.id}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "1rem",
-              padding: "1rem",
-              backgroundColor: "#ffffff",
-              width: "100%",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
-              textAlign: "center",
-            }}
-          >
+      <p style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>
+        Recurring Subscription: <strong>{orderData.recurring ? "Yes" : "No"}</strong>
+      </p>
+
+      <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Your Bundles:</h2>
+      <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+        {orderData.bundles.map((bundle) => (
+          <li key={bundle.id} style={{
+            marginBottom: "1rem",
+            padding: "1rem",
+            border: "1px solid #ccc",
+            borderRadius: "6px",
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem"
+          }}>
             <img
-              src={bundle.icon || `/icons/${bundle.id}.png`}
+              src={bundle.icon}
               alt={bundle.name}
-              style={{
-                width: "50px",
-                height: "50px",
-                marginBottom: "1rem",
-              }}
+              style={{ width: "60px", height: "60px", objectFit: "contain" }}
             />
-            <h3 style={{ fontSize: "1.2rem", marginBottom: "0.25rem" }}>
-              {bundle.name}
-            </h3>
-            <p style={{ fontSize: "0.95rem", color: "#444" }}>
-              {bundle.description}
-            </p>
-            <div style={{ marginTop: "0.75rem" }}>
-              <label>
-                Qty:{" "}
-                <input
-                  type="number"
-                  min="1"
-                  value={bundle.quantity}
-                  onChange={(e) =>
-                    updateQuantity(bundle.id, e.target.value)
-                  }
-                  style={{
-                    width: "60px",
-                    padding: "0.25rem",
-                    borderRadius: "0.4rem",
-                    border: "1px solid #aaa",
-                    textAlign: "center",
-                  }}
-                />
-              </label>
+            <div>
+              <h3 style={{ margin: 0 }}>{bundle.name}</h3>
+              <p style={{ margin: "0.2rem 0" }}>{bundle.description}</p>
+              <p style={{ fontWeight: "bold" }}>
+                Quantity: {bundle.quantity || 1} × ${bundle.price} = ${bundle.price * (bundle.quantity || 1)}
+              </p>
             </div>
-            <strong
-              style={{
-                fontSize: "1.1rem",
-                marginTop: "0.75rem",
-                display: "block",
-              }}
-            >
-              ${bundle.price * bundle.quantity}
-            </strong>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
 
-      <h2 style={{ marginBottom: "1rem" }}>Total: ${getTotal()}</h2>
+      <h2 style={{ fontSize: "1.8rem" }}>
+        Total Price: <strong>${totalPrice}</strong>
+      </h2>
 
       <button
-        onClick={handleProceed}
-        disabled={loading}
+        onClick={() => alert("Checkout flow coming soon!")}
         style={{
-          backgroundColor: loading ? "#aaa" : "#2ecc71",
-          color: "white",
-          fontSize: "1.1rem",
           padding: "0.75rem 2rem",
+          fontSize: "1.2rem",
+          backgroundColor: "#007f00",
+          color: "#fff",
           border: "none",
-          borderRadius: "0.5rem",
-          cursor: loading ? "not-allowed" : "pointer",
-          transition: "background-color 0.3s",
+          borderRadius: "6px",
+          cursor: "pointer",
+          marginTop: "2rem",
+          width: "100%",
         }}
       >
-        {loading ? "Processing..." : "Proceed to Payment"}
+        Proceed to Checkout
       </button>
     </main>
   );

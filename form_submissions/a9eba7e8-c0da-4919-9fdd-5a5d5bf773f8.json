@@ -1,0 +1,24 @@
+{
+  "audience": "Campers, hikers, and emergency preppers",
+  "answers": [
+    "6–8 hours in sunlight",
+    "Yes, it can be used while charging via USB"
+  ],
+  "features": [
+    "Solar Powered",
+    "Waterproof",
+    "3 Brightness Levels"
+  ],
+  "bundle_ids": [
+    "product-description",
+    "faq-section"
+  ],
+  "productName": "Solar Camping Lantern",
+  "submitted_at": "2025-07-27 14:31:07.136 -05:00",
+  "customer_email": "test@example.com",
+  "questions": [
+    "How long does it take to charge?",
+    "Can it be used while charging?"
+  ],
+  "id": "a9eba7e8-c0da-4919-9fdd-5a5d5bf773f8"
+}

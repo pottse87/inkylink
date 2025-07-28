@@ -1,0 +1,26 @@
+{
+  "assistant_output": {
+    "summary": "Initial REST output"
+  },
+  "submitted_at": "2025-07-27 19:45:01.328 -05:00",
+  "completion_time_ms": 2000,
+  "language": "en",
+  "bundle_ids": [
+    "product-description",
+    "faq-section"
+  ],
+  "source_page": "rest-test",
+  "internal_notes": "test order from REST",
+  "feedback_submitted_at": "2025-07-27 19:45:01.328 -05:00",
+  "status": "pending",
+  "client_feedback": "none yet",
+  "plan": "Pro Plan",
+  "review_notes": "no notes",
+  "source_campaign": "rest-campaign",
+  "ai_assistant": "ChatGPT",
+  "client_name": "Test User",
+  "customer_email": "testrest@example.com",
+  "total_price": 199,
+  "id": "dc327b9c-5989-4956-9bcd-a438c33a890d",
+  "created_at": "2025-07-28T00:45:01.855Z"
+}
