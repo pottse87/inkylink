@@ -1,134 +1,108 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 export default function IntakeForm() {
   const router = useRouter();
-  const { bundles } = router.query;
+  const [order, setOrder] = useState(null);
+  const [formData, setFormData] = useState({});
+  const [submitted, setSubmitted] = useState(false);
 
-  const [parsedBundles, setParsedBundles] = useState([]);
-  const [formData, setFormData] = useState({
-    productName: "",
-    features: "",
-    audience: "",
-    questions: "",
-    answers: "",
-    customer_email: "",
-  });
+  // Simulated form templates
+  const formTemplates = {
+    'expansion-kit': [
+      { question: 'What products are we describing?', type: 'text' },
+      { question: 'Who is your target customer?', type: 'text' }
+    ],
+    'conversion-booster': [
+      { question: 'What are the top objections customers have?', type: 'text' },
+      { question: 'What benefits should we emphasize?', type: 'text' }
+    ],
+    'launch-kit': [
+      { question: 'Describe your brand vibe in a sentence.', type: 'text' },
+      { question: 'What makes your store unique?', type: 'text' }
+    ]
+    // Add more templates as needed
+  };
 
   useEffect(() => {
-    if (!router.isReady) return;
+    if (router.query && router.query.order) {
+      try {
+        const decoded = decodeURIComponent(router.query.order);
+        const parsedOrder = JSON.parse(decoded);
+        setOrder(parsedOrder);
 
-    try {
-      if (!bundles) {
-        router.replace("/pricing");
-        return;
+        // Pre-fill form data object with empty answers
+        const initialData = {};
+        parsedOrder.items.forEach(item => {
+          const questions = formTemplates[item.id] || [];
+          initialData[item.id] = questions.map(q => ({ question: q.question, answer: '' }));
+        });
+        setFormData(initialData);
+      } catch (err) {
+        console.error('Error parsing order:', err);
       }
-
-      const decoded = JSON.parse(decodeURIComponent(bundles));
-      if (!Array.isArray(decoded) || decoded.length === 0) {
-        router.replace("/pricing");
-        return;
-      }
-
-      setParsedBundles(decoded);
-    } catch (err) {
-      console.error("Error decoding bundles:", err);
-      router.replace("/pricing");
     }
-  }, [router.isReady, bundles]);
+  }, [router.query]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (itemId, index, value) => {
+    const updated = { ...formData };
+    updated[itemId][index].answer = value;
+    setFormData(updated);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const payload = {
-      productName: formData.productName,
-      features: formData.features.split(",").map((f) => f.trim()),
-      audience: formData.audience,
-      questions: formData.questions.split("\n").map((q) => q.trim()),
-      answers: formData.answers.split("\n").map((a) => a.trim()),
-      customer_email: formData.customer_email,
-      submitted_at: new Date().toISOString(),
-      bundle_ids: parsedBundles.map((b) => b.id),
+  const handleSubmit = async () => {
+    if (!order) return;
+    const updatedOrder = {
+      ...order,
+      form_data: formData,
+      status: 'needs_review'
     };
 
-    const res = await fetch("/api/save-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const response = await fetch('/api/save-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedOrder)
+      });
 
-    if (res.ok) {
-      router.push("/thankyou");
-    } else {
-      alert("Submission failed.");
+      if (response.ok) {
+        setSubmitted(true);
+        router.push('/thankyou');
+      } else {
+        console.error('Save failed');
+      }
+    } catch (err) {
+      console.error('Submission error:', err);
     }
   };
 
+  if (!order) return <p>Loading order...</p>;
+
   return (
-    <div style={{ maxWidth: "600px", margin: "2rem auto", padding: "1rem" }}>
-      <h1>Client Intake Form</h1>
-      <form onSubmit={handleSubmit}>
-        <label>Product Name</label>
-        <input
-          type="text"
-          name="productName"
-          value={formData.productName}
-          onChange={handleChange}
-          required
-        />
-
-        <label>Key Features (comma-separated)</label>
-        <input
-          type="text"
-          name="features"
-          value={formData.features}
-          onChange={handleChange}
-          required
-        />
-
-        <label>Target Audience</label>
-        <input
-          type="text"
-          name="audience"
-          value={formData.audience}
-          onChange={handleChange}
-          required
-        />
-
-        <label>Common Customer Questions (one per line)</label>
-        <textarea
-          name="questions"
-          rows={3}
-          value={formData.questions}
-          onChange={handleChange}
-        />
-
-        <label>Detailed Answers (one per line)</label>
-        <textarea
-          name="answers"
-          rows={3}
-          value={formData.answers}
-          onChange={handleChange}
-        />
-
-        <label>Customer Email</label>
-        <input
-          type="email"
-          name="customer_email"
-          value={formData.customer_email}
-          onChange={handleChange}
-          required
-        />
-
-        <button type="submit" style={{ marginTop: "1rem" }}>
-          Submit
-        </button>
-      </form>
+    <div style={{ padding: '2rem' }}>
+      <h1>Answer a few quick questions</h1>
+      {order.items.map(item => (
+        <div key={item.id} style={{ marginBottom: '2rem' }}>
+          <h3>{item.name} (×{item.quantity})</h3>
+          {(formTemplates[item.id] || []).map((q, idx) => (
+            <div key={idx} style={{ marginBottom: '0.5rem' }}>
+              <label>{q.question}</label><br />
+              <input
+                type="text"
+                value={formData[item.id]?.[idx]?.answer || ''}
+                onChange={(e) => handleChange(item.id, idx, e.target.value)}
+                style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem' }}
+              />
+            </div>
+          ))}
+        </div>
+      ))}
+      <button
+        onClick={handleSubmit}
+        style={{ padding: '0.75rem 1.5rem', backgroundColor: '#008060', color: 'white', border: 'none', borderRadius: '5px' }}
+      >
+        Submit
+      </button>
     </div>
   );
 }

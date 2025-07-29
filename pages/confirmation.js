@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { loadStripe } from '@stripe/stripe-js';
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function ConfirmationPage() {
   const router = useRouter();
@@ -19,53 +16,55 @@ export default function ConfirmationPage() {
     }
   }, [router.query]);
 
-  const handleCheckout = async () => {
-    const response = await fetch('/api/create-checkout-session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bundles: selectedBundles }),
-    });
+  const generateOrderId = () => {
+    const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, '');
+    const rand = Math.random().toString(36).substring(2, 6);
+    return \order_\_\\;
+  };
 
-    const session = await response.json();
-    const stripe = await stripePromise;
-    await stripe.redirectToCheckout({ sessionId: session.id });
+  const handleConfirm = () => {
+    const order = {
+      order_id: generateOrderId(),
+      source: router.query.source || 'confirmation',
+      customer: {
+        name: '',
+        email: ''
+      },
+      items: selectedBundles.map((bundle) => ({
+        id: bundle.id,
+        name: bundle.name,
+        quantity: bundle.quantity || 1,
+        price: bundle.price,
+        icon: bundle.icon || ''
+      })),
+      form_data: {},
+      status: 'needs_form',
+      created_at: Date.now()
+    };
+
+    const orderString = encodeURIComponent(JSON.stringify(order));
+    router.push(\/forms?order=\\);
   };
 
   return (
-    <div className="p-8 text-center">
-      <h1 className="text-3xl font-bold mb-6">🧾 Order Confirmation</h1>
-      {selectedBundles.length === 0 ? (
-        <p>No items selected. Please go back and build your bundle.</p>
-      ) : (
-        <div className="space-y-4">
+    <div style={{ padding: '2rem' }}>
+      <h1>Confirm Your Selection</h1>
+      {selectedBundles.length === 0 && <p>No items selected.</p>}
+      {selectedBundles.length > 0 && (
+        <ul>
           {selectedBundles.map((bundle, index) => (
-            <div
-              key={index}
-              className="p-4 border rounded-xl bg-white shadow text-left"
-            >
-              <div className="flex items-center space-x-4">
-                <img
-                  src={/icons/}
-                  alt={bundle.name}
-                  className="w-10 h-10"
-                />
-                <div>
-                  <h2 className="text-xl font-semibold">{bundle.name}</h2>
-                  <p>{bundle.description}</p>
-                  <p className="font-bold"></p>
-                </div>
-              </div>
-            </div>
+            <li key={index}>
+              <strong>{bundle.name}</strong> —  × {bundle.quantity || 1}
+            </li>
           ))}
-
-          <button
-            onClick={handleCheckout}
-            className="mt-6 bg-green-600 text-white px-6 py-3 rounded-xl text-lg hover:bg-green-700 transition"
-          >
-            Place Order & Checkout
-          </button>
-        </div>
+        </ul>
       )}
+      <button
+        style={{ marginTop: '1rem', padding: '0.5rem 1rem', backgroundColor: '#008060', color: 'white', border: 'none', borderRadius: '5px' }}
+        onClick={handleConfirm}
+      >
+        Continue to Intake Form
+      </button>
     </div>
   );
 }
