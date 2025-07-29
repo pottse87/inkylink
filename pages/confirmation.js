@@ -1,126 +1,71 @@
-// pages/confirmation.js
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function ConfirmationPage() {
   const router = useRouter();
-  const [orderData, setOrderData] = useState(null);
-  const [error, setError] = useState(null);
+  const [selectedBundles, setSelectedBundles] = useState([]);
 
   useEffect(() => {
-    if (!router.isReady) return;
-
-    const { data, bundles } = router.query;
-    const encoded = data || bundles;
-
-    if (!encoded || encoded.length < 5) {
-      setError("No order data found.");
-      return;
-    }
-
-    try {
-      const decoded = decodeURIComponent(encoded);
-      const parsed = JSON.parse(decoded);
-
-      const fullData = Array.isArray(parsed)
-        ? { bundles: parsed, recurring: parsed.some((b) => b.recurring) }
-        : parsed;
-
-      if (!fullData.bundles || !Array.isArray(fullData.bundles)) {
-        throw new Error("Invalid bundle structure.");
+    if (router.query && router.query.bundles) {
+      try {
+        const parsed = JSON.parse(router.query.bundles);
+        setSelectedBundles(parsed);
+      } catch (error) {
+        console.error('Failed to parse bundles:', error);
       }
-
-      setOrderData(fullData);
-    } catch (err) {
-      console.error("❌ Failed to parse order data:", err);
-      setError("Invalid or corrupt order data.");
     }
-  }, [router.isReady, router.query]);
+  }, [router.query]);
 
-  if (error) {
-    return (
-      <div style={{ padding: "2rem", fontFamily: "Lato, sans-serif" }}>
-        <h1>❌ Order Error</h1>
-        <p>{error}</p>
-        <button
-          onClick={() => router.push("/pricing")}
-          style={{
-            marginTop: "1rem",
-            padding: "0.5rem 1rem",
-            fontSize: "1rem",
-            cursor: "pointer",
-          }}
-        >
-          Return to Pricing
-        </button>
-      </div>
-    );
-  }
+  const handleCheckout = async () => {
+    const response = await fetch('/api/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bundles: selectedBundles }),
+    });
 
-  if (!orderData) {
-    return (
-      <div style={{ padding: "2rem", fontFamily: "Lato, sans-serif" }}>
-        <h1>Loading order confirmation…</h1>
-      </div>
-    );
-  }
-
-  const total = orderData.bundles.reduce(
-    (sum, item) => sum + item.price * (item.quantity || 1),
-    0
-  );
+    const session = await response.json();
+    const stripe = await stripePromise;
+    await stripe.redirectToCheckout({ sessionId: session.id });
+  };
 
   return (
-    <main
-      style={{
-        padding: "2rem",
-        fontFamily: "Lato, sans-serif",
-        maxWidth: "700px",
-        margin: "0 auto",
-      }}
-    >
-      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>✅ Order Confirmation</h1>
-
-      <ul style={{ listStyle: "none", paddingLeft: 0 }}>
-        {orderData.bundles.map((bundle, i) => (
-          <li
-            key={i}
-            style={{
-              marginBottom: "1rem",
-              padding: "1rem",
-              border: "1px solid #ccc",
-              borderRadius: "6px",
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            <img
-              src={bundle.icon}
-              alt={`${bundle.name} icon`}
-              style={{ width: "60px", height: "60px", objectFit: "contain" }}
-            />
-            <div>
-              <h3 style={{ margin: 0 }}>{bundle.name}</h3>
-              <p style={{ margin: "0.2rem 0" }}>{bundle.description}</p>
-              <p style={{ fontWeight: "bold" }}>
-                Quantity: {bundle.quantity || 1} × ${bundle.price} = $
-                {bundle.price * (bundle.quantity || 1)}
-              </p>
+    <div className="p-8 text-center">
+      <h1 className="text-3xl font-bold mb-6">🧾 Order Confirmation</h1>
+      {selectedBundles.length === 0 ? (
+        <p>No items selected. Please go back and build your bundle.</p>
+      ) : (
+        <div className="space-y-4">
+          {selectedBundles.map((bundle, index) => (
+            <div
+              key={index}
+              className="p-4 border rounded-xl bg-white shadow text-left"
+            >
+              <div className="flex items-center space-x-4">
+                <img
+                  src={/icons/}
+                  alt={bundle.name}
+                  className="w-10 h-10"
+                />
+                <div>
+                  <h2 className="text-xl font-semibold">{bundle.name}</h2>
+                  <p>{bundle.description}</p>
+                  <p className="font-bold"></p>
+                </div>
+              </div>
             </div>
-          </li>
-        ))}
-      </ul>
+          ))}
 
-      <h2 style={{ fontSize: "1.8rem" }}>
-        Total: <strong>${total}</strong>
-      </h2>
-
-      {orderData.recurring && (
-        <p style={{ fontSize: "1rem", color: "#555", marginTop: "1rem" }}>
-          🌀 This is a recurring subscription.
-        </p>
+          <button
+            onClick={handleCheckout}
+            className="mt-6 bg-green-600 text-white px-6 py-3 rounded-xl text-lg hover:bg-green-700 transition"
+          >
+            Place Order & Checkout
+          </button>
+        </div>
       )}
-    </main>
+    </div>
   );
 }
