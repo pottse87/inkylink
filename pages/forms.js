@@ -4,44 +4,36 @@ import { useRouter } from 'next/router';
 export default function IntakeForm() {
   const router = useRouter();
   const [order, setOrder] = useState(null);
+  const [templates, setTemplates] = useState({});
   const [formData, setFormData] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
-  // Simulated form templates
-  const formTemplates = {
-    'expansion-kit': [
-      { question: 'What products are we describing?', type: 'text' },
-      { question: 'Who is your target customer?', type: 'text' }
-    ],
-    'conversion-booster': [
-      { question: 'What are the top objections customers have?', type: 'text' },
-      { question: 'What benefits should we emphasize?', type: 'text' }
-    ],
-    'launch-kit': [
-      { question: 'Describe your brand vibe in a sentence.', type: 'text' },
-      { question: 'What makes your store unique?', type: 'text' }
-    ]
-    // Add more templates as needed
-  };
-
   useEffect(() => {
-    if (router.query && router.query.order) {
-      try {
-        const decoded = decodeURIComponent(router.query.order);
-        const parsedOrder = JSON.parse(decoded);
-        setOrder(parsedOrder);
+    // Load form templates from /public/form_templates.json
+    fetch('/form_templates.json')
+      .then((res) => res.json())
+      .then((loadedTemplates) => {
+        setTemplates(loadedTemplates);
 
-        // Pre-fill form data object with empty answers
-        const initialData = {};
-        parsedOrder.items.forEach(item => {
-          const questions = formTemplates[item.id] || [];
-          initialData[item.id] = questions.map(q => ({ question: q.question, answer: '' }));
-        });
-        setFormData(initialData);
-      } catch (err) {
-        console.error('Error parsing order:', err);
-      }
-    }
+        // Then parse the order object from router
+        if (router.query && router.query.order) {
+          try {
+            const decoded = decodeURIComponent(router.query.order);
+            const parsedOrder = JSON.parse(decoded);
+            setOrder(parsedOrder);
+
+            // Initialize empty answer set
+            const initial = {};
+            parsedOrder.items.forEach(item => {
+              const questions = loadedTemplates[item.id] || [];
+              initial[item.id] = questions.map(q => ({ question: q.question, answer: '' }));
+            });
+            setFormData(initial);
+          } catch (err) {
+            console.error('Order parsing failed:', err);
+          }
+        }
+      });
   }, [router.query]);
 
   const handleChange = (itemId, index, value) => {
@@ -52,6 +44,7 @@ export default function IntakeForm() {
 
   const handleSubmit = async () => {
     if (!order) return;
+
     const updatedOrder = {
       ...order,
       form_data: formData,
@@ -59,20 +52,20 @@ export default function IntakeForm() {
     };
 
     try {
-      const response = await fetch('/api/save-order', {
+      const res = await fetch('/api/save-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedOrder)
       });
 
-      if (response.ok) {
+      if (res.ok) {
         setSubmitted(true);
         router.push('/thankyou');
       } else {
         console.error('Save failed');
       }
     } catch (err) {
-      console.error('Submission error:', err);
+      console.error('Submit error:', err);
     }
   };
 
@@ -84,8 +77,8 @@ export default function IntakeForm() {
       {order.items.map(item => (
         <div key={item.id} style={{ marginBottom: '2rem' }}>
           <h3>{item.name} (×{item.quantity})</h3>
-          {(formTemplates[item.id] || []).map((q, idx) => (
-            <div key={idx} style={{ marginBottom: '0.5rem' }}>
+          {(templates[item.id] || []).map((q, idx) => (
+            <div key={idx} style={{ marginBottom: '1rem' }}>
               <label>{q.question}</label><br />
               <input
                 type="text"

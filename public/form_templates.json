@@ -1,0 +1,52 @@
+{
+  "seo-titles-metadata": [
+    {
+      "question": "What products are we optimizing?",
+      "type": "text"
+    },
+    {
+      "question": "Are there specific keywords or phrases to include?",
+      "type": "text"
+    }
+  ],
+  "expansion-kit": [
+    {
+      "question": "List the product names or SKUs you want described.",
+      "type": "text"
+    },
+    {
+      "question": "Who is your target customer for these products?",
+      "type": "text"
+    }
+  ],
+  "conversion-booster": [
+    {
+      "question": "What objections do customers typically have?",
+      "type": "text"
+    },
+    {
+      "question": "What features or benefits should we emphasize?",
+      "type": "text"
+    }
+  ],
+  "launch-kit": [
+    {
+      "question": "Describe your brand’s tone or vibe.",
+      "type": "text"
+    },
+    {
+      "question": "What makes your business unique?",
+      "type": "text"
+    }
+  ],
+  "faq-section": [
+    {
+      "question": "List common questions your customers ask.",
+      "type": "text"
+    },
+    {
+      "question": "Any specific answers you want included?",
+      "type": "text"
+    }
+  ]
+}

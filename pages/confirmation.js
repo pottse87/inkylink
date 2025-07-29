@@ -19,7 +19,7 @@ export default function ConfirmationPage() {
   const generateOrderId = () => {
     const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, '');
     const rand = Math.random().toString(36).substring(2, 6);
-    return \order_\_\\;
+    return 'order_' + timestamp + '_' + rand;
   };
 
   const handleConfirm = () => {
@@ -43,7 +43,7 @@ export default function ConfirmationPage() {
     };
 
     const orderString = encodeURIComponent(JSON.stringify(order));
-    router.push(\/forms?order=\\);
+    router.push('/forms?order=' + orderString);
   };
 
   return (
