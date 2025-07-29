@@ -1,110 +1,28 @@
-import { Client } from "pg";
+// pages/api/save-order.js
+import fs from "fs";
+import path from "path";
 
-export default async function handler(req, res) {
+export default function handler(req, res) {
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Method Not Allowed" });
+    return res.status(405).json({ error: "Method not allowed" });
   }
-
-  const order = req.body;
-
-  // Validate required fields
-  if (
-    !order.customer_email ||
-    !order.bundles ||
-    !Array.isArray(order.bundles)
-  ) {
-    return res.status(400).json({ error: "Invalid order data" });
-  }
-
-  console.log("🚀 Connecting to database...");
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: false, // Adjust if your DB requires SSL
-  });
 
   try {
-    await client.connect();
-    console.log("✅ Connected. Preparing insert...");
+    const orderData = req.body;
 
-    const query = `
-      INSERT INTO orders (
-        id,
-        created_at,
-        customer_email,
-        plan,
-        bundle_ids,
-        status,
-        client_feedback,
-        ai_assistant,
-        submitted_at,
-        total_price,
-        source_page,
-        internal_notes,
-        client_name,
-        feedback_submitted_at,
-        assistant_output,
-        source_campaign,
-        completion_time_ms,
-        review_notes,
-        recurring
-      ) VALUES (
-        gen_random_uuid(),
-        NOW(),
-        $1,
-        $2,
-        $3,
-        'pending',
-        $4,
-        $5,
-        $6,
-        $7,
-        $8,
-        $9,
-        $10,
-        $11,
-        $12,
-        $13,
-        $14,
-        $15,
-        $16
-      )
-      RETURNING id
-    `;
+    // Timestamped filename for uniqueness
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const filename = `order-${timestamp}.json`;
 
-    const values = [
-      order.customer_email,
-      order.plan || null,
-      JSON.stringify(order.bundles.map((b) => b.id)),
-      order.client_feedback || "none yet",
-      order.ai_assistant || "ChatGPT",
-      order.submitted_at || new Date().toISOString(),
-      order.total_price || 0,
-      order.source_page || null,
-      order.internal_notes || null,
-      order.client_name || null,
-      order.feedback_submitted_at || null,
-      JSON.stringify(order.assistant_output || {}),
-      order.source_campaign || null,
-      order.completion_time_ms || 0,
-      order.review_notes || null,
-      order.recurring || false,
-    ];
+    // Save to external SSD path
+    const ordersDir = "E:/inkylink_orders";
+    const fullPath = path.join(ordersDir, filename);
 
-    console.log("📝 Running insert with values:", values);
+    fs.writeFileSync(fullPath, JSON.stringify(orderData, null, 2), "utf8");
 
-    const result = await client.query(query, values);
-
-    await client.end();
-    console.log("✅ Insert successful:", result.rows[0]);
-
-    return res.status(200).json({ success: true, orderId: result.rows[0].id });
-  } catch (error) {
-    console.error("❌ Database insertion error:", error.message);
-    console.error("📍 Stack Trace:", error.stack);
-    await client.end();
-    return res
-      .status(500)
-      .json({ error: "Internal Server Error", details: error.message });
+    return res.status(200).json({ message: "Order saved locally", filename });
+  } catch (err) {
+    console.error("Failed to save order:", err);
+    return res.status(500).json({ error: "Failed to save order" });
   }
 }

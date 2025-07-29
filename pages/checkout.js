@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
 
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 export default function CheckoutPage() {
   const router = useRouter();
   const [orderData, setOrderData] = useState(null);
@@ -20,7 +22,7 @@ export default function CheckoutPage() {
     try {
       const parsed = JSON.parse(decodeURIComponent(encoded));
       const fullData = Array.isArray(parsed)
-        ? { bundles: parsed, recurring: parsed.some(b => b.recurring) }
+        ? { bundles: parsed, recurring: parsed.some((b) => b.recurring) }
         : parsed;
 
       setOrderData(fullData);
@@ -36,16 +38,26 @@ export default function CheckoutPage() {
   );
 
   const handleStripeCheckout = async () => {
-    alert("Stripe Checkout logic will go here (or redirect to a hosted page).");
-    // Example placeholder:
-    // const res = await fetch("/api/create-checkout-session", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(orderData),
-    // });
-    // const session = await res.json();
-    // const stripe = await loadStripe("your_public_key_here");
-    // await stripe.redirectToCheckout({ sessionId: session.id });
+    try {
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.url) {
+        const stripe = await stripePromise;
+        window.location.href = data.url;
+      } else {
+        console.error("Stripe session error:", data);
+        alert("Failed to initiate Stripe checkout.");
+      }
+    } catch (err) {
+      console.error("Unexpected error during Stripe checkout:", err);
+      alert("An error occurred. Please try again.");
+    }
   };
 
   if (error) {
