@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import Logo from "../public/logo.png";
+import Image from "next/image";
 
 const bundles = [
   {
@@ -42,21 +44,21 @@ const bundles = [
     title: "Bullet Point Rewrite",
     price: 29,
     description: "Let us polish and optimize your feature bullets.",
-    icon: "/icons/bullet-point-rewrite.png",
+    icon: "/icons/bullet point rewrite.png",
   },
   {
     id: "faq-section",
     title: "FAQ Section",
     price: 29,
     description: "We’ll craft a useful and buyer-focused FAQ section.",
-    icon: "/icons/faq-section.png",
+    icon: "/icons/faq section.png",
   },
   {
     id: "comparison-table",
     title: "Comparison Table",
     price: 39,
     description: "Give customers a clean, visual way to compare options.",
-    icon: "/icons/comparison-table.png",
+    icon: "/icons/comparison table.png",
   },
   {
     id: "seo-titles-metadata",
@@ -70,28 +72,28 @@ const bundles = [
     title: "Full Site Audit",
     price: 149,
     description: "We’ll review your store and provide clear, actionable feedback.",
-    icon: "/icons/full-site-audit.png",
+    icon: "/icons/full site audit.png",
   },
   {
     id: "launch-kit",
     title: "Launch Kit",
     price: 149,
     description: "Everything you need to kickstart your store.",
-    icon: "/icons/launch-kit.png",
+    icon: "/icons/launch kit.png",
   },
   {
     id: "expansion-kit",
     title: "Expansion Kit",
     price: 199,
     description: "Bulk product descriptions and SEO setup.",
-    icon: "/icons/expansion-kit.png",
+    icon: "/icons/expansion kit.png",
   },
   {
     id: "conversion-booster",
     title: "Conversion Booster",
     price: 129,
     description: "Improve trust and conversions fast.",
-    icon: "/icons/conversion-booster.png",
+    icon: "/icons/conversion booster.png",
   },
 ];
 
@@ -160,7 +162,7 @@ export default function BuildABundle() {
           justifyContent: "center",
         }}
       >
-        <img src="/logo.png" alt="Inkylink Logo" width={80} height={80} />
+        <Image src={Logo} alt="Inkylink Logo" width={80} height={80} />
         <h1 style={{ fontSize: "3.5rem", margin: 0 }}>Build a Bundle</h1>
       </header>
 
@@ -208,7 +210,7 @@ export default function BuildABundle() {
           >
             <img
               src={bundle.icon}
-              alt={`${bundle.title} icon`}
+              alt={bundle.title}
               style={{ width: "60px", height: "60px", objectFit: "contain" }}
             />
             <h3 style={{ marginTop: "1rem", marginBottom: "0.5rem" }}>
