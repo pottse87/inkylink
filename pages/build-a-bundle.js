@@ -98,7 +98,7 @@ export default function BuildABundle() {
                 onClick={() => handleQuantityChange(bundle.id, (quantities[bundle.id] || 0) - 1)}
                 disabled={(quantities[bundle.id] || 0) <= 0}
                 style={{ padding: "0.3rem 0.7rem", fontSize: "1.5rem", fontWeight: "bold", cursor: "pointer", borderRadius: "4px", border: "1px solid #ccc", backgroundColor: "#fff", minWidth: "32px" }}
-              >–</button>
+              >-</button>
               <span style={{ fontSize: "1.1rem", fontWeight: "bold", minWidth: "32px", textAlign: "center" }}>{quantities[bundle.id] || 0}</span>
               <button
                 onClick={() => handleQuantityChange(bundle.id, (quantities[bundle.id] || 0) + 1)}
@@ -124,3 +124,4 @@ export default function BuildABundle() {
     </main>
   );
 }
+
