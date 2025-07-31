@@ -54,17 +54,51 @@ export default function ConfirmationPage() {
         <ul>
           {selectedBundles.map((bundle, index) => (
             <li key={index}>
-              <strong>{bundle.name}</strong> —  × {bundle.quantity || 1}
+              <strong>{bundle.name}</strong> - * {bundle.quantity || 1}
             </li>
           ))}
         </ul>
       )}
-      <button
-        style={{ marginTop: '1rem', padding: '0.5rem 1rem', backgroundColor: '#008060', color: 'white', border: 'none', borderRadius: '5px' }}
-        onClick={handleConfirm}
-      >
-        Continue to Intake Form
-      </button>
-    </div>
-  );
-}
+
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2rem" }}>
+        {/* Back Button - coral red */}
+        <button
+          onClick={() => router.back()}
+          style={{
+            backgroundColor: "#ff6666",
+            color: "#333",
+            border: "none",
+            borderRadius: "6px",
+            padding: "0.6rem 1.2rem",
+            fontSize: "1rem",
+            cursor: "pointer",
+            transition: "background-color 0.2s ease"
+          }}
+          onMouseOver={e => (e.target.style.backgroundColor = "#e65555")}
+          onMouseOut={e => (e.target.style.backgroundColor = "#ff6666")}
+        >
+          ⬅ Back
+        </button>
+
+        {/* Continue Button - emerald teal*/}
+        <button
+          onClick={handleConfirm}
+          style={{
+            backgroundColor: "#00b894",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            padding: "0.6rem 1.2rem",
+            fontSize: "1rem",
+            cursor: "pointer",
+            transition: "background-color 0.2s ease"
+          }}
+          onMouseOver={e => (e.target.style.backgroundColor = "#00997a")}
+          onMouseOut={e => (e.target.style.backgroundColor = "#00b894")}
+        >
+          Continue to Intake Form →
+        </button>
+      </div>
+    </div> 
+  ); 
+} 

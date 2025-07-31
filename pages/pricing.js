@@ -38,8 +38,8 @@ export default function Pricing() {
       name: "Starter Plan",
       description: "Professional polish for lean operations.",
       priceMonthly: 49,
-      priceYearly: 490,
-      productDescriptions: 2,
+      priceYearly: 499,
+      productDescriptions: 3,
       bulletRewrites: 1,
       welcomeEmail: 1,
       color: "#e8f5e9",
@@ -49,9 +49,10 @@ export default function Pricing() {
       name: "Growth Plan",
       description: "Scalable content support for growing catalogs.",
       priceMonthly: 99,
-      priceYearly: 990,
+      priceYearly: 999,
       productDescriptions: 6,
       bulletRewrites: 2,
+      welcomeEmail: 1,
       seoMetadata: 2,
       color: "#e3f2fd",
     },
@@ -59,11 +60,13 @@ export default function Pricing() {
       id: "pro",
       name: "Pro Plan",
       description: "Comprehensive content creation for established brands.",
-      priceMonthly: 179,
-      priceYearly: 1790,
-      productDescriptions: 10,
+      priceMonthly: 189,
+      priceYearly: 1899,
+      productDescriptions: 8,
+      productOverview: 2,
       bulletRewrites: 3,
       seoMetadata: 2,
+      welcomeEmail: 2,
       blog: "1 blog post",
       faq: "1 FAQ section",
       revisions: "Up to 2 revisions/month",
@@ -72,12 +75,14 @@ export default function Pricing() {
     {
       id: "elite",
       name: "Elite Plan",
-      description: "Full-suite monthly content for high-performing teams.",
+      description: "Full-suite, monthly content for high-performing businesses.",
       priceMonthly: 299,
-      priceYearly: 2990,
+      priceYearly: 2999,
       productDescriptions: 15,
+      productOverview: 3,
       bulletRewrites: 5,
       seoMetadata: 4,
+      welcomeEmail: 2,
       blog: "1 blog post",
       email: "1 email campaign",
       extra: "1 comparison table",
@@ -98,7 +103,7 @@ export default function Pricing() {
     {
       id: "product-overview",
       title: "Product Overview",
-      price: 39,
+      price: 49,
       description: "Summarize your product in a short, scannable overview.",
       icon: "/icons/overview.png",
     },
@@ -128,21 +133,21 @@ export default function Pricing() {
       title: "Bullet Point Rewrite",
       price: 29,
       description: "Let us polish and optimize your feature bullets.",
-      icon: "/icons/bullet-point-rewrite.png",
+      icon: "/icons/bullet point rewrite.png",
     },
     {
       id: "faq-section",
       title: "FAQ Section",
       price: 29,
-      description: "We’ll craft a useful and buyer-focused FAQ section.",
-      icon: "/icons/faq-section.png",
+      description: "We'll craft a useful and buyer-focused FAQ section.",
+      icon: "/icons/faq section.png",
     },
     {
       id: "comparison-table",
       title: "Comparison Table",
       price: 39,
       description: "Give customers a clean, visual way to compare options.",
-      icon: "/icons/comparison-table.png",
+      icon: "/icons/comparison table.png",
     },
     {
       id: "seo-titles-metadata",
@@ -155,29 +160,29 @@ export default function Pricing() {
       id: "full-site-audit",
       title: "Full Site Audit",
       price: 149,
-      description: "We’ll review your store and provide clear, actionable feedback.",
-      icon: "/icons/full-site-audit.png",
+      description: "We'll review your store and provide clear, usable feedback you can apply immediately.",
+      icon: "/icons/full site audit.png",
     },
     {
       id: "launch-kit",
       title: "Launch Kit",
       price: 149,
-      description: "Everything you need to kickstart your store.",
-      icon: "/icons/launch-kit.png",
+      description: "The perfect starter package for product rollouts.",
+      icon: "/icons/launch kit.png",
     },
     {
       id: "expansion-kit",
       title: "Expansion Kit",
       price: 199,
-      description: "Bulk product descriptions and SEO setup.",
-      icon: "/icons/expansion-kit.png",
+      description: "Ideal for stores looking to expand their catalog or refresh stale listings.",
+      icon: "/icons/expansion kit.png",
     },
     {
       id: "conversion-booster",
       title: "Conversion Booster",
       price: 129,
-      description: "Improve trust and conversions fast.",
-      icon: "/icons/conversion-booster.png",
+      description: "Ideal for underperforming listings or high-traffic pages that need a boost.",
+      icon: "/icons/conversion booster.png",
     },
   ];
 
@@ -213,9 +218,9 @@ export default function Pricing() {
           paddingLeft: "2rem",
         }}
       >
-        <li style={{ marginBottom: "1rem" }}>Choose the plan or build your own bundle from the options below</li>
-        <li style={{ marginBottom: "1rem" }}>We craft the content using state-of-the-art SEO optimization theory and advanced AI integration</li>
-        <li style={{ marginBottom: "1rem" }}>Once the work is completed, it is sent to you via email. You can review and revise, or accept and deploy it instantly</li>
+        <li style={{ marginBottom: "1rem" }}>Choose a plan or build your own bundle from the options below</li>
+        <li style={{ marginBottom: "1rem" }}>We craft your content using state-of-the-art SEO optimization theory and advanced AI integration</li>
+        <li style={{ marginBottom: "1rem" }}>Once your work is completed, it is sent to you via email. You can review and revise; or accept and deploy it instantly</li>
       </ul>
 
       <h2 style={{ fontSize: "2rem", marginBottom: "2rem" }}>Choose Your Plan</h2>
@@ -229,6 +234,7 @@ export default function Pricing() {
             onChange={() =>
               setBillingFrequency(billingFrequency === "monthly" ? "yearly" : "monthly")
             }
+
           />
           <span className="slider round"></span>
         </label>
@@ -310,12 +316,19 @@ export default function Pricing() {
             <p style={{ fontSize: "1rem", marginBottom: "1rem", fontStyle: "italic" }}>
               {plan.description}
             </p>
-            <p>
-              <strong>
-                ${billingFrequency === "monthly" ? plan.priceMonthly : plan.priceYearly}
-              </strong>{" "}
-              /{billingFrequency === "monthly" ? "mo" : "yr"}
-            </p>
+     <p style={{ marginBottom: "0.3rem" }}>
+  <strong>
+    ${billingFrequency === "monthly" ? plan.priceMonthly : plan.priceYearly}
+  </strong>{" "}
+  /{billingFrequency === "monthly" ? "mo" : "yr"}
+</p>
+
+{billingFrequency === "yearly" && (
+  <p style={{ color: "#007f00", fontWeight: "bold", fontSize: "0.9rem" }}>
+    Save ${plan.priceMonthly * 12 - plan.priceYearly} per year
+  </p>
+)}
+
             <ul style={{ textAlign: "left", marginTop: "1rem", paddingLeft: "1rem" }}>
               <li>{plan.productDescriptions} product descriptions</li>
               <li>{plan.bulletRewrites} bullet rewrites</li>
@@ -349,7 +362,7 @@ export default function Pricing() {
       </div>
 
       <div style={{ marginBottom: "2rem" }}>
-        <p style={{ fontSize: "1.1rem" }}>Not sure how we can help? Use our conversion calculator…</p>
+        <p style={{ fontSize: "1.1rem" }}>Not sure how we can help? click the lighbulb to use our content conversion calculator</p>
         <div
           onClick={() => setShowROI(!showROI)}
           style={{ fontSize: "2rem", cursor: "pointer" }}
@@ -382,12 +395,15 @@ export default function Pricing() {
             style={{
               padding: "0.5rem 1rem",
               fontSize: "1rem",
-              backgroundColor: "#007f00",
+              backgroundColor: "#00b984",
               color: "#fff",
               border: "none",
               borderRadius: "4px",
               cursor: "pointer",
+              transition: "background-color 0.2s ease"
             }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = "#3399ff")}
+            onMouseOut={(e) => (e.target.style.backgroundColor = "#00b894")}
           >
             Build a Bundle
           </button>

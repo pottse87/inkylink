@@ -39,11 +39,11 @@ export default function Home() {
         </div>
 
         <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>
-          Your SEO content provider—and so much more!
+          Your SEO web content provider, and much, much more!
         </h2>
 
         <p style={{ maxWidth: "700px", fontSize: "1.1rem", marginBottom: "2rem" }}>
-          We create powerful SEO optimized product descriptions, emails, and web content that drive clicks, build trust, and boost conversions; delivered to you each month automatically.
+          We create advanced SEO optimized product descriptions, emails, and web content that drive clicks, build trust, and boost conversions; delivered to you each month automatically.
         </p>
 
         <div style={{
@@ -52,26 +52,46 @@ export default function Home() {
           flexWrap: "wrap",
           justifyContent: "center"
         }}>
-          <Link href="/pricing" style={{
-            padding: "1rem 2rem",
-            backgroundColor: "#0070f3",
-            color: "#fff",
-            textDecoration: "none",
-            borderRadius: "8px",
-            fontSize: "1.1rem"
-          }}>
-            View Plans & Pricing
+          <Link href="/pricing">
+            <button
+              style={{
+                padding: "0.75rem 1.5rem",
+                backgroundColor: "#26de81",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                fontFamily: "Lato, sans-serif",
+                textAlign: "center",
+                cursor: "pointer",
+                transition: "background-color 0.2s ease"
+              }}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#3399ff")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#26de81")}
+            >
+              View Plans & Pricing
+            </button>
           </Link>
 
-          <Link href="/build-a-bundle" style={{
-            padding: "1rem 2rem",
-            backgroundColor: "#555",
-            color: "#fff",
-            textDecoration: "none",
-            borderRadius: "8px",
-            fontSize: "1.1rem"
-          }}>
-            Build a Custom Bundle
+          <Link href="/build-a-bundle">
+            <button
+              style={{
+                padding: "0.75rem 1.5rem",
+                backgroundColor: "#00b894",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                fontFamily: "Lato, sans-serif",
+                textAlign: "center",
+                cursor: "pointer",
+                transition: "background-color 0.2s ease"
+              }}
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#3399ff")}
+              onMouseOut={(e) => (e.target.style.backgroundColor = "#00b894")}
+            >
+              Build a Custom Bundle
+            </button>
           </Link>
         </div>
       </main>

@@ -7,26 +7,34 @@ export default function IntakeForm() {
   const [templates, setTemplates] = useState({});
   const [formData, setFormData] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
-    // Load form templates from /public/form_templates.json
     fetch('/form_templates.json')
       .then((res) => res.json())
       .then((loadedTemplates) => {
         setTemplates(loadedTemplates);
 
-        // Then parse the order object from router
         if (router.query && router.query.order) {
           try {
             const decoded = decodeURIComponent(router.query.order);
             const parsedOrder = JSON.parse(decoded);
             setOrder(parsedOrder);
 
-            // Initialize empty answer set
+            // 💵 Calculate total price
+            const calculatedTotal = parsedOrder.items.reduce((sum, item) => {
+              return sum + (item.price || 0) * (item.quantity || 1);
+            }, 0);
+            setTotalPrice(calculatedTotal);
+
+            // Set up empty answer slots
             const initial = {};
             parsedOrder.items.forEach(item => {
               const questions = loadedTemplates[item.id] || [];
-              initial[item.id] = questions.map(q => ({ question: q.question, answer: '' }));
+              initial[item.id] = questions.map(q => ({
+                question: q.question,
+                answer: ''
+              }));
             });
             setFormData(initial);
           } catch (err) {
@@ -42,60 +50,80 @@ export default function IntakeForm() {
     setFormData(updated);
   };
 
-  const handleSubmit = async () => {
-    if (!order) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    const updatedOrder = {
-      ...order,
-      form_data: formData,
-      status: 'needs_review'
+    const formPayload = {
+      customer_email: order?.customer_email || '',
+      plan: order?.plan || '',
+      bundle_ids: JSON.stringify(order?.items || []),
+      client_feedback: '',
+      rework_count: 0,
+      ai_assistant: 'ChatGPT',
+      total_price: totalPrice,
+      approved: false,
+      delivered: false,
+      source_page: 'forms',
+      internal_notes: '',
+      client_name: order?.client_name || '',
+      revision_limit: order?.revision_limit || 3,
+      assistant_output: formData || {},
+      payment_status: 'unpaid',
+      source_campaign: order?.source_campaign || 'organic',
+      completion_time_ms: 0,
+      priority_level: 'normal',
+      language: 'en',
+      review_notes: '',
+      recurring: false,
+      submitted_at: new Date().toISOString(),
+      feedback_submitted_at: null
     };
 
     try {
-      const res = await fetch('/api/save-order', {
+      const response = await fetch('/api/save-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedOrder)
+        body: JSON.stringify(formPayload)
       });
 
-      if (res.ok) {
+      if (response.ok) {
         setSubmitted(true);
         router.push('/thankyou');
       } else {
-        console.error('Save failed');
+        console.error('Failed to save order:', await response.text());
+        alert('There was an issue submitting your form.');
       }
     } catch (err) {
-      console.error('Submit error:', err);
+      console.error('Submission error:', err);
+      alert('Something went wrong. Please try again later.');
     }
   };
 
-  if (!order) return <p>Loading order...</p>;
+  if (!order) {
+    return <p>Loading...</p>;
+  }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Answer a few quick questions</h1>
-      {order.items.map(item => (
-        <div key={item.id} style={{ marginBottom: '2rem' }}>
-          <h3>{item.name} (×{item.quantity})</h3>
-          {(templates[item.id] || []).map((q, idx) => (
-            <div key={idx} style={{ marginBottom: '1rem' }}>
-              <label>{q.question}</label><br />
+    <form onSubmit={handleSubmit}>
+      {order.items.map((item) => (
+        <div key={item.id}>
+          <h3>{item.name}</h3>
+          {(formData[item.id] || []).map((entry, index) => (
+            <div key={index}>
+              <label>{entry.question}</label>
               <input
                 type="text"
-                value={formData[item.id]?.[idx]?.answer || ''}
-                onChange={(e) => handleChange(item.id, idx, e.target.value)}
-                style={{ width: '100%', padding: '0.5rem', marginTop: '0.25rem' }}
+                value={entry.answer}
+                onChange={(e) =>
+                  handleChange(item.id, index, e.target.value)
+                }
+                required
               />
             </div>
           ))}
         </div>
       ))}
-      <button
-        onClick={handleSubmit}
-        style={{ padding: '0.75rem 1.5rem', backgroundColor: '#008060', color: 'white', border: 'none', borderRadius: '5px' }}
-      >
-        Submit
-      </button>
-    </div>
+      <button type="submit">Submit</button>
+    </form>
   );
 }

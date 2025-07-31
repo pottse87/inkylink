@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Logo from "../public/logo.png";
 import Image from "next/image";
+import QuantitySelector from "../components/QuantitySelector";
 
 const bundles = [
   {
@@ -216,71 +217,24 @@ export default function BuildABundle() {
             <h3 style={{ marginTop: "1rem", marginBottom: "0.5rem" }}>
               {bundle.title}
             </h3>
-            <p style={{ fontSize: "0.9rem", fontStyle: "italic", marginBottom: "1rem" }}>
+            <p
+              style={{
+                fontSize: "0.9rem",
+                fontStyle: "italic",
+                marginBottom: "1rem",
+              }}
+            >
               {bundle.description}
             </p>
             <p style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
               ${bundle.price} each
             </p>
 
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                marginTop: "auto",
-              }}
-            >
-              <button
-                onClick={() =>
-                  handleQuantityChange(bundle.id, (quantities[bundle.id] || 0) - 1)
-                }
-                disabled={(quantities[bundle.id] || 0) <= 0}
-                style={{
-                  padding: "0.3rem 0.7rem",
-                  fontSize: "1.2rem",
-                  cursor: "pointer",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                  backgroundColor: "#fff",
-                }}
-                aria-label={`Decrease quantity of ${bundle.title}`}
-              >
-                –
-              </button>
-              <input
-                type="number"
-                min="0"
-                value={quantities[bundle.id]}
-                onChange={(e) =>
-                  handleQuantityChange(bundle.id, Math.max(0, Number(e.target.value)))
-                }
-                style={{
-                  width: "50px",
-                  textAlign: "center",
-                  fontSize: "1rem",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                }}
-                aria-label={`Quantity of ${bundle.title}`}
-              />
-              <button
-                onClick={() =>
-                  handleQuantityChange(bundle.id, (quantities[bundle.id] || 0) + 1)
-                }
-                style={{
-                  padding: "0.3rem 0.7rem",
-                  fontSize: "1.2rem",
-                  cursor: "pointer",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                  backgroundColor: "#fff",
-                }}
-                aria-label={`Increase quantity of ${bundle.title}`}
-              >
-                +
-              </button>
-            </div>
+            <QuantitySelector
+              bundle={bundle}
+              quantity={quantities[bundle.id]}
+              onQuantityChange={handleQuantityChange}
+            />
           </div>
         ))}
       </div>
@@ -297,29 +251,7 @@ export default function BuildABundle() {
         {isRecurring ? " / month" : ""}
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <button
-          onClick={() => router.back()}
-          style={{
-            padding: "0.6rem 1.5rem",
-            fontSize: "1rem",
-            backgroundColor: "#ccc",
-            color: "#000",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-          aria-label="Go back"
-        >
-          ⬅ Back
-        </button>
-
+      <div style={{ textAlign: "right" }}>
         <button
           onClick={handleCheckout}
           style={{
@@ -336,6 +268,23 @@ export default function BuildABundle() {
           Proceed to Checkout
         </button>
       </div>
+     <div style={{ marginTop: "2rem", textAlign: "center" }}>
+  <button
+    onClick={() => window.history.back()}
+    style={{
+      padding: "0.6rem 1.2rem",
+      fontSize: "1rem",
+      backgroundColor: "#333",
+      color: "#fff",
+      border: "none",
+      borderRadius: "6px",
+      cursor: "pointer",
+    }}
+  >
+    ← Back
+  </button>
+</div>
+ 
     </main>
   );
 }
