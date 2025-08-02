@@ -384,23 +384,25 @@ export default function BuildABundle() {
           Proceed to Checkout
         </button>
       </div>
-     <div style={{ marginTop: "2rem", textAlign: "center" }}>
+   <div style={{ marginTop: "2rem", textAlign: "center" }}>
   <button
     onClick={() => window.history.back()}
     style={{
       padding: "0.6rem 1.2rem",
       fontSize: "1rem",
-      backgroundColor: "#333",
+      backgroundColor: "#ff6666", // Coral Red
       color: "#fff",
       border: "none",
       borderRadius: "6px",
       cursor: "pointer",
+      transition: "background-color 0.2s ease-in-out",
     }}
+    onMouseEnter={(e) => (e.target.style.backgroundColor = "#e65555")}
+    onMouseLeave={(e) => (e.target.style.backgroundColor = "#ff6666")}
   >
     ← Back
   </button>
 </div>
- 
     </main>
   );
 }
