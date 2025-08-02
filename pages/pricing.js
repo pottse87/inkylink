@@ -222,7 +222,7 @@ export default function Pricing() {
     title: "Amazon Bullet Points Rewrite",
     description: "Revamp your 5 Amazon bullet points with keyword-rich, benefit-focused language that improves scanability and conversion.",
     price: 39,
-    icon: "/icons/amazon bullet points rewrite.png",
+    icon: "/icons/amazon bullet point rewrite.png",
     stripeMonthlyId: "price_1RrB4bFjDGmKohCH3pvtcmn9",
   },
   {
