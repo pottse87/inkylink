@@ -19,7 +19,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
-    // For testing endpoint is live
     return res.status(200).json({ message: "Webhook endpoint is live" });
   }
 
@@ -40,12 +39,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
-      await saveOrder(session);
-      console.log(`✅ Order saved successfully: ${session.id}`);
-    } else {
-      console.log(`ℹ️ Unhandled event type: ${event.type}`);
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        const paymentIntent = event.data.object;
+        console.log(`✅ PaymentIntent succeeded: ${paymentIntent.id}`);
+        break;
+
+      case "checkout.session.completed":
+        const session = event.data.object;
+        await saveOrder(session);
+        console.log(`✅ Checkout session completed: ${session.id}`);
+        break;
+
+      default:
+        console.log(`ℹ️ Unhandled event type: ${event.type}`);
     }
 
     res.status(200).json({ received: true });
@@ -55,6 +62,7 @@ export default async function handler(req, res) {
   }
 }
 
+// ✅ Moved outside the handler
 async function saveOrder(session) {
   const client = await pool.connect();
 

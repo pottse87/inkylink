@@ -45,43 +45,23 @@ export default async function handler(req, res) {
   try {
     const query = `
       INSERT INTO orders (
-        customer_email,
-        plan,
-        bundle_ids,
-        status,
-        client_feedback,
-        rework_count,
-        ai_assistant,
-        total_price,
-        approved,
-        delivered,
-        source_page,
-        internal_notes,
-        client_name,
-        revision_limit,
-        assistant_output,
-        payment_status,
-        source_campaign,
-        completion_time_ms,
-        priority_level,
-        language,
-        review_notes,
-        recurring,
-        submitted_at,
-        feedback_submitted_at
-      ) VALUES (
-        $1, $2, $3::jsonb,
-        $4, $5, $6, $7, $8, $9, $10,
-        $11, $12, $13, $14, $15::jsonb,
-        $16, $17, $18, $19, $20,
-        $21, $22, $23, $24
+        customer_email, plan, bundle_ids, status, client_feedback, rework_count,
+        ai_assistant, total_price, approved, delivered, source_page,
+        internal_notes, client_name, revision_limit, assistant_output,
+        payment_status, source_campaign, completion_time_ms, priority_level,
+        language, review_notes, recurring, submitted_at, feedback_submitted_at
+      )
+      VALUES (
+        $1, $2, $3::jsonb, $4, $5, $6, $7, $8, $9, $10,
+        $11, $12, $13, $14, $15::jsonb, $16, $17, $18, $19,
+        $20, $21, $22, $23, $24
       )
     `;
 
     const values = [
       customer_email,
       plan,
-      bundle_ids,
+      JSON.stringify(bundle_ids),
       status,
       client_feedback,
       rework_count || 0,
@@ -93,7 +73,7 @@ export default async function handler(req, res) {
       internal_notes,
       client_name,
       revision_limit || 3,
-      assistant_output,
+      JSON.stringify(assistant_output),
       payment_status || 'unpaid',
       source_campaign,
       completion_time_ms,
@@ -106,9 +86,9 @@ export default async function handler(req, res) {
     ];
 
     await pool.query(query, values);
-    res.status(200).json({ message: 'Order saved successfully' });
+    res.status(200).json({ message: 'Order saved to PostgreSQL successfully' });
   } catch (error) {
-    console.error('Error saving order:', error);
+    console.error('Error saving order to PostgreSQL:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 }
