@@ -559,21 +559,24 @@ export default function Pricing() {
             />
             <p style={{ marginTop: "0.5rem", fontSize: "1rem" }}>{bundle.description}</p>
             <p style={{ fontWeight: "bold", marginTop: "0.5rem" }}>${bundle.price}</p>
-            <button
-              onClick={() => handleBundleCheckout(bundle)}
-              style={{
-                marginTop: "0.5rem",
-                padding: "0.4rem 1rem",
-                fontSize: "0.9rem",
-                backgroundColor: "#000",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              Order Now
-            </button>
+           <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+  <button
+    onClick={() => handleBundleCheckout(bundle)}
+    style={{
+      width: "140px",                // 🔒 Uniform width for alignment
+      padding: "0.4rem 1rem",
+      fontSize: "0.9rem",
+      backgroundColor: "#000",
+      color: "#fff",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer",
+    }}
+  >
+    Order Now
+  </button>
+</div>
+
           </div>
         ))}
       </div>
