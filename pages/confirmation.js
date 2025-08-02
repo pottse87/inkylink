@@ -88,7 +88,7 @@ useEffect(() => {
     <div style={{ display: 'flex', gap: '3rem', alignItems: 'flex-start' }}>
       {/* Left Side – Previous Orders */}
       <div style={{ flex: 1 }}>
-        <h2>🔁 You’ve Ordered These Before</h2>
+        <h2>🔁 Previously Selected Services:</h2>
         {previousOrders.length > 0 ? (
           <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
             {previousOrders.map((order, index) =>
@@ -128,13 +128,13 @@ useEffect(() => {
             )}
           </ul>
         ) : (
-          <p>No previous orders found.</p>
+          <p>You haven't ordered anything yet!</p>
         )}
       </div>
 
       {/* Right Side – Cart */}
       <div style={{ flex: 1 }}>
-        <h1>Confirm Your Selection</h1>
+        <h1>In Your Cart Today:</h1>
         {selectedBundles.length === 0 ? (
           <p>No items selected.</p>
         ) : (
