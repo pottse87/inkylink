@@ -36,7 +36,7 @@ export default function Pricing() {
     {
       id: "starter",
       name: "Starter Plan",
-      description: "Professional polish for lean operations.",
+      description: "Streamlined precision with a professional edge.",
       priceMonthly: 69,
       priceYearly: 699,
       stripeMonthlyId: "price_1RrASOFjDGmKohCH3emQcGkw",
@@ -50,7 +50,7 @@ export default function Pricing() {
     {
       id: "growth",
       name: "Growth Plan",
-      description: "Scalable content support for growing catalogs.",
+      description: "Content that scales as fast as your catalog.",
       priceMonthly: 129,
       priceYearly: 1299,
       stripeMonthlyId: "price_1RrAZCFjDGmKohCHxEnUiiHn",
@@ -65,7 +65,7 @@ export default function Pricing() {
     {
       id: "pro",
       name: "Pro Plan",
-      description: "Comprehensive content creation for established brands.",
+      description: "Strategic content development tailored to established names.",
       priceMonthly: 229,
       priceYearly: 2299,
       stripeMonthlyId: "price_1RrAcJFjDGmKohCHEzzR4KF7",
@@ -84,7 +84,7 @@ export default function Pricing() {
     {
       id: "elite",
       name: "Elite Plan",
-      description: "Full-suite, monthly content for high-performing businesses.",
+      description: "Consistent monthly content to match your business velocity.",
       priceMonthly: 329,
       priceYearly: 3299,
       stripeMonthlyId: "price_1RrAfJFjDGmKohCHuZ3dZPUs",
@@ -109,7 +109,7 @@ export default function Pricing() {
       id: "product-description",
       title: "Product Description",
       price: 39,
-      description: "Get a compelling and SEO-optimized product description.",
+      description: "Stand out in search with expertly crafted product descriptions.",
       icon: "/icons/desc.png",
       stripeMonthlyId: "price_1RrAiGFjDGmKohCHv5acUOmw",
     },
@@ -117,7 +117,7 @@ export default function Pricing() {
       id: "product-overview",
       title: "Product Overview",
       price: 29,
-      description: "Summarize your product in a short, scannable overview.",
+      description: "Highlight your product in a quick, easy-to-read snapshot.",
       icon: "/icons/overview.png",
       stripeMonthlyId: "price_1RrAkaFjDGmKohCHFah1gFHG",
     },
@@ -125,7 +125,7 @@ export default function Pricing() {
       id: "welcome-email",
       title: "Welcome Email",
       price: 39,
-      description: "A warm, professional welcome for new customers.",
+      description: "Make a lasting first impression with a warm, professional welcome.",
       icon: "/icons/welcome.png",
       stripeMonthlyId: "price_1RrAnIFjDGmKohCHAFVQH1Ew",
     },
@@ -133,7 +133,7 @@ export default function Pricing() {
       id: "product-drop-email",
       title: "Product Drop Email",
       price: 39,
-      description: "Announce a new product drop with energy and style.",
+      description: "Announce your new product with a sharp branded impact.",
       icon: "/icons/drop.png",
       stripeMonthlyId: "price_1RrAnxFjDGmKohCHrqsHz9Z7",
     },
@@ -141,7 +141,7 @@ export default function Pricing() {
       id: "seo-blog-post",
       title: "SEO-Optimized Blog Post",
       price: 59,
-      description: "A helpful blog post written to rank and convert.",
+      description: "A keyword-driven blog built to rank on page one.",
       icon: "/icons/blog.png",
       stripeMonthlyId: "price_1RrAovFjDGmKohCHvLnPKHf8",
     },
@@ -149,7 +149,7 @@ export default function Pricing() {
       id: "bullet-point-rewrite",
       title: "Bullet Point Rewrite",
       price: 39,
-      description: "Let us polish and optimize your feature bullets.",
+      description: "Optimize your bullet points high-performance, persuasive language.",
       icon: "/icons/bullet point rewrite.png",
       stripeMonthlyId: "price_1RrAqhFjDGmKohCHBPP4F3i1",
     },
@@ -157,7 +157,7 @@ export default function Pricing() {
       id: "faq-section",
       title: "FAQ Section",
       price: 29,
-      description: "We'll craft a useful and buyer-focused FAQ section.",
+      description: "Answer buyer questions before they're asked with a customer-focused FAQ.",
       icon: "/icons/faq section.png",
       stripeMonthlyId: "price_1RrArMFjDGmKohCHYT4OISyP",
     },
@@ -165,7 +165,7 @@ export default function Pricing() {
       id: "comparison-table",
       title: "Comparison Table",
       price: 39,
-      description: "Give customers a clean, visual way to compare options.",
+      description: "Make decision-making easy with a side-by-side comparison.",
       icon: "/icons/comparison table.png",
       stripeMonthlyId: "price_1RrAs9FjDGmKohCHEJ4tkmdY",
     },
@@ -173,7 +173,7 @@ export default function Pricing() {
       id: "seo-titles-metadata",
       title: "SEO Titles & Metadata",
       price: 39,
-      description: "Get clean, optimized titles and metadata that rank.",
+      description: "Keyword-smart titles that speak both human and search engine.",
       icon: "/icons/seo.png",
       stripeMonthlyId: "price_1RrAtGFjDGmKohCHvzgeRw3f",
     },
@@ -189,7 +189,7 @@ export default function Pricing() {
       id: "launch-kit",
       title: "Launch Kit",
       price: 119,
-      description: "The perfect starter package for product rollouts.",
+      description: "Everything you need to launch new products with confidence.",
       icon: "/icons/launch kit.png",
       stripeMonthlyId: "price_1RrAyoFjDGmKohCHFlITlQ0H",
     },
@@ -197,7 +197,7 @@ export default function Pricing() {
       id: "expansion-kit",
       title: "Expansion Kit",
       price: 149,
-      description: "Ideal for stores looking to expand their catalog or refresh stale listings.",
+      description: "A smart choice for stores expanding their lineup or revamping old content.",
       icon: "/icons/expansion kit.png",
       stripeMonthlyId: "price_1RrAztFjDGmKohCHYJYF4khr",
     },
@@ -205,7 +205,7 @@ export default function Pricing() {
       id: "conversion-booster",
       title: "Conversion Booster",
       price: 129,
-      description: "Ideal for underperforming listings or high-traffic pages that need a boost.",
+      description: "Revive sluggish listings and amplify your most visited pages.",
       icon: "/icons/conversion booster.png",
       stripeMonthlyId: "price_1RrB2IFjDGmKohCHWVM3XyqB",
     },
@@ -220,7 +220,7 @@ export default function Pricing() {
   {
     id: "amazon bullet points rewrite",
     title: "Amazon Bullet Points Rewrite",
-    description: "Revamp your 5 Amazon bullet points with keyword-rich, benefit-focused language that improves scanability and conversion.",
+    description: "High-performance bullet points designed to boost click-through-rate and conversions.",
     price: 39,
     icon: "/icons/amazon bullet point rewrite.png",
     stripeMonthlyId: "price_1RrB4bFjDGmKohCH3pvtcmn9",
@@ -228,7 +228,7 @@ export default function Pricing() {
   {
     id: "Enhanced Amazon Content",
     title: "Enhanced Amazon Content",
-    description: "Get professionally written A+ content that fits Amazon's enhanced brand storytelling modules.",
+    description: "Strategically crafted narratives built to fit Amazon's visual structure.",
     price: 59,
     icon: "/icons/enhanced amazon content.png",
     stripeMonthlyId: "price_1RrB5kFjDGmKohCHHVGJMjnm",
@@ -236,7 +236,7 @@ export default function Pricing() {
   {
     id: "split test variants",
     title: "Split Test Variants",
-    description: "Run A/B tests with multiple versions of your product copy to see which converts best. Includes 2 full variants.",
+    description: "Run A/B tests with multiple versions of your product's copy to see which converts best. Includes 2 full variants.",
     price: 69,
     icon: "/icons/split test variants.png",
     stripeMonthlyId: "price_1RrBDYFjDGmKohCHE7gydsgB",
@@ -266,7 +266,7 @@ export default function Pricing() {
   {
     id: "store revamp kit",
     title: "Store Revamp Kit",
-    description: "Audit + new descriptions and key upgrades for tired stores.",
+    description: "Revitalize your store with expert insight and high impact descriptions.",
     price: 199,
     stripeMonthlyId: "price_1RrB88FjDGmKohCHTTZcDy5q",
     icon: "/icons/store revamp kit.png",
@@ -281,7 +281,7 @@ export default function Pricing() {
   {
     id: "ongoing optimization",
     title: "Ongoing Optimization",
-    description: "Designed for continuous improvement and iteration.",
+    description: "Structured to adapt, improve and help scale your goals.",
     price: 149,
     stripeMonthlyId: "price_1RrB9jFjDGmKohCH0yklX14H",
     icon: "/icons/ongoing optimization.png",
@@ -295,7 +295,7 @@ export default function Pricing() {
   {
     id: "conversion booster pro",
     title: "Conversion Booster Pro",
-    description: "High-impact changes to maximize conversions.",
+    description: "Targeted improvements designed to turn traffic into sales.",
     price: 169,
     stripeMonthlyId: "price_1RrB9jFjDGmKohCH0yklX14H",
     icon: "/icons/conversion booster pro.png",
@@ -532,54 +532,61 @@ export default function Pricing() {
         </div>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "1.5rem",
-          marginBottom: "2rem",
-        }}
-      >
-        {oneTimeBundles.map((bundle) => (
-          <div
-            key={bundle.id}
-            style={{
-              padding: "1rem",
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              background: "#fff",
-              textAlign: "center",
-            }}
-          >
-            <h3 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>{bundle.title}</h3>
-            <img
-              src={bundle.icon}
-              alt={`${bundle.title} icon`}
-              style={{ width: "60px", height: "60px", objectFit: "contain" }}
-            />
-            <p style={{ marginTop: "0.5rem", fontSize: "1rem" }}>{bundle.description}</p>
-            <p style={{ fontWeight: "bold", marginTop: "0.5rem" }}>${bundle.price}</p>
-           <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-  <button
-    onClick={() => handleBundleCheckout(bundle)}
-    style={{
-      width: "140px",                // 🔒 Uniform width for alignment
-      padding: "0.4rem 1rem",
-      fontSize: "0.9rem",
-      backgroundColor: "#000",
-      color: "#fff",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
-    }}
-  >
-    Order Now
-  </button>
-</div>
-
-          </div>
-        ))}
+    <div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+    gap: "1.5rem",
+    marginBottom: "2rem",
+  }}
+>
+  {oneTimeBundles.map((bundle) => (
+    <div
+      key={bundle.id}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "360px",
+        padding: "1rem",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        background: "#fff",
+        textAlign: "center",
+      }}
+    >
+      <div>
+        <h3 style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>{bundle.title}</h3>
+        <img
+          src={bundle.icon}
+          alt={`${bundle.title} icon`}
+          style={{ width: "60px", height: "60px", objectFit: "contain" }}
+        />
+        <p style={{ marginTop: "0.5rem", fontSize: "1rem" }}>{bundle.description}</p>
+        <p style={{ fontWeight: "bold", marginTop: "0.5rem" }}>${bundle.price}</p>
       </div>
+
+      <div style={{ marginTop: "1rem" }}>
+        <button
+          onClick={() => handleBundleCheckout(bundle)}
+          style={{
+            width: "140px",
+            padding: "0.4rem 1rem",
+            fontSize: "0.9rem",
+            backgroundColor: "#000",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Order Now
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
     </main>
   );
 }
+
