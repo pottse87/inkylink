@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Inkylink</title>
+        <title>Welcome to Inkylink!</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -23,20 +23,27 @@ export default function Home() {
       }}>
         <div style={{
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-end",
           justifyContent: "center",
-          gap: "1rem",
+          gap: "1.5rem",
           marginBottom: "2rem"
         }}>
           <img
             src="/logo.png"
             alt="Inkylink Logo"
-            width="150"
-            height="150"
+            width="300"
+            height="300"
             style={{ display: "block" }}
           />
-          <h1 style={{ fontSize: "clamp(2rem, 10vw, 8rem)", margin: 0 }}>Inkylink</h1>
-        </div>
+          <h1 style={{
+    fontSize: "clamp(3rem, 10vw, 8rem)",
+    margin: 0,
+    lineHeight: "1.2",
+    transform: "translateY(-10px)"
+  }}>
+    Welcome to Inkylink!
+  </h1>
+</div>
 
         <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>
           Your SEO web content provider, and much, much more!

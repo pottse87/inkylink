@@ -345,7 +345,7 @@ export default function Pricing() {
         <li style={{ marginBottom: "1rem" }}>Once your work is completed, it is sent to you via email. You can review and revise; or accept and deploy it instantly</li>
       </ul>
 
-      <h2 style={{ fontSize: "2rem", marginBottom: "2rem" }}>Choose Your Plan</h2>
+      <h2 style={{ fontSize: "2rem", marginBottom: "2rem" }}>Choose A Plan:</h2>
 
       <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
         <label style={{ fontSize: "1.1rem", marginRight: "0.5rem" }}>Monthly</label>
@@ -483,22 +483,30 @@ export default function Pricing() {
         ))}
       </div>
 
-      <div style={{ marginBottom: "2rem" }}>
-        <p style={{ fontSize: "1.1rem" }}>Not sure how we can help? click the lighbulb to use our content conversion calculator</p>
-        <div
-          onClick={() => setShowROI(!showROI)}
-          style={{ fontSize: "2rem", cursor: "pointer" }}
-          aria-label="Toggle ROI Calculator"
-          role="button"
-          tabIndex={0}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") setShowROI(!showROI);
-          }}
-        >
-          💡
-        </div>
-        {showROI && <ROIcalculator key="roi-widget" />}
-      </div>
+   <div style={{ marginBottom: "2rem", textAlign: "center" }}>
+  <p style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>
+    Not sure how we can help? Use our conversion calculator…
+  </p>
+  <div
+    onClick={() => setShowROI(!showROI)}
+    style={{
+      fontSize: "6rem",
+      cursor: "pointer",
+      userSelect: "none",
+      transition: "transform 0.2s ease"
+    }}
+    aria-label="Toggle ROI Calculator"
+    role="button"
+    tabIndex={0}
+    onKeyPress={(e) => {
+      if (e.key === "Enter") setShowROI(!showROI);
+    }}
+  >
+    💡
+  </div>
+  {showROI && <ROIcalculator key="roi-widget" />}
+</div>
+
 
       <div
         style={{

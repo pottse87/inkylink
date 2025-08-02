@@ -346,11 +346,18 @@ export default function BuildABundle() {
               ${bundle.price} each
             </p>
 
-            <QuantitySelector
-              bundle={bundle}
-              quantity={quantities[bundle.id]}
-              onQuantityChange={handleQuantityChange}
-            />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", height: "48px" }}>
+  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", lineHeight: "1", fontSize: "1.2rem", userSelect: "none" }}>
+    <span>+</span>
+    <span>–</span>
+  </div>
+  <QuantitySelector
+    bundle={bundle}
+    quantity={quantities[bundle.id]}
+    onQuantityChange={handleQuantityChange}
+  />
+</div>
+
           </div>
         ))}
       </div>

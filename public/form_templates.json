@@ -1,131 +1,131 @@
 {
   "seo-titles-metadata": [
     {
-      "question": "What products are we optimizing today?",
+      "question": "Which product(s) are we optimizing titles and metadata for today?",
       "type": "text"
     },
     {
-      "question": "Are there specific keywords or phrases you want to include?",
+      "question": "Are there specific keywords, phrases or brand terms you want to include?",
       "type": "text"
     }
   ],
   "expansion-kit": [
     {
-      "question": "List the product names or SKUs you want described.",
+      "question": "List the product names or SKUs you want us to write descritions for.",
       "type": "text"
     },
     {
-      "question": "Who is your target customer for these products?",
+      "question": "Who is your ideal customer for these products (age, interests, use case, etc.)?",
       "type": "text"
     }
   ],
   "conversion-booster": [
     {
-      "question": "What objections do customers typically have?",
+      "question": "What common objections or hesitations do customers express before buying?",
       "type": "text"
     },
     {
-      "question": "What features or benefits should we emphasize?",
+      "question": "What features, benefits, or advantages should we emphasize to build trust?",
       "type": "text"
     }
   ],
   "launch-kit": [
     {
-      "question": "Describe your brand's vibe and tone.",
+      "question": "How would you describe your brand's personality or tone (e.g., bold, caring, playful)?",
       "type": "text"
     },
     {
-      "question": "What makes your business stand out from the crowd?",
+      "question": "What makes your business different, exciting, or memorable to customers?",
       "type": "text"
     }
   ],
   "faq-section": [
     {
-      "question": "List common questions your customers ask, or anything you would like covered.",
+      "question": "What are the top questions your customers ask before purchasing?",
       "type": "text"
     },
     {
-      "question": "Any specific answers you want included?",
+      "question": "Are there any must-include answers, details, or support policies you want us to mention?",
       "type": "text"
     }
   ],
   "product-description": [
     {
-      "question": "What product are we describing, and what makes it special?",
+      "question": "What product are we writing about, and why do customers love it?",
       "type": "text"
     },
     {
-      "question": "Is there a certain tone or personality you'd like us to use?",
+      "question": "Would you like us to match a specific tone or writing style?",
       "type": "text"
     }
   ],
   "product-overview": [
     {
-      "question": "Tell us what your product does at a glance.",
+      "question": "What does this product do at a glance, and who is it for?",
       "type": "text"
     },
     {
-      "question": "What details must be included in this overview?",
+      "question": "What key details or benefits absolutely must be included?",
       "type": "text"
     }
   ],
   "welcome-email": [
     {
-      "question": "What feeling do you want to give customers when they first join you?",
+      "question": "What feeling or impression do you want new customers to get when they first join you?",
       "type": "text"
     },
     {
-      "question": "Is there anything you'd like us to highlight (values, offers, or mission)?",
+      "question": "Is there anything you want to highlight, like your values, unique offers, or brand mission?",
       "type": "text"
     }
   ],
   "product-drop-email": [
     {
-      "question": "What product are we announcing, and what's exciting about it?",
+      "question": "What product are we announcing, and what's exciting or new about it?",
       "type": "text"
     },
     {
-      "question": "Any urgency, offers, or exclusives we should include?",
+      "question": "Should we include urgency, exclusivity, or a special offer to drive clicks?",
       "type": "text"
     }
   ],
   "seo-optimized-blog-post": [
     {
-      "question": "What topic or keyword(s) do you want this blog post to focus on?",
+      "question": "What topic or keyword(s) should we focus this blog post on?",
       "type": "text"
     },
     {
-      "question": "Is there a specific takeaway or call to action you'd like readers to walk away with?",
+      "question": "What's the main takeaway or call to action you want readers to leave with?",
       "type": "text"
     }
   ],
   "bullet-point-rewrite": [
     {
-      "question": "Paste your current bullet points below.",
+      "question": "Paste your current bullet points below so we can help imrove them.",
       "type": "text"
     },
     {
-      "question": "What tone or style should the new bullet points follow (e.g., persuasive, fun, professional)?",
+      "question": "What tone or approach should we use in the new version (e.g., persuasive, playful, formal)?",
       "type": "text"
     }
   ],
   "comparison-table": [
     {
-      "question": "What are we comparing (products, competitors, plans)?",
+      "question": "What products, services, or options are we comparing?",
       "type": "text"
     },
     {
-      "question": "What points of comparison are most the important to highlight to you?",
+      "question": "What comparison points matter most to your customers (features, price, quality, etc.)?",
       "type": "text"
     }
   ],
   "full-site-audit": [
     {
-      "question": "Please share your website URL for review.",
+      "question": "What's your website URL?",
       "type": "text"
     },
     {
-      "question": "Are there any concerns or goals you'd like us to focus on (SEO, conversions, UX)?",
+      "question": "Do you want us to focus on SEO, conversions, user experience, or all of the above?",
       "type": "text"
     }
   ]
