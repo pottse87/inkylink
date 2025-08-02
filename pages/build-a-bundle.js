@@ -197,7 +197,7 @@ const oneTimeBundles = [
     title: "Conversion Booster Pro",
     description: "Targeted improvements designed to turn traffic into sales.",
     price: 169,
-    stripeMonthlyId: "price_1RrB9jFjDGmKohCH0yklX14H",
+    stripeMonthlyId: "price_1RrBBNFjDGmKohCHE209rvTT",
     icon: "/icons/conversion booster pro.png",
     includes: [
       "Landing Page Optimization",
@@ -212,12 +212,12 @@ export default function BuildABundle() {
   const router = useRouter();
 
   const [quantities, setQuantities] = useState(
-    bundles.reduce((acc, b) => ({ ...acc, [b.id]: 0 }), {})
+    oneTimeBundles.reduce((acc, b) => ({ ...acc, [b.id]: 0 }), {})
   );
 
   const [isRecurring, setIsRecurring] = useState(false);
 
-  const totalPrice = bundles.reduce(
+  const totalPrice = oneTimeBundles.reduce(
     (total, bundle) => total + bundle.price * (quantities[bundle.id] || 0),
     0
   );
@@ -228,7 +228,7 @@ export default function BuildABundle() {
   };
 
   const handleCheckout = () => {
-    const selectedBundles = bundles
+    const selectedBundles = oneTimeBundles
       .filter((b) => quantities[b.id] > 0)
       .map((b) => ({
         id: b.id,
@@ -305,7 +305,7 @@ export default function BuildABundle() {
           marginBottom: "2rem",
         }}
       >
-        {bundles.map((bundle) => (
+        {oneTimeBundles.map((bundle) => (
           <div
             key={bundle.id}
             style={{
