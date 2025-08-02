@@ -76,9 +76,17 @@ useEffect(() => {
   };
 
   return (
-  <div style={{ padding: '2rem' }}>
+  <div
+    style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      padding: '2rem'
+    }}
+  >
     <div style={{ display: 'flex', gap: '3rem', alignItems: 'flex-start' }}>
-      {/* Left Side – Previous Orders + Back */}
+      {/* Left Side – Previous Orders */}
       <div style={{ flex: 1 }}>
         <h2>🔁 You’ve Ordered These Before</h2>
         {previousOrders.length > 0 ? (
@@ -122,27 +130,9 @@ useEffect(() => {
         ) : (
           <p>No previous orders found.</p>
         )}
-
-        <button
-          onClick={() => router.back()}
-          style={{
-            marginTop: '2rem',
-            backgroundColor: '#ff6666',
-            color: '#333',
-            border: 'none',
-            borderRadius: '6px',
-            padding: '0.6rem 1.2rem',
-            fontSize: '1rem',
-            cursor: 'pointer'
-          }}
-          onMouseOver={e => (e.target.style.backgroundColor = '#e65555')}
-          onMouseOut={e => (e.target.style.backgroundColor = '#ff6666')}
-        >
-          ⬅ Back
-        </button>
       </div>
 
-      {/* Right Side – Current Cart */}
+      {/* Right Side – Cart */}
       <div style={{ flex: 1 }}>
         <h1>Confirm Your Selection</h1>
         {selectedBundles.length === 0 ? (
@@ -156,26 +146,50 @@ useEffect(() => {
             ))}
           </ul>
         )}
-
-        <div style={{ marginTop: '2rem' }}>
-          <button
-            onClick={handleConfirm}
-            style={{
-              backgroundColor: '#00b894',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              padding: '0.6rem 1.2rem',
-              fontSize: '1rem',
-              cursor: 'pointer'
-            }}
-            onMouseOver={e => (e.target.style.backgroundColor = '#00997a')}
-            onMouseOut={e => (e.target.style.backgroundColor = '#00b894')}
-          >
-            Continue to Intake Form →
-          </button>
-        </div>
       </div>
+    </div>
+
+    {/* Bottom Buttons */}
+    <div
+      style={{
+        marginTop: '2rem',
+        display: 'flex',
+        justifyContent: 'space-between'
+      }}
+    >
+      <button
+        onClick={() => router.back()}
+        style={{
+          backgroundColor: '#ff6666',
+          color: '#333',
+          border: 'none',
+          borderRadius: '6px',
+          padding: '0.6rem 1.2rem',
+          fontSize: '1rem',
+          cursor: 'pointer'
+        }}
+        onMouseOver={e => (e.target.style.backgroundColor = '#e65555')}
+        onMouseOut={e => (e.target.style.backgroundColor = '#ff6666')}
+      >
+        ⬅ Back
+      </button>
+
+      <button
+        onClick={handleConfirm}
+        style={{
+          backgroundColor: '#00b894',
+          color: 'white',
+          border: 'none',
+          borderRadius: '6px',
+          padding: '0.6rem 1.2rem',
+          fontSize: '1rem',
+          cursor: 'pointer'
+        }}
+        onMouseOver={e => (e.target.style.backgroundColor = '#00997a')}
+        onMouseOut={e => (e.target.style.backgroundColor = '#00b894')}
+      >
+        Continue to Intake Form →
+      </button>
     </div>
   </div>
 );
