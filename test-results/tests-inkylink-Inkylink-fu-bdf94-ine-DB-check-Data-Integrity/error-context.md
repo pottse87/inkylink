@@ -1,0 +1,45 @@
+# Page snapshot
+
+```yaml
+- button "Open Next.js Dev Tools":
+  - img
+- button "Open issues overlay": 2 Issue
+- button "Collapse issues badge":
+  - img
+- navigation:
+  - button "previous" [disabled]:
+    - img "previous"
+  - text: 1/2
+  - button "next":
+    - img "next"
+- img
+- link "Next.js 15.4.4 (stale) Webpack":
+  - /url: https://nextjs.org/docs/messages/version-staleness
+  - img
+  - text: Next.js 15.4.4 (stale) Webpack
+- img
+- dialog "Runtime Error":
+  - text: Runtime Error
+  - button "Copy Stack Trace":
+    - img
+  - button "No related documentation found" [disabled]:
+    - img
+  - link "Learn more about enabling Node.js inspector for server code with Chrome DevTools":
+    - /url: https://nextjs.org/docs/app/building-your-application/configuring/debugging#server-side-code
+    - img
+  - paragraph: "Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen for one of the following reasons: 1. You might have mismatching versions of React and the renderer (such as React DOM) 2. You might be breaking the Rules of Hooks 3. You might have more than one copy of React in the same app See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem."
+  - paragraph:
+    - img
+    - text: pages\_app.js (9:29) @ eval
+    - button "Open in editor":
+      - img
+  - text: "7 | const currentPath = typeof window !== 'undefined' ? window.location.pathname : ''; 8 | > 9 | useEffect(() => {useEffect(() => { | ^ 10 | if (typeof window !== 'undefined') { 11 | window.addEventListener('error', (event) => { 12 | fetch('/api/log-error', {"
+  - paragraph: Call Stack 14
+  - button "Show 13 ignore-listed frame(s)":
+    - text: Show 13 ignore-listed frame(s)
+    - img
+  - text: eval
+  - button "Open eval in editor":
+    - img
+  - text: pages\_app.js (9:29)
+```
