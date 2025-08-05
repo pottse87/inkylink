@@ -1,0 +1,29 @@
+{
+  "order_id": "1754338792727_order",
+  "customer_email": "",
+  "plan": "",
+  "bundle_ids": "[{\"id\":\"product description\",\"name\":\"Product Description\",\"quantity\":1,\"price\":39,\"icon\":\"/icons/desc.png\"}]",
+  "status": "pending",
+  "client_feedback": "",
+  "rework_count": 0,
+  "ai_assistant": "ChatGPT",
+  "total_price": 39,
+  "approved": false,
+  "delivered": false,
+  "source_page": "forms",
+  "internal_notes": "",
+  "client_name": "",
+  "revision_limit": 3,
+  "assistant_output": {
+    "product description": []
+  },
+  "payment_status": "unpaid",
+  "source_campaign": "organic",
+  "completion_time_ms": 0,
+  "priority_level": "normal",
+  "language": "en",
+  "review_notes": "",
+  "recurring": false,
+  "submitted_at": "2025-08-04T20:19:52.633Z",
+  "feedback_submitted_at": null
+}

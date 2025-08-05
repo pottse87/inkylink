@@ -4,46 +4,36 @@ import Head from "next/head";
 
 export default function Home() {
   return (
-    <>
-      <Head>
-        <title>Welcome to Inkylink!</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+  <>
+    <Head>
+      <title>Welcome to Inkylink!</title>
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
 
-      <main style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
+    <main
+      style={{
         backgroundColor: "#f1f8fc",
         fontFamily: "Lato, sans-serif",
-        textAlign: "center",
-        padding: "2rem"
-      }}>
-        <div style={{
+        padding: "2rem",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+      }}
+    >
+      <header
+        style={{
           display: "flex",
-          alignItems: "flex-end",
+          alignItems: "center",
           justifyContent: "center",
-          gap: "1.5rem",
-          marginBottom: "2rem"
-        }}>
-          <img
-            src="/logo.png"
-            alt="Inkylink Logo"
-            width="300"
-            height="300"
-            style={{ display: "block" }}
-          />
-          <h1 style={{
-    fontSize: "clamp(3rem, 10vw, 8rem)",
-    margin: 0,
-    lineHeight: "1.2",
-    transform: "translateY(-10px)"
-  }}>
-    Welcome to Inkylink!
-  </h1>
-</div>
+          marginBottom: "2rem",
+        }}
+      >
+        <img src="/logo.png" alt="Inkylink Logo" width={100} height={100} />
+        <h1 style={{ fontSize: "4rem", marginLeft: "1rem" }}>Welcome to Inkylink</h1>
+      </header>
+
 
         <h2 style={{ fontSize: "1.8rem", marginBottom: "1rem" }}>
           Your SEO web content provider, and much, much more!
