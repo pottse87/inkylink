@@ -432,7 +432,7 @@ export default function Pricing() {
             <img
               src={`/icons/${plan.id}.png`}
               alt={`${plan.name} Icon`}
-              style={{ width: "60px", height: "60px", marginBottom: "1rem" }}
+              style={{ width: "70px", height: "70px", marginBottom: "1rem" }}
             />
             <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>{plan.name}</h3>
             <p style={{ fontSize: "1rem", marginBottom: "1rem", fontStyle: "italic" }}>
@@ -451,7 +451,7 @@ export default function Pricing() {
   </p>
 )}
 
-            <ul style={{ textAlign: "left", marginTop: "1rem", paddingLeft: "1rem" }}>
+            <ul style={{ textAlign: "left", marginTop: "0.5rem", paddingLeft: "1rem" }}>
               <li>{plan.productDescriptions} product descriptions</li>
               <li>{plan.bulletRewrites} bullet rewrites</li>
               {plan.welcomeEmail && <li>1 welcome email</li>}
@@ -485,7 +485,7 @@ export default function Pricing() {
 
    <div style={{ marginBottom: "2rem", textAlign: "center" }}>
   <p style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>
-    Not sure how we can help? Use our conversion calculator…
+    Not sure how we can help? Click the light bulb below to use our conversion calculator...
   </p>
   <div
     onClick={() => setShowROI(!showROI)}
@@ -555,8 +555,8 @@ export default function Pricing() {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        height: "360px",
-        padding: "1rem",
+        
+        padding: "0.75rem",
         border: "1px solid #ccc",
         borderRadius: "8px",
         background: "#fff",
@@ -568,13 +568,13 @@ export default function Pricing() {
         <img
           src={bundle.icon}
           alt={`${bundle.title} icon`}
-          style={{ width: "60px", height: "60px", objectFit: "contain" }}
+          style={{ width: "70px", height: "70px", objectFit: "contain" }}
         />
-        <p style={{ marginTop: "0.5rem", fontSize: "1rem" }}>{bundle.description}</p>
-        <p style={{ fontWeight: "bold", marginTop: "0.5rem" }}>${bundle.price}</p>
+        <p style={{ marginTop: "0.3rem", fontSize: "1rem" }}>{bundle.description}</p>
+        <p style={{ fontWeight: "bold", marginTop: "0.3rem" }}>${bundle.price}</p>
       </div>
 
-      <div style={{ marginTop: "1rem" }}>
+      <div style={{ marginTop: "0.5rem" }}>
         <button
           onClick={() => handleBundleCheckout(bundle)}
           style={{
