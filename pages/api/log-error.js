@@ -1,17 +1,11 @@
-import fs from 'fs';
-import path from 'path';
+import { appendLogLineSafe } from "../../lib/localFS";
 
-export default function handler(req, res) {
-  if (req.method === 'POST') {
-    const logsDir = path.join(process.cwd(), 'logs', 'website');
-    if (!fs.existsSync(logsDir)) {
-      fs.mkdirSync(logsDir, { recursive: true });
-    }
-    const timestamp = new Date().toISOString().replace(/:/g, '-');
-    const logPath = path.join(logsDir, `error-${timestamp}.json`);
-    fs.writeFileSync(logPath, JSON.stringify(req.body, null, 2));
-    res.status(200).json({ success: true });
-  } else {
-    res.status(405).json({ error: 'Method not allowed' });
+export default async function handler(req, res) {
+  try {
+    const msg = (req.body && (req.body.message || req.body.msg)) || "unknown";
+    appendLogLineSafe(String(msg));
+    res.status(200).json({ ok: true });
+  } catch {
+    res.status(200).json({ ok: true });
   }
 }

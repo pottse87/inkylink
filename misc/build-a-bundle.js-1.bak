@@ -63,9 +63,6 @@ export default function BuildABundle() {
   const router = useRouter();
   const [clientId, setClientId] = useState(null);
   const [selected, setSelected] = useState({}); // id -> quantity
-  const [hoverId, setHoverId] = useState(null);
-  const [hoverBack, setHoverBack] = useState(false);
-  const [hoverReview, setHoverReview] = useState(false);
 
   useEffect(() => { setClientId(getClientId()); }, []);
 
@@ -102,48 +99,13 @@ export default function BuildABundle() {
 
   return (
     <main style={{ maxWidth: 1100, margin: "40px auto", padding: "0 16px", fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 }}>
-  <h1 style={{ fontSize: 32, margin: 0 }}>Build a Bundle</h1>
-  <button
-    onClick={() => router.push("/pricing")}
-    onMouseEnter={() => setHoverBack(true)}
-    onMouseLeave={() => setHoverBack(false)}
-    style={{
-      padding: "10px 14px",
-      borderRadius: 10,
-      border: "1px solid #0fc24bff",
-      background: hoverBack ? "#0fc24bff" : "transparent",
-      color: hoverBack ? "#fff" : "#0fc24bff",
-      cursor: "pointer",
-      boxShadow: hoverBack ? "0 8px 24px rgba(0,0,0,0.12)" : "0 2px 8px rgba(0,0,0,0.06)",
-      transform: hoverBack ? "translateY(-2px)" : "translateY(0)",
-      transition: "transform 150ms ease, box-shadow 150ms ease, background 150ms ease, color 150ms ease"
-    }}
-  >
-    Back to Pricing
-  </button>
-</div>
-<div style={{fontSize:12,color:"#777"}}>Bundle items: {bundleItems.length}</div>
-
+      <h1 style={{ fontSize: 32, marginBottom: 16 }}>Build a Bundle</h1><div style={{fontSize:12,color:"#777"}}>Bundle items: {bundleItems.length}</div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
         {bundleItems.map((it) => {
           const qty = selected[it.id] || 0;
           return (
-            <div
-  key={it.id}
-  onMouseEnter={() => setHoverId(it.id)}
-  onMouseLeave={() => setHoverId(null)}
-  style={{
-    border: "1px solid #eee",
-    borderRadius: 12,
-    padding: 16,
-    boxShadow: hoverId === it.id ? "0 8px 24px rgba(0,0,0,0.12)" : "0 2px 8px rgba(0,0,0,0.06)",
-    transform: hoverId === it.id ? "translateY(-4px)" : "translateY(0)",
-    transition: "transform 150ms ease, box-shadow 150ms ease"
-  }}
->
-
+            <div key={it.id} style={{ border: "1px solid #eee", borderRadius: 12, padding: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 {it.icon ? <img src={it.icon} alt="" width={28} height={28} /> : <div style={{ width: 28, height: 28, background: "#eee", borderRadius: 6 }} />}
                 <strong>{displayName(it)}</strong>
@@ -160,26 +122,11 @@ export default function BuildABundle() {
         })}
       </div>
 
-   <div style={{ marginTop: 18, display: "flex", justifyContent: "flex-end" }}>
-  <button
-    onClick={addSelectedToCart}
-    onMouseEnter={() => setHoverReview(true)}
-    onMouseLeave={() => setHoverReview(false)}
-    style={{
-      padding: "10px 14px",
-      borderRadius: 10,
-      border: "1px solid #0fc24bff",
-      background: hoverReview ? "#0fc24bff" : "#111",
-      cursor: "pointer",
-      color: "#fff",
-      boxShadow: hoverReview ? "0 8px 24px rgba(0,0,0,0.12)" : "0 2px 8px rgba(0,0,0,0.06)",
-      transform: hoverReview ? "translateY(-2px)" : "translateY(0)",
-      transition: "transform 150ms ease, box-shadow 150ms ease, background 150ms ease"
-    }}
-  >
-    Add Selected & Review
-  </button>
-</div>
+      <div style={{ marginTop: 18, display: "flex", justifyContent: "flex-end" }}>
+        <button onClick={addSelectedToCart} style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", background: "#111", cursor: "pointer", color: "#fff" }}>
+          Add Selected & Review
+        </button>
+      </div>
     </main>
   );
 }

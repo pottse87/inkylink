@@ -8,7 +8,9 @@
     "start": "next start"
   },
   "dependencies": {
+    "@nhost/nhost-js": "^3.3.0",
     "@stripe/stripe-js": "^7.5.0",
+    "@supabase/supabase-js": "^2.52.0",
     "formidable": "3.5.2",
     "framer-motion": "^10.16.1",
     "micro": "^10.0.1",
@@ -25,8 +27,5 @@
     "pg": "^8.16.3",
     "postcss": "^8.4.25",
     "tailwindcss": "^3.4.1"
-  },
-  "engines": {
-    "node": "22.x"
   }
 }

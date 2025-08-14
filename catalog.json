@@ -1,0 +1,242 @@
+[
+  {
+    "id": "product description",
+    "title": "Product Description",
+    "price": 39,
+    "description": "Stand out in search with expertly crafted product descriptions.",
+    "icon": "/icons/desc.png",
+    "stripeMonthlyId": "price_1RrAiGFjDGmKohCHv5acUOmw"
+  },
+  {
+    "id": "product overview",
+    "title": "Product Overview",
+    "price": 29,
+    "description": "Highlight your product in a quick, easy-to-read snapshot.",
+    "icon": "/icons/overview.png",
+    "stripeMonthlyId": "price_1RrAkaFjDGmKohCHFah1gFHG"
+  },
+  {
+    "id": "welcome email",
+    "title": "Welcome Email",
+    "price": 39,
+    "description": "Make a lasting first impression with a warm, professional welcome.",
+    "icon": "/icons/welcome.png",
+    "stripeMonthlyId": "price_1RrAnIFjDGmKohCHAFVQH1Ew"
+  },
+  {
+    "id": "product drop email",
+    "title": "Product Drop Email",
+    "price": 39,
+    "description": "Announce your new product with a sharp branded impact.",
+    "icon": "/icons/drop.png",
+    "stripeMonthlyId": "price_1RrAnxFjDGmKohCHrqsHz9Z7"
+  },
+  {
+    "id": "seo blog post",
+    "title": "SEO-Optimized Blog Post",
+    "price": 59,
+    "description": "A keyword-driven blog built to rank on page one.",
+    "icon": "/icons/blog.png",
+    "stripeMonthlyId": "price_1RrAovFjDGmKohCHvLnPKHf8"
+  },
+  {
+    "id": "bullet point rewrite",
+    "title": "Bullet Point Rewrite",
+    "price": 39,
+    "description": "Optimize your bullet points high-performance, persuasive language.",
+    "icon": "/icons/bullet point rewrite.png",
+    "stripeMonthlyId": "price_1RrAqhFjDGmKohCHBPP4F3i1"
+  },
+  {
+    "id": "faq section",
+    "title": "FAQ Section",
+    "price": 29,
+    "description": "Answer buyer questions before they're asked with a customer-focused FAQ.",
+    "icon": "/icons/faq section.png",
+    "stripeMonthlyId": "price_1RrArMFjDGmKohCHYT4OISyP"
+  },
+  {
+    "id": "comparison table",
+    "title": "Comparison Table",
+    "price": 39,
+    "description": "Make decision-making easy with a side-by-side comparison.",
+    "icon": "/icons/comparison table.png",
+    "stripeMonthlyId": "price_1RrAs9FjDGmKohCHEJ4tkmdY"
+  },
+  {
+    "id": "seo titles metadata",
+    "title": "SEO Titles & Metadata",
+    "price": 39,
+    "description": "Keyword-smart titles that speak both human and search engine.",
+    "icon": "/icons/seo.png",
+    "stripeMonthlyId": "price_1RrAtGFjDGmKohCHvzgeRw3f"
+  },
+  {
+    "id": "full site audit",
+    "title": "Full Site Audit",
+    "price": 179,
+    "description": "We'll review your store and provide clear, usable feedback you can apply immediately.",
+    "icon": "/icons/full site audit.png",
+    "stripeMonthlyId": "price_1RrAuVFjDGmKohCHzjoZfIQ5"
+  },
+  {
+    "price": 149,
+    "id": "a plus content",
+    "icon": "/icons/a plus content.png",
+    "title": "A+ Content",
+    "description": "Optimized storytelling that fits Amazon's enhanced layout perfectly.",
+    "stripeMonthlyId": "price_1RrAvsFjDGmKohCH9Zib1z7v"
+  },
+  {
+    "price": 69,
+    "id": "bullet point expansion",
+    "icon": "/icons/bullet point expansion.png",
+    "title": "Bullet Point Expansion",
+    "description": "Revamp your 5 Amazon bullet points with keyword-rich, benefit-focused language that improves scanability and conversion.",
+    "stripeMonthlyId": "price_1RrAwgFjDGmKohCHGQ7szTld"
+  },
+  {
+    "price": 49,
+    "id": "amazon product description",
+    "icon": "/icons/amazon product description.png",
+    "title": "Amazon Product Description",
+    "description": "Optimized for Amazon's algorithm and shopper behavior. Includes SEO-driven copy, brand tone, and strategic formatting.",
+    "stripeMonthlyId": "price_1RrAxjFjDGmKohCHXug6Zqef"
+  },
+  {
+    "price": 69,
+    "id": "split test variants",
+    "icon": "/icons/split test variants.png",
+    "title": "Split Test Variants",
+    "description": "Run A/B tests with multiple versions of your product's copy to see which converts best. Includes 2 full variants.",
+    "stripeMonthlyId": "price_1RrAyXFjDGmKohCHL4uzDxPW"
+  },
+  {
+    "price": 119,
+    "id": "audit and upgrades",
+    "icon": "/icons/audit and upgrades.png",
+    "title": "Audit & Upgrades",
+    "description": "Audit + new descriptions and key upgrades for tired stores.",
+    "stripeMonthlyId": "price_1RrAzDFjDGmKohCHN2B6dgvA"
+  },
+  {
+    "price": 149,
+    "id": "ongoing optimization",
+    "icon": "/icons/ongoing optimization.png",
+    "title": "Ongoing Optimization",
+    "description": "Designed for continuous improvement and iteration.",
+    "stripeMonthlyId": "price_1RrAzpFjDGmKohCHlMNz8SAr"
+  },
+  {
+    "price": 149,
+    "id": "high impact conversion upgrades",
+    "icon": "/icons/high impact conversion upgrades.png",
+    "title": "High-Impact Conversion Upgrades",
+    "description": "High impact changes to maximize conversions.",
+    "stripeMonthlyId": "price_1RrB0LFjDGmKohCHZnzy5kZy"
+  },
+  {
+    "price": 69,
+    "id": "starter",
+    "icon": "/icons/starter.png",
+    "title": "Starter Plan",
+    "description": "Streamlined precision with a professional edge.",
+    "stripeMonthlyId": "price_1RrB1cFjDGmKohCH7ymuSRv2"
+  },
+  {
+    "price": 129,
+    "id": "growth",
+    "icon": "/icons/growth.png",
+    "title": "Growth Plan",
+    "description": "Content that scales as fast as your catalog.",
+    "stripeMonthlyId": "price_1RrB25FjDGmKohCHqYysT1DB"
+  },
+  {
+    "price": 299,
+    "id": "empire",
+    "icon": "/icons/empire.png",
+    "title": "Empire Plan",
+    "description": "Everything optimized and done for you. Scale content, test and win.",
+    "stripeMonthlyId": "price_1RrB2rFjDGmKohCHjYkDuwb1"
+  },
+  {
+    "price": 69,
+    "id": "amazon bullet points",
+    "icon": "/icons/amazon bullet points.png",
+    "title": "Amazon Bullet Points",
+    "description": "Revamp your 5 Amazon bullet points with keyword-rich, benefit-focused language.",
+    "stripeMonthlyId": "price_1RrB3pFjDGmKohCHhUcy3gvl"
+  },
+  {
+    "price": 99,
+    "id": "catalog expansion",
+    "icon": "/icons/catalog expansion.png",
+    "title": "Catalog Expansion",
+    "description": "Ideal for stores looking to expand their catalog or refresh stale listings.",
+    "stripeMonthlyId": "price_1RrB4gFjDGmKohCHldX1sAO8"
+  },
+  {
+    "price": 59,
+    "id": "hero image copy",
+    "icon": "/icons/hero image copy.png",
+    "title": "Hero Image Copy",
+    "description": "Clean, compelling copy for above-the-fold product imagery.",
+    "stripeMonthlyId": "price_1RrB5FFjDGmKohCHsPUSUtjz"
+  },
+  {
+    "price": 39,
+    "id": "seo title and metadata",
+    "icon": "/icons/seo title and metadata.png",
+    "title": "SEO Title & Metadata",
+    "description": "Get clean, optimized titles and metadata that help your listings rank.",
+    "stripeMonthlyId": "price_1RrB5uFjDGmKohCHDkqrkBeZ"
+  },
+  {
+    "price": 29,
+    "id": "conversion calculator",
+    "icon": "/icons/conversion calculator.png",
+    "title": "Conversion Calculator",
+    "description": "Use our proprietary tool to estimate potential revenue boosts from optimization.",
+    "stripeMonthlyId": "price_1RrB6aFjDGmKohCHVjzMuUKu"
+  },
+  {
+    "price": 79,
+    "id": "visual content guide",
+    "icon": "/icons/visual content guide.png",
+    "title": "Visual Content Guide",
+    "description": "We’ll tell you exactly what to show, not just what to say.",
+    "stripeMonthlyId": "price_1RrB74FjDGmKohCHHaBMxONl"
+  },
+  {
+    "price": 59,
+    "id": "brand tone matching",
+    "icon": "/icons/brand tone matching.png",
+    "title": "Brand Tone Matching",
+    "description": "Seamless voice consistency across all your product listings and emails.",
+    "stripeMonthlyId": "price_1RrB7nFjDGmKohCHs2J6qtDM"
+  },
+  {
+    "price": 89,
+    "id": "copy refresh",
+    "icon": "/icons/copy refresh.png",
+    "title": "Copy Refresh",
+    "description": "Ideal for underperforming listings or high traffic pages that need a boost.",
+    "stripeMonthlyId": "price_1RrB8WFjDGmKohCH7ph6A7qg"
+  },
+  {
+    "price": 199,
+    "id": "content strategy",
+    "icon": "/icons/content strategy.png",
+    "title": "Content Strategy Session",
+    "description": "Meet with our team to align your content plan to your business goals.",
+    "stripeMonthlyId": "price_1RrB8sFjDGmKohCHdsqMiZLB"
+  },
+  {
+    "price": 99,
+    "id": "market positioning audit",
+    "icon": "/icons/market positioning audit.png",
+    "title": "Market Positioning Audit",
+    "description": "Get feedback on your store’s current position and how to stand out.",
+    "stripeMonthlyId": "price_1RrB9PFjDGmKohCH3fPa6E8X"
+  }
+]

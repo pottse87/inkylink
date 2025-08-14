@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
 /** ───────── helpers ───────── **/
@@ -30,10 +30,37 @@ async function saveCart(client_id, items) {
   return data;
 }
 
-const displayName = (x) => (x?.name ?? x?.title ?? "").toString();
+const displayName = (p) => (p?.name ?? p?.title ?? "").toString();
+const n = (v) => {
+  if (typeof v === "number") return Math.max(0, Math.floor(v));
+  if (typeof v === "string") {
+    const m = v.match(/\d+/);
+    return m ? Math.max(0, parseInt(m[0], 10)) : 0;
+  }
+  return 0;
+};
 
-/** ───────── your bundle items (cleaned) ───────── **/
-const bundleItems = [
+// Map plan counters -> catalog ids
+function expandSubscriptionPlan(plan) {
+  const out = [];
+  const push = (id, qty) => { if (id && qty > 0) out.push({ id, name: "", description: "", icon: "", quantity: qty }); };
+
+  // counters supported by your plan objects
+  push("product description",        n(plan.productDescriptions));
+  push("product overview",           n(plan.productOverview));
+  push("bullet point rewrite",       n(plan.bulletRewrites));
+  push("welcome email",              n(plan.welcomeEmail));
+  push("seo titles metadata",        n(plan.seoMetadata));
+  push("seo blog post",              n(plan.blog));
+  push("product drop email",         n(plan.email));
+  push("comparison table",           n(plan.extra));
+  push("faq section",                n(plan.faq));
+
+  return out;
+}
+
+/** ───────── data (your products/plans, cleaned) ───────── **/
+const oneTimeProducts = [
   { id: "product description", title: "Product Description", price: 39, description: "Stand out in search with expertly crafted product descriptions.", icon: "/icons/desc.png", stripeMonthlyId: "price_1RrAiGFjDGmKohCHv5acUOmw" },
   { id: "product overview", title: "Product Overview", price: 29, description: "Highlight your product in a quick, easy-to-read snapshot.", icon: "/icons/overview.png", stripeMonthlyId: "price_1RrAkaFjDGmKohCHFah1gFHG" },
   { id: "welcome email", title: "Welcome Email", price: 39, description: "Make a lasting first impression with a warm, professional welcome.", icon: "/icons/welcome.png", stripeMonthlyId: "price_1RrAnIFjDGmKohCHAFVQH1Ew" },
@@ -58,128 +85,92 @@ const bundleItems = [
   { id: "conversion booster pro", title: "Conversion Booster Pro", description: "Targeted improvements designed to turn traffic into sales.", price: 169, stripeMonthlyId: "price_1RrB9jFjDGmKohCH0yklX14H", icon: "/icons/conversion booster pro.png", includes: ["Landing Page Optimization","Comparison Table","Email Campaign"], color: "#fce4ec" },
 ];
 
+const plans = [
+  { id: "starter", name: "Starter Plan", description: "Streamlined precision with a professional edge.", priceMonthly: 69, priceYearly: 699, stripeMonthlyId: "price_1RrASOFjDGmKohCH3emQcGkw", stripeYearlyId: "price_1RrAWzFjDGmKohCHaTwI70lD", icon: "/icons/starter.png", productDescriptions: 3, bulletRewrites: 1, welcomeEmail: 1, color: "#e8f5e9" },
+  { id: "growth", name: "Growth Plan", description: "Content that scales as fast as your catalog.", priceMonthly: 129, priceYearly: 1299, stripeMonthlyId: "price_1RrAZCFjDGmKohCHxEnUiiHn", stripeYearlyId: "price_1RrAa2FjDGmKohCHOnxsKpAJ", icon: "/icons/growth.png", productDescriptions: 6, bulletRewrites: 2, welcomeEmail: 1, seoMetadata: 2, color: "#e3f2fd" },
+  { id: "pro", name: "Pro Plan", description: "Strategic content development tailored to established names.", priceMonthly: 229, priceYearly: 2299, stripeMonthlyId: "price_1RrAcJFjDGmKohCHEzzR4KF7", stripeYearlyId: "price_1RrAdjFjDGmKohCHwYxagpG4", icon: "/icons/pro.png", productDescriptions: 8, productOverview: 2, bulletRewrites: 3, seoMetadata: 2, welcomeEmail: 2, blog: "1 blog post", faq: "1 FAQ section", revisions: "Up to 2 revisions per item/month", color: "#ede7f6" },
+  { id: "elite", name: "Elite Plan", description: "Consistent monthly content to match your business velocity.", priceMonthly: 329, priceYearly: 3299, stripeMonthlyId: "price_1RrAfJFjDGmKohCHuZ3dZPUs", stripeYearlyId: "price_1RrAglFjDGmKohCHmVeQg6YC", icon: "/icons/elite.png", productDescriptions: 15, productOverview: 3, bulletRewrites: 5, seoMetadata: 4, welcomeEmail: 2, blog: "1 blog post", email: "1 email campaign", extra: "1 comparison table", faq: "1 FAQ section", revisions: "Up to 2 revisions per item/ month ", color: "#fff3e0" },
+];
+
 /** ───────── component ───────── **/
-export default function BuildABundle() {
+export default function Pricing() {
   const router = useRouter();
   const [clientId, setClientId] = useState(null);
-  const [selected, setSelected] = useState({}); // id -> quantity
-  const [hoverId, setHoverId] = useState(null);
-  const [hoverBack, setHoverBack] = useState(false);
-  const [hoverReview, setHoverReview] = useState(false);
+  const [billingFrequency, setBillingFrequency] = useState("monthly");
 
   useEffect(() => { setClientId(getClientId()); }, []);
 
-  const increment = (id) => setSelected(s => ({ ...s, [id]: Math.max(1, (s[id] || 0) + 1) }));
-  const decrement = (id) => setSelected(s => {
-    const next = Math.max(0, (s[id] || 0) - 1);
-    const copy = { ...s };
-    if (next <= 0) delete copy[id]; else copy[id] = next;
-    return copy;
-  });
+  const addItemAndGo = async (item, quantity = 1) => {
+    if (!clientId) return;
+    const normalized = [{
+      id: String(item.id),
+      name: displayName(item),
+      description: item.description ?? "",
+      icon: item.icon ?? "",
+      quantity: Number.isFinite(+quantity) && +quantity > 0 ? Math.floor(+quantity) : 1
+    }];
+    await saveCart(clientId, normalized);
+    router.push("/confirmation");
+  };
 
-  const addSelectedToCart = async () => {
+  const handleOneTime = async (p) => {
+    try { await addItemAndGo(p, 1); } catch (e) { alert(e.message); }
+  };
+
+  const handlePlan = async (plan) => {
     try {
       if (!clientId) return;
-      const items = bundleItems
-        .filter(it => (selected[it.id] || 0) > 0)
-        .map(it => ({
-          id: String(it.id),
-          name: displayName(it),
-          description: it.description ?? "",
-          icon: it.icon ?? "",
-          quantity: Math.max(1, selected[it.id] || 1)
-        }));
-      if (items.length === 0) {
-        alert("Select at least one item.");
-        return;
+      const expanded = expandSubscriptionPlan(plan);
+      if (expanded.length === 0) {
+        await addItemAndGo({ ...plan, name: plan.name || plan.title || "Plan" }, 1);
+      } else {
+        await saveCart(clientId, expanded);
+        router.push("/confirmation");
       }
-      await saveCart(clientId, items);
-      router.push("/confirmation");
     } catch (e) {
-      alert(e.message || "Failed to add bundle");
+      alert(e.message || "Failed to add plan");
     }
   };
 
   return (
     <main style={{ maxWidth: 1100, margin: "40px auto", padding: "0 16px", fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 }}>
-  <h1 style={{ fontSize: 32, margin: 0 }}>Build a Bundle</h1>
-  <button
-    onClick={() => router.push("/pricing")}
-    onMouseEnter={() => setHoverBack(true)}
-    onMouseLeave={() => setHoverBack(false)}
-    style={{
-      padding: "10px 14px",
-      borderRadius: 10,
-      border: "1px solid #0fc24bff",
-      background: hoverBack ? "#0fc24bff" : "transparent",
-      color: hoverBack ? "#fff" : "#0fc24bff",
-      cursor: "pointer",
-      boxShadow: hoverBack ? "0 8px 24px rgba(0,0,0,0.12)" : "0 2px 8px rgba(0,0,0,0.06)",
-      transform: hoverBack ? "translateY(-2px)" : "translateY(0)",
-      transition: "transform 150ms ease, box-shadow 150ms ease, background 150ms ease, color 150ms ease"
-    }}
-  >
-    Back to Pricing
-  </button>
-</div>
-<div style={{fontSize:12,color:"#777"}}>Bundle items: {bundleItems.length}</div>
+      <h1 style={{ fontSize: 32, marginBottom: 16 }}>Pricing</h1><div style={{fontSize:12,color:"#777"}}>Products loaded: {oneTimeProducts.length} • Plans: {plans.length}</div>
 
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
-        {bundleItems.map((it) => {
-          const qty = selected[it.id] || 0;
-          return (
-            <div
-  key={it.id}
-  onMouseEnter={() => setHoverId(it.id)}
-  onMouseLeave={() => setHoverId(null)}
-  style={{
-    border: "1px solid #eee",
-    borderRadius: 12,
-    padding: 16,
-    boxShadow: hoverId === it.id ? "0 8px 24px rgba(0,0,0,0.12)" : "0 2px 8px rgba(0,0,0,0.06)",
-    transform: hoverId === it.id ? "translateY(-4px)" : "translateY(0)",
-    transition: "transform 150ms ease, box-shadow 150ms ease"
-  }}
->
-
+      <section style={{ marginTop: 24 }}>
+        <h2 style={{ fontSize: 22, marginBottom: 8 }}>One-time Products</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+          {oneTimeProducts.map((p) => (
+            <div key={p.id} style={{ border: "1px solid #eee", borderRadius: 12, padding: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                {it.icon ? <img src={it.icon} alt="" width={28} height={28} /> : <div style={{ width: 28, height: 28, background: "#eee", borderRadius: 6 }} />}
-                <strong>{displayName(it)}</strong>
+                {p.icon ? <img src={p.icon} alt="" width={28} height={28} /> : <div style={{ width: 28, height: 28, background: "#eee", borderRadius: 6 }} />}
+                <strong>{displayName(p)}</strong>
               </div>
-              <p style={{ color: "#555" }}>{it.description}</p><div style={{margin:"8px 0",fontWeight:700}}>${it.price?.toFixed ? it.price.toFixed(2) : it.price}</div>
-
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <button onClick={() => decrement(it.id)} style={{ width: 34, height: 34, borderRadius: 8, border: "1px solid #ddd", background: "#111" }}>-</button>
-                <div style={{ minWidth: 28, textAlign: "center" }}>{qty}</div>
-                <button onClick={() => increment(it.id)} style={{ width: 34, height: 34, borderRadius: 8, border: "1px solid #ddd", background: "#111" }}>+</button>
-              </div>
+              <p style={{ color: "#555" }}>{p.description}</p><div style={{margin:"8px 0",fontWeight:700}}>${p.price?.toFixed ? p.price.toFixed(2) : p.price}</div>
+              <button onClick={() => handleOneTime(p)} style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", background: "#111", cursor: "pointer", color: "#fff" }}>
+                Order Now
+              </button>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      </section>
 
-   <div style={{ marginTop: 18, display: "flex", justifyContent: "flex-end" }}>
-  <button
-    onClick={addSelectedToCart}
-    onMouseEnter={() => setHoverReview(true)}
-    onMouseLeave={() => setHoverReview(false)}
-    style={{
-      padding: "10px 14px",
-      borderRadius: 10,
-      border: "1px solid #0fc24bff",
-      background: hoverReview ? "#0fc24bff" : "#111",
-      cursor: "pointer",
-      color: "#fff",
-      boxShadow: hoverReview ? "0 8px 24px rgba(0,0,0,0.12)" : "0 2px 8px rgba(0,0,0,0.06)",
-      transform: hoverReview ? "translateY(-2px)" : "translateY(0)",
-      transition: "transform 150ms ease, box-shadow 150ms ease, background 150ms ease"
-    }}
-  >
-    Add Selected & Review
-  </button>
-</div>
+      <section style={{ marginTop: 32 }}>
+        <h2 style={{ fontSize: 22, marginBottom: 8 }}>Plans</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+          {plans.map((p) => (
+            <div key={p.id} style={{ border: "1px solid #eee", borderRadius: 12, padding: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {p.icon ? <img src={p.icon} alt="" width={28} height={28} /> : <div style={{ width: 28, height: 28, background: "#eee", borderRadius: 6 }} />}
+                <strong>{p.name || p.title}</strong>
+              </div>
+              <p style={{ color: "#555" }}>{p.description}</p><div style={{margin:"8px 0",fontWeight:700}}>${p.price?.toFixed ? p.price.toFixed(2) : p.price}</div>
+              <button onClick={() => handlePlan(p)} style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", background: "#111", cursor: "pointer", color: "#fff" }}>
+                Add Plan
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }

@@ -1,10 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Logo from "../public/logo.png";
-import Image from "next/image";
-import QuantitySelector from "../components/QuantitySelector";
 
-const oneTimeBundles = [
+const isBrowser = () => typeof window !== "undefined";
+const getClientId = () => {
+  if (!isBrowser()) return null;
+  let cid = localStorage.getItem("inkylink_client_id");
+  if (!cid) {
+    cid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+    localStorage.setItem("inkylink_client_id", cid);
+  }
+  return cid;
+};
+
+async function saveCart(client_id, items) {
+  const r = await fetch("/api/save-cloud-cart", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ client_id, items })
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.error || "Failed to save cart");
+  return data;
+}
+
+export default function BuildABundle() {
+  const router = useRouter();
+  const [clientId, setClientId] = useState(null);
+  const [selected, setSelected] = useState({}); // id -> quantity
+
+  useEffect(() => { setClientId(getClientId()); }, []);
+
+  // Example bundle library (use your existing)
+  const bundleItems = [
     {
       id: "product description",
       title: "Product Description",
@@ -197,7 +226,7 @@ const oneTimeBundles = [
     title: "Conversion Booster Pro",
     description: "Targeted improvements designed to turn traffic into sales.",
     price: 169,
-    stripeMonthlyId: "price_1RrBBNFjDGmKohCHE209rvTT",
+    stripeMonthlyId: "price_1RrB9jFjDGmKohCH0yklX14H",
     icon: "/icons/conversion booster pro.png",
     includes: [
       "Landing Page Optimization",
@@ -208,208 +237,64 @@ const oneTimeBundles = [
   },
 ];
 
-export default function BuildABundle() {
-  const router = useRouter();
+  const increment = (id) => setSelected(s => ({ ...s, [id]: Math.max(1, (s[id] || 0) + 1) }));
+  const decrement = (id) => setSelected(s => {
+    const next = Math.max(0, (s[id] || 0) - 1);
+    const copy = { ...s };
+    if (next <= 0) delete copy[id]; else copy[id] = next;
+    return copy;
+  });
 
-  const [quantities, setQuantities] = useState(
-    oneTimeBundles.reduce((acc, b) => ({ ...acc, [b.id]: 0 }), {})
-  );
-
-  const [isRecurring, setIsRecurring] = useState(false);
-
-  const totalPrice = oneTimeBundles.reduce(
-    (total, bundle) => total + bundle.price * (quantities[bundle.id] || 0),
-    0
-  );
-
-  const handleQuantityChange = (id, newQty) => {
-    if (newQty < 0) return;
-    setQuantities((prev) => ({ ...prev, [id]: newQty }));
-  };
-
-  const handleCheckout = () => {
-    const selectedBundles = oneTimeBundles
-      .filter((b) => quantities[b.id] > 0)
-      .map((b) => ({
-        id: b.id,
-        name: b.title,
-        description: b.description,
-        price: b.price,
-        quantity: quantities[b.id],
-        icon: b.icon,
+  const addSelectedToCart = async () => {
+    if (!clientId) return;
+    // Normalize
+    const items = bundleItems
+      .filter(it => selected[it.id] > 0)
+      .map(it => ({
+        id: String(it.id),
+        name: it.name ?? it.title ?? "",
+        description: it.description ?? "",
+        icon: it.icon ?? "",
+        quantity: Math.max(1, selected[it.id] || 1)
       }));
-
-    if (selectedBundles.length === 0) {
-      alert("Please select at least one bundle with quantity > 0.");
+    if (items.length === 0) {
+      alert("Select at least one item.");
       return;
     }
-
-    const data = {
-      bundles: selectedBundles,
-      recurring: isRecurring,
-    };
-
-    const encoded = encodeURIComponent(JSON.stringify(data));
-    router.push(`/confirmation?data=${encoded}`);
+    await saveCart(clientId, items);
+    router.push("/confirmation");
   };
 
   return (
-    <main
-      style={{
-        backgroundColor: "#f1f8fc",
-        fontFamily: "Lato, sans-serif",
-        padding: "2rem",
-        minHeight: "100vh",
-        maxWidth: "960px",
-        margin: "0 auto",
-      }}
-    >
-      <header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-          marginBottom: "2rem",
-          justifyContent: "center",
-        }}
-      >
-        <Image src={Logo} alt="Inkylink Logo" width={80} height={80} />
-        <h1 style={{ fontSize: "3.5rem", margin: 0 }}>Build a Bundle</h1>
-      </header>
+    <main style={{ maxWidth: 1100, margin: "40px auto", padding: "0 16px", fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" }}>
+      <h1 style={{ fontSize: 32, marginBottom: 16 }}>Build a Bundle</h1>
 
-      <div style={{ marginBottom: "1rem" }}>
-        <label
-          style={{
-            fontSize: "1.2rem",
-            fontWeight: "bold",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            cursor: "pointer",
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={isRecurring}
-            onChange={() => setIsRecurring(!isRecurring)}
-          />
-          Recurring Monthly Subscription
-        </label>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+        {bundleItems.map((it) => {
+          const qty = selected[it.id] || 0;
+          return (
+            <div key={it.id} style={{ border: "1px solid #eee", borderRadius: 12, padding: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {it.icon ? <img src={it.icon} alt="" width={28} height={28} /> : <div style={{ width: 28, height: 28, background: "#eee", borderRadius: 6 }} />}
+                <strong>{it.name}</strong>
+              </div>
+              <p style={{ color: "#555" }}>{it.description}</p>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <button onClick={() => decrement(it.id)} style={{ width: 34, height: 34, borderRadius: 8, border: "1px solid #ddd", background: "#fff" }}>-</button>
+                <div style={{ minWidth: 28, textAlign: "center" }}>{qty}</div>
+                <button onClick={() => increment(it.id)} style={{ width: 34, height: 34, borderRadius: 8, border: "1px solid #ddd", background: "#fff" }}>+</button>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-          gap: "1.5rem",
-          marginBottom: "2rem",
-        }}
-      >
-        {oneTimeBundles.map((bundle) => (
-          <div
-            key={bundle.id}
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: "8px",
-              boxShadow: "0 3px 6px rgba(0,0,0,0.1)",
-              padding: "1rem",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-            }}
-          >
-            <img
-              src={bundle.icon}
-              alt={bundle.title}
-              style={{ width: "60px", height: "60px", objectFit: "contain" }}
-            />
-            <h3 style={{ marginTop: "1rem", marginBottom: "0.5rem" }}>
-              {bundle.title}
-            </h3>
-            <p   
-            style={{
-              fontSize: "0.9rem",
-              fontStyle: "italic",
-              marginBottom: "1rem",
-              maxHeight: "90px",
-              overflowY: "auto",
-              paddingRight: "0.5rem",
-              lineHeight: "1.4",
-              wordBreak: "break-word",
-              textAlign: "left",
-           }}
-            >
-              {bundle.description}
-            </p>
-            <p style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-              ${bundle.price} each
-            </p>
-
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", height: "48px" }}>
-  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", lineHeight: "1", fontSize: "1.2rem", userSelect: "none" }}>
-    <span>+</span>
-    <span>–</span>
-  </div>
-  <QuantitySelector
-    bundle={bundle}
-    quantity={quantities[bundle.id]}
-    onQuantityChange={handleQuantityChange}
-  />
-</div>
-
-          </div>
-        ))}
-      </div>
-
-      <div
-        style={{
-          fontSize: "1.4rem",
-          fontWeight: "bold",
-          marginBottom: "2rem",
-          textAlign: "right",
-        }}
-      >
-        Total: ${totalPrice}
-        {isRecurring ? " / month" : ""}
-      </div>
-
-      <div style={{ textAlign: "right" }}>
-        <button
-          onClick={handleCheckout}
-          style={{
-            padding: "0.75rem 2rem",
-            fontSize: "1.1rem",
-            backgroundColor: "#007f00",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-          aria-label="Proceed to checkout"
-        >
-          Proceed to Checkout
+      <div style={{ marginTop: 18, display: "flex", justifyContent: "flex-end" }}>
+        <button onClick={addSelectedToCart} style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", background: "#fff", cursor: "pointer" }}>
+          Add Selected & Review
         </button>
       </div>
-   <div style={{ marginTop: "2rem", textAlign: "center" }}>
-  <button
-    onClick={() => window.history.back()}
-    style={{
-      padding: "0.6rem 1.2rem",
-      fontSize: "1rem",
-      backgroundColor: "#ff6666", // Coral Red
-      color: "#fff",
-      border: "none",
-      borderRadius: "6px",
-      cursor: "pointer",
-      transition: "background-color 0.2s ease-in-out",
-    }}
-    onMouseEnter={(e) => (e.target.style.backgroundColor = "#e65555")}
-    onMouseLeave={(e) => (e.target.style.backgroundColor = "#ff6666")}
-  >
-    ← Back
-  </button>
-</div>
     </main>
   );
 }

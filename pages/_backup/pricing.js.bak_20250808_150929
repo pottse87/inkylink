@@ -1,0 +1,375 @@
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+
+const isBrowser = () => typeof window !== "undefined";
+const getClientId = () => {
+  if (!isBrowser()) return null;
+  let cid = localStorage.getItem("inkylink_client_id");
+  if (!cid) {
+    cid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+    localStorage.setItem("inkylink_client_id", cid);
+  }
+  return cid;
+};
+
+async function saveCart(client_id, items) {
+  const r = await fetch("/api/save-cloud-cart", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ client_id, items })
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.error || "Failed to save cart");
+  return data;
+}
+
+export default function Pricing() {
+  const router = useRouter();
+  const [clientId, setClientId] = useState(null);
+  const [billingFrequency, setBillingFrequency] = useState("monthly");
+
+  useEffect(() => { setClientId(getClientId()); }, []);
+
+  // Example product data (use your existing arrays/props if present)
+  const oneTimeProducts = [
+    {
+      id: "product description",
+      title: "Product Description",
+      price: 39,
+      description: "Stand out in search with expertly crafted product descriptions.",
+      icon: "/icons/desc.png",
+      stripeMonthlyId: "price_1RrAiGFjDGmKohCHv5acUOmw",
+    },
+    {
+      id: "product overview",
+      title: "Product Overview",
+      price: 29,
+      description: "Highlight your product in a quick, easy-to-read snapshot.",
+      icon: "/icons/overview.png",
+      stripeMonthlyId: "price_1RrAkaFjDGmKohCHFah1gFHG",
+    },
+    {
+      id: "welcome email",
+      title: "Welcome Email",
+      price: 39,
+      description: "Make a lasting first impression with a warm, professional welcome.",
+      icon: "/icons/welcome.png",
+      stripeMonthlyId: "price_1RrAnIFjDGmKohCHAFVQH1Ew",
+    },
+    {
+      id: "product drop email",
+      title: "Product Drop Email",
+      price: 39,
+      description: "Announce your new product with a sharp branded impact.",
+      icon: "/icons/drop.png",
+      stripeMonthlyId: "price_1RrAnxFjDGmKohCHrqsHz9Z7",
+    },
+    {
+      id: "seo blog post",
+      title: "SEO-Optimized Blog Post",
+      price: 59,
+      description: "A keyword-driven blog built to rank on page one.",
+      icon: "/icons/blog.png",
+      stripeMonthlyId: "price_1RrAovFjDGmKohCHvLnPKHf8",
+    },
+    {
+      id: "bullet point rewrite",
+      title: "Bullet Point Rewrite",
+      price: 39,
+      description: "Optimize your bullet points high-performance, persuasive language.",
+      icon: "/icons/bullet point rewrite.png",
+      stripeMonthlyId: "price_1RrAqhFjDGmKohCHBPP4F3i1",
+    },
+    {
+      id: "faq section",
+      title: "FAQ Section",
+      price: 29,
+      description: "Answer buyer questions before they're asked with a customer-focused FAQ.",
+      icon: "/icons/faq section.png",
+      stripeMonthlyId: "price_1RrArMFjDGmKohCHYT4OISyP",
+    },
+    {
+      id: "comparison table",
+      title: "Comparison Table",
+      price: 39,
+      description: "Make decision-making easy with a side-by-side comparison.",
+      icon: "/icons/comparison table.png",
+      stripeMonthlyId: "price_1RrAs9FjDGmKohCHEJ4tkmdY",
+    },
+    {
+      id: "seo titles metadata",
+      title: "SEO Titles & Metadata",
+      price: 39,
+      description: "Keyword-smart titles that speak both human and search engine.",
+      icon: "/icons/seo.png",
+      stripeMonthlyId: "price_1RrAtGFjDGmKohCHvzgeRw3f",
+    },
+    {
+      id: "full site audit",
+      title: "Full Site Audit",
+      price: 179,
+      description: "We'll review your store and provide clear, usable feedback you can apply immediately.",
+      icon: "/icons/full site audit.png",
+      stripeMonthlyId: "price_1RrAuVFjDGmKohCHzjoZfIQ5",
+    },
+    {
+      id: "launch kit",
+      title: "Launch Kit",
+      price: 119,
+      description: "Everything you need to launch new products with confidence.",
+      icon: "/icons/launch kit.png",
+      stripeMonthlyId: "price_1RrAyoFjDGmKohCHFlITlQ0H",
+    },
+    {
+      id: "expansion kit",
+      title: "Expansion Kit",
+      price: 149,
+      description: "A smart choice for stores expanding their lineup or revamping old content.",
+      icon: "/icons/expansion kit.png",
+      stripeMonthlyId: "price_1RrAztFjDGmKohCHYJYF4khr",
+    },
+    {
+      id: "conversion booster",
+      title: "Conversion Booster",
+      price: 129,
+      description: "Revive sluggish listings and amplify your most visited pages.",
+      icon: "/icons/conversion booster.png",
+      stripeMonthlyId: "price_1RrB2IFjDGmKohCHWVM3XyqB",
+    },
+  {
+    id: "amazon product description",
+    title: "Amazon Product Description",
+    description: "Optimized for Amazon's algorithm and shopper behavior. Includes SEO-driven copy, brand tone, and strategic formatting.",
+    price: 49,
+    icon: "/icons/amazon product description.png",
+    stripeMonthlyId: "price_1RrB3sFjDGmKohCH96i7R4hi",
+  },
+  {
+    id: "amazon bullet points rewrite",
+    title: "Amazon Bullet Points Rewrite",
+    description: "High-performance bullet points designed to boost click-through-rate and conversions.",
+    price: 39,
+    icon: "/icons/amazon bullet point rewrite.png",
+    stripeMonthlyId: "price_1RrB4bFjDGmKohCH3pvtcmn9",
+  },
+  {
+    id: "Enhanced Amazon Content",
+    title: "Enhanced Amazon Content",
+    description: "Strategically crafted narratives built to fit Amazon's visual structure.",
+    price: 59,
+    icon: "/icons/enhanced amazon content.png",
+    stripeMonthlyId: "price_1RrB5kFjDGmKohCHHVGJMjnm",
+  },
+  {
+    id: "split test variants",
+    title: "Split Test Variants",
+    description: "Run A/B tests with multiple versions of your product's copy to see which converts best. Includes 2 full variants.",
+    price: 69,
+    icon: "/icons/split test variants.png",
+    stripeMonthlyId: "price_1RrBDYFjDGmKohCHE7gydsgB",
+  },
+  {
+    id: "branding voice guidelines",
+    title: "Branding Voice Guidelines",
+    description: "Define your unique voice, tone, and messaging pillars so all future content aligns with your brand.",
+    price: 89,
+    icon: "/icons/branding voice guidelines.png",
+    stripeMonthlyId: "price_1RrBEBFjDGmKohCHLRhmPioP",
+  },
+  {
+    id: "amazon power pack",
+    title: "Amazon Power Pack",
+    description: "Amazon-optimized description, bullet points, and A+ content.",
+    price: 129,
+    icon: "/icons/amazon power pack.png",
+    stripeMonthlyId: "price_1RrB6wFjDGmKohCHgHxpeQRN",
+    includes: [
+      "Amazon Description",
+      "Amazon Bullets",
+      "A+ Module Copy"
+    ],
+    color: "#fce4ec",
+  },
+  {
+    id: "store revamp kit",
+    title: "Store Revamp Kit",
+    description: "Revitalize your store with expert insight and high impact descriptions.",
+    price: 199,
+    stripeMonthlyId: "price_1RrB88FjDGmKohCHTTZcDy5q",
+    icon: "/icons/store revamp kit.png",
+    includes: [
+      "Full Site Audit",
+      "Descriptions",
+      "Bullets",
+      "SEO Metadata"
+    ],
+    color: "#fce4ec",
+  },
+  {
+    id: "ongoing optimization",
+    title: "Ongoing Optimization",
+    description: "Structured to adapt, improve and help scale your goals.",
+    price: 149,
+    stripeMonthlyId: "price_1RrB9jFjDGmKohCH0yklX14H",
+    icon: "/icons/ongoing optimization.png",
+    includes: [
+      "Product Page Audit",
+      "Split Test Variants",
+      "SEO Metadata"
+    ],
+    color: "#fce4ec",
+  },
+  {
+    id: "conversion booster pro",
+    title: "Conversion Booster Pro",
+    description: "Targeted improvements designed to turn traffic into sales.",
+    price: 169,
+    stripeMonthlyId: "price_1RrB9jFjDGmKohCH0yklX14H",
+    icon: "/icons/conversion booster pro.png",
+    includes: [
+      "Landing Page Optimization",
+      "Comparison Table",
+      "Email Campaign"
+    ],
+    color: "#fce4ec",
+  },
+];
+
+  const plans = [
+    {
+      id: "starter",
+      name: "Starter Plan",
+      description: "Streamlined precision with a professional edge.",
+      priceMonthly: 69,
+      priceYearly: 699,
+      stripeMonthlyId: "price_1RrASOFjDGmKohCH3emQcGkw",
+      stripeYearlyId: "price_1RrAWzFjDGmKohCHaTwI70lD",
+      icon: "/icons/starter.png",
+      productDescriptions: 3,
+      bulletRewrites: 1,
+      welcomeEmail: 1,
+      color: "#e8f5e9",
+    },
+    {
+      id: "growth",
+      name: "Growth Plan",
+      description: "Content that scales as fast as your catalog.",
+      priceMonthly: 129,
+      priceYearly: 1299,
+      stripeMonthlyId: "price_1RrAZCFjDGmKohCHxEnUiiHn",
+      stripeYearlyId: "price_1RrAa2FjDGmKohCHOnxsKpAJ",
+      icon: "/icons/growth.png",
+      productDescriptions: 6,
+      bulletRewrites: 2,
+      welcomeEmail: 1,
+      seoMetadata: 2,
+      color: "#e3f2fd",
+    },
+    {
+      id: "pro",
+      name: "Pro Plan",
+      description: "Strategic content development tailored to established names.",
+      priceMonthly: 229,
+      priceYearly: 2299,
+      stripeMonthlyId: "price_1RrAcJFjDGmKohCHEzzR4KF7",
+      stripeYearlyId: "price_1RrAdjFjDGmKohCHwYxagpG4",
+      icon: "/icons/pro.png",
+      productDescriptions: 8,
+      productOverview: 2,
+      bulletRewrites: 3,
+      seoMetadata: 2,
+      welcomeEmail: 2,
+      blog: "1 blog post",
+      faq: "1 FAQ section",
+      revisions: "Up to 2 revisions per item/month",
+      color: "#ede7f6",
+    },
+    {
+      id: "elite",
+      name: "Elite Plan",
+      description: "Consistent monthly content to match your business velocity.",
+      priceMonthly: 329,
+      priceYearly: 3299,
+      stripeMonthlyId: "price_1RrAfJFjDGmKohCHuZ3dZPUs",
+      stripeYearlyId: "price_1RrAglFjDGmKohCHmVeQg6YC",
+      icon: "/icons/elite.png",
+      productDescriptions: 15,
+      productOverview: 3,
+      bulletRewrites: 5,
+      seoMetadata: 4,
+      welcomeEmail: 2,
+      blog: "1 blog post",
+      email: "1 email campaign",
+      extra: "1 comparison table",
+      faq: "1 FAQ section",
+      revisions: "Up to 2 revisions per item/ month ",
+      color: "#fff3e0",
+    },
+  ];
+
+  const addItemAndGo = async (item, quantity = 1) => {
+    if (!clientId) return;
+    const normalized = [{
+      id: String(item.id),
+      name: item.name ?? item.title ?? "",
+      description: item.description ?? "",
+      icon: item.icon ?? "",
+      quantity: Number.isFinite(+quantity) && +quantity > 0 ? Math.floor(+quantity) : 1
+    }];
+    await saveCart(clientId, normalized);
+    router.push("/confirmation");
+  };
+
+  const handleOneTime = async (p) => {
+    try { await addItemAndGo(p, 1); } catch (e) { alert(e.message); }
+  };
+
+  const handlePlan = async (p) => {
+    // Still treated as an item in the cart; Stripe config stays wherever you trigger Checkout.
+    try { await addItemAndGo({ ...p, name: p.name || p.title || "Plan" }, 1); } catch (e) { alert(e.message); }
+  };
+
+  return (
+    <main style={{ maxWidth: 1100, margin: "40px auto", padding: "0 16px", fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" }}>
+      <h1 style={{ fontSize: 32, marginBottom: 16 }}>Pricing</h1>
+
+      <section style={{ marginTop: 24 }}>
+        <h2 style={{ fontSize: 22, marginBottom: 8 }}>One-time Products</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+          {oneTimeProducts.map((p) => (
+            <div key={p.id} style={{ border: "1px solid #eee", borderRadius: 12, padding: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {p.icon ? <img src={p.icon} alt="" width={28} height={28} /> : <div style={{ width: 28, height: 28, background: "#eee", borderRadius: 6 }} />}
+                <strong>{p.name}</strong>
+              </div>
+              <p style={{ color: "#555" }}>{p.description}</p>
+              <button onClick={() => handleOneTime(p)} style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", background: "#fff", cursor: "pointer" }}>
+                Order Now
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginTop: 32 }}>
+        <h2 style={{ fontSize: 22, marginBottom: 8 }}>Plans</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+          {plans.map((p) => (
+            <div key={p.id} style={{ border: "1px solid #eee", borderRadius: 12, padding: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {p.icon ? <img src={p.icon} alt="" width={28} height={28} /> : <div style={{ width: 28, height: 28, background: "#eee", borderRadius: 6 }} />}
+                <strong>{p.name || p.title}</strong>
+              </div>
+              <p style={{ color: "#555" }}>{p.description}</p>
+              <button onClick={() => handlePlan(p)} style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", background: "#fff", cursor: "pointer" }}>
+                Add Plan
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
+}

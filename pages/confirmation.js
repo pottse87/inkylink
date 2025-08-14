@@ -1,196 +1,277 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/router";
 
+/** helpers **/
+const isBrowser = () => typeof window !== "undefined";
+const getClientId = () => {
+  if (!isBrowser()) return null;
+  let cid = localStorage.getItem("inkylink_client_id");
+  if (!cid) {
+    try {
+      cid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
+    } catch {
+      cid = `cid_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    }
+    localStorage.setItem("inkylink_client_id", cid);
+  }
+  return cid;
+};
+
+async function apiGetCloudCart(client_id) {
+  const r = await fetch(`/api/get-cloud-cart?client_id=${encodeURIComponent(client_id)}`);
+  if (!r.ok) throw new Error(`get-cloud-cart failed: ${r.status}`);
+  return r.json(); // { items, updated_at }
+}
+
+async function apiSaveCloudCart(client_id, items, mode = "merge") {
+  const r = await fetch("/api/save-cloud-cart", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ client_id, items, mode })
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.error || `save-cloud-cart failed: ${r.status}`);
+  return data; // { ok, items }
+}
+
+async function apiCheckout(client_id, session_id) {
+  const r = await fetch("/api/checkout", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ client_id, session_id })
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data?.error || `checkout failed: ${r.status}`);
+  return data; // { ok, order_id, status, total_cents }
+}
 
 export default function ConfirmationPage() {
   const router = useRouter();
-  const [selectedBundles, setSelectedBundles] = useState([]);
   const [clientId, setClientId] = useState(null);
-  const [previousOrders, setPreviousOrders] = useState([]); // 🟡 Add this
+  const [items, setItems] = useState([]);            // [{id,name,description,icon,price_cents,quantity}]
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [checkoutStatus, setCheckoutStatus] = useState(null);
+  const [busyId, setBusyId] = useState(null);   // which item is being removed
+  const [clearing, setClearing] = useState(false); // when Clear All is running
 
-useEffect(() => {
-  // 🔶 Fetch previous orders using clientId
-  if (clientId) {
-    fetch('/api/get-previous-orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ client_id: clientId })
-    })
-      .then(res => res.json())
-      .then(data => setPreviousOrders(data))
-      .catch(err => console.error('Fetch failed:', err));
-  }
-}, [clientId]);
 
-useEffect(() => {
-  // 🔶 Persist a client_id across sessions using localStorage
-  let existingId = localStorage.getItem('inkylink_client_id');
-  if (!existingId) {
-    existingId = uuidv4(); // or crypto.randomUUID()
-    localStorage.setItem('inkylink_client_id', existingId);
-  }
-  setClientId(existingId);
-}, []);
+  // establish client id
+  useEffect(() => { setClientId(getClientId()); }, []);
 
+  // load cart
   useEffect(() => {
-    if (router.query && router.query.bundles) {
+    if (!clientId) return;
+    let alive = true;
+    (async () => {
       try {
-        const parsed = JSON.parse(router.query.bundles);
-        setSelectedBundles(parsed);
-      } catch (error) {
-        console.error('Failed to parse bundles:', error);
+        setLoading(true);
+        const data = await apiGetCloudCart(clientId);
+        if (!alive) return;
+        setItems(Array.isArray(data.items) ? data.items : []);
+        setError(null);
+      } catch (e) {
+        if (!alive) return;
+        setError(e.message || "Failed to load cart");
+      } finally {
+        alive && setLoading(false);
       }
-    }
-  }, [router.query]);
+    })();
+    return () => { alive = false; };
+  }, [clientId]);
 
-  const generateOrderId = () => {
-    const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, '');
-    const rand = Math.random().toString(36).substring(2, 6);
-    return 'order_' + timestamp + '_' + rand;
-  };
+  // finalize checkout if coming back from Stripe
+  useEffect(() => {
+    if (!clientId) return;
+    const session_id = typeof router.query.session_id === "string" ? router.query.session_id : null;
+    if (!session_id) return;
 
-  const handleConfirm = () => {
-    const order = {
-      order_id: generateOrderId(),
-      client_id: clientId,
-      source: router.query.source || 'confirmation',
-      customer: {
-        name: '',
-        email: ''
-      },
-      items: selectedBundles.map((bundle) => ({
-        id: bundle.id,
-        name: bundle.name,
-        quantity: bundle.quantity || 1,
-        price: bundle.price,
-        icon: bundle.icon || ''
-      })),
-      form_data: {},
-      status: 'needs_form',
-      created_at: Date.now()
-    };   
+    let alive = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const data = await apiCheckout(clientId, session_id);
+        if (!alive) return;
+        setCheckoutStatus(data);
+        setError(null);
+      } catch (e) {
+        if (!alive) return;
+        setError(e.message || "Checkout failed");
+      } finally {
+        alive && setLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [clientId, router.query.session_id]);
 
-    const orderString = encodeURIComponent(JSON.stringify(order));
-    router.push('/forms?order=' + orderString);
-  };
+  const totalCents = useMemo(
+    () => items.reduce((sum, it) => sum + (Number(it.price_cents) || 0) * (Number(it.quantity) || 1), 0),
+    [items]
+  );
+
+// actions
+const handleRemove = async (id) => {
+  if (!clientId) return;
+  setBusyId(id);
+  try {
+    // Create updated list
+    const next = items
+      .map(it => {
+        if (it.id === id) {
+          const newQty = (Number(it.quantity) || 1) - 1;
+          if (newQty > 0) {
+            return { ...it, quantity: newQty };
+          }
+          // If qty would hit 0, remove entirely
+          return null;
+        }
+        return it;
+      })
+      .filter(Boolean) // remove nulls
+
+    // Clear server cart first to avoid merge math
+    await apiSaveCloudCart(clientId, [], "replace");
+
+    // Then write updated cart
+    const res = await apiSaveCloudCart(clientId, next, "replace");
+
+    setItems(Array.isArray(res.items) ? res.items : []);
+    setError(null);
+  } catch (e) {
+    setError(e.message || "Remove failed");
+  } finally {
+    setBusyId(null);
+  }
+};
+
+
+
+  // clear BOTH DB and UI
+  const handleClear = async () => {
+  if (!clientId) return;
+  setClearing(true);
+  try {
+    const res = await apiSaveCloudCart(clientId, [], "replace"); // empty array = clear
+    setItems(res.items || []);
+    setError(null);
+  } catch (e) {
+    setError(e.message || "Clear failed");
+  } finally {
+    setClearing(false);
+  }
+};
+
 
   return (
-  <div
-    style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      padding: '2rem'
-    }}
-  >
-    <div style={{ display: 'flex', gap: '3rem', alignItems: 'flex-start' }}>
-      {/* Left Side – Previous Orders */}
-      <div style={{ flex: 1 }}>
-        <h2>🔁 Previously Selected Services:</h2>
-        {previousOrders.length > 0 ? (
-          <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-            {previousOrders.map((order, index) =>
-              order.items.map((item, i) => (
-                <li key={`${index}-${i}`} style={{ marginBottom: '0.5rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>
-                      <strong>{item.name}</strong> — ${item.price}
-                    </span>
-                    <button
-                      onClick={() =>
-                        setSelectedBundles(prev => [
-                          ...prev,
-                          {
-                            id: item.id,
-                            name: item.name,
-                            quantity: 1,
-                            price: item.price,
-                            icon: item.icon || ''
-                          }
-                        ])
-                      }
-                      style={{
-                        backgroundColor: '#00b894',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '0.3rem 0.8rem',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Add Again
-                    </button>
+    <main style={{ maxWidth: 900, margin: "40px auto", padding: "0 16px", fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" }}>
+      <h1 style={{ fontSize: "2rem", marginBottom: 8 }}>Order Confirmation</h1>
+      <p style={{ color: "#555", marginBottom: 16 }}>Review your items below. If you just paid with Stripe, we’ll finalize your order automatically.</p>
+
+      {error && (
+        <div style={{ background: "#ffe8e8", border: "1px solid #f5b5b5", padding: 12, borderRadius: 8, marginBottom: 12 }}>
+          {String(error)}
+        </div>
+      )}
+
+      {checkoutStatus && (
+        <div style={{ background: "#e7f8ee", border: "1px solid #b7e2c9", padding: 12, borderRadius: 8, marginBottom: 12 }}>
+          <strong>Order received.</strong><br/>
+          Order ID: {checkoutStatus.order_id}<br/>
+          Status: {checkoutStatus.status}<br/>
+          Total: ${(checkoutStatus.total_cents/100).toFixed(2)}
+        </div>
+      )}
+
+      {loading ? (
+        <div>Loading…</div>
+      ) : items.length === 0 ? (
+        <div style={{ padding: 24, border: "1px dashed #bbb", borderRadius: 12, textAlign: "center" }}>
+          Your cart is empty.
+        </div>
+      ) : (
+        <>
+                    <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {items.map((it) => {
+              const isBusy = busyId === it.id || clearing;
+              return (
+                <li
+                  key={it.id}
+                  style={{ display: "flex", alignItems: "center", gap: 12, padding: 12, borderBottom: "1px solid #eee" }}
+                >
+                  {it.icon ? (
+                    <img src={it.icon} alt="" width={32} height={32} />
+                  ) : (
+                    <div style={{ width: 32, height: 32, background: "#eee", borderRadius: 6 }} />
+                  )}
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+                      <span>{it.name}</span>
+                      <span
+                        style={{
+                          fontSize: 12,
+                          background: "#eef2ff",
+                          color: "#3730a3",
+                          border: "1px solid #e5e7eb",
+                          padding: "2px 6px",
+                          borderRadius: 999
+                        }}
+                      >
+                        Qty: {it.quantity || 1}
+                      </span>
+                    </div>
+                    {it.description ? <div style={{ color: "#666", fontSize: 14 }}>{it.description}</div> : null}
                   </div>
+
+                  <div style={{ fontWeight: 700 }}>
+                    {"$" + (((Number(it.price_cents) || 0) * (Number(it.quantity) || 1)) / 100).toFixed(2)}
+                  </div>
+
+                  <button
+                    onClick={() => handleRemove(it.id)}
+                    disabled={isBusy}
+                    style={{
+                      marginLeft: 12,
+                      padding: "8px 12px",
+                      borderRadius: 8,
+                      border: "1px solid #ddd",
+                      background: isBusy ? "#eee" : "#fafafa",
+                      color: "#111",
+                      cursor: isBusy ? "not-allowed" : "pointer"
+                    }}
+                  >
+                    {busyId === it.id ? "Removing…" : "Remove"}
+                  </button>
                 </li>
-              ))
-            )}
+              );
+            })}
           </ul>
-        ) : (
-          <p>You haven't ordered anything yet!</p>
-        )}
-      </div>
 
-      {/* Right Side – Cart */}
-      <div style={{ flex: 1 }}>
-        <h1>In Your Cart Today:</h1>
-        {selectedBundles.length === 0 ? (
-          <p>No items selected.</p>
-        ) : (
-          <ul>
-            {selectedBundles.map((bundle, index) => (
-              <li key={index}>
-                <strong>{bundle.name}</strong> – × {bundle.quantity || 1}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}>
+            <button
+              onClick={handleClear}
+              disabled={clearing || busyId !== null || loading}
+              style={{
+                padding: "10px 14px",
+                borderRadius: 10,
+                border: "1px solid #ddd",
+                background: (clearing || busyId !== null || loading) ? "#eee" : "#fff",
+                color: "#111",
+                cursor: (clearing || busyId !== null || loading) ? "not-allowed" : "pointer"
+              }}
+              title="Clear all items"
+            >
+              {clearing ? "Clearing…" : "Clear All"}
+            </button>
 
-    {/* Bottom Buttons */}
-    <div
-      style={{
-        marginTop: '2rem',
-        display: 'flex',
-        justifyContent: 'space-between'
-      }}
-    >
-      <button
-        onClick={() => router.back()}
-        style={{
-          backgroundColor: '#ff6666',
-          color: '#333',
-          border: 'none',
-          borderRadius: '6px',
-          padding: '0.6rem 1.2rem',
-          fontSize: '1rem',
-          cursor: 'pointer'
-        }}
-        onMouseOver={e => (e.target.style.backgroundColor = '#e65555')}
-        onMouseOut={e => (e.target.style.backgroundColor = '#ff6666')}
-      >
-        ⬅ Back
-      </button>
-
-      <button
-        onClick={handleConfirm}
-        style={{
-          backgroundColor: '#00b894',
-          color: 'white',
-          border: 'none',
-          borderRadius: '6px',
-          padding: '0.6rem 1.2rem',
-          fontSize: '1rem',
-          cursor: 'pointer'
-        }}
-        onMouseOver={e => (e.target.style.backgroundColor = '#00997a')}
-        onMouseOut={e => (e.target.style.backgroundColor = '#00b894')}
-      >
-        Continue to Intake Form →
-      </button>
-    </div>
-  </div>
-);
+            <div style={{ fontSize: 18 }}>
+              <strong>{"Total: $" + (totalCents / 100).toFixed(2)}</strong>
+            </div>
+          </div>
+        </>
+      )}
+    </main>
+  );
 }

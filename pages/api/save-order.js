@@ -1,143 +1,83 @@
-// pages/api/save-order.js
-import { Pool } from 'pg';
-import fs from 'fs';
-import path from 'path';
+import path from "path";
+import fs from "fs";
 
-const pool = new Pool({
-  host: process.env.PGHOST,
-  port: process.env.PGPORT,
-  database: process.env.PGDATABASE,
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-});
+const isProd = process.env.NODE_ENV === "production";
+
+function log(...args) {
+  if (!isProd) console.log("[save-order]", ...args);
+}
+
+function getOrdersDir() {
+  const preferred = process.env.LOCAL_ORDER_PATH || "E:\\\\inkylink\\\\orders";
+  try {
+    fs.mkdirSync(preferred, { recursive: true });
+    log("orders dir:", preferred);
+    return preferred;
+  } catch (e) {
+    log("mkdir preferred failed:", e?.message || e);
+  }
+  const fallback = path.join(process.cwd(), ".local-orders");
+  try {
+    fs.mkdirSync(fallback, { recursive: true });
+    log("orders dir (fallback):", fallback);
+  } catch (e) {
+    log("mkdir fallback failed:", e?.message || e);
+  }
+  return fallback;
+}
+
+function findExistingByKey(dir, key) {
+  if (!key) return null;
+  try {
+    const files = fs.readdirSync(dir);
+    const needle = `_${String(key).toLowerCase()}.json`;
+    const match = files.find((name) => name.toLowerCase().endsWith(needle));
+    log("findExistingByKey", { key, match });
+    return match ? path.join(dir, match) : null;
+  } catch (e) {
+    log("readdir failed:", e?.message || e);
+    return null;
+  }
+}
+
+function writeOnce(dir, payload, key) {
+  const ts = Date.now();
+  const safeKey = String(key || "order").replace(/[^a-zA-Z0-9_-]/g, "_");
+  const name = `${ts}_${safeKey}.json`;
+  const full = path.join(dir, name);
+  fs.writeFileSync(full, JSON.stringify(payload, null, 2));
+  log("wrote file:", full);
+  return full;
+}
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method Not Allowed" });
+    return;
   }
 
-  const {
-    customer_email,
-    plan,
-    bundle_ids,
-    client_feedback,
-    rework_count,
-    ai_assistant,
-    total_price,
-    approved,
-    delivered,
-    source_page,
-    internal_notes,
-    client_name,
-    revision_limit,
-    assistant_output,
-    payment_status,
-    source_campaign,
-    completion_time_ms,
-    priority_level,
-    language,
-    review_notes,
-    recurring,
-    submitted_at,
-    feedback_submitted_at,
-  } = req.body;
-
-  const status = 'pending';
-
   try {
-    // 1️⃣ Save to PostgreSQL (existing logic)
-    const query = `
-      INSERT INTO orders (
-        customer_email, plan, bundle_ids, status, client_feedback, rework_count,
-        ai_assistant, total_price, approved, delivered, source_page,
-        internal_notes, client_name, revision_limit, assistant_output,
-        payment_status, source_campaign, completion_time_ms, priority_level,
-        language, review_notes, recurring, submitted_at, feedback_submitted_at
-      )
-      VALUES (
-        $1, $2, $3::jsonb, $4, $5, $6, $7, $8, $9, $10,
-        $11, $12, $13, $14, $15::jsonb, $16, $17, $18, $19,
-        $20, $21, $22, $23, $24
-      )
-    `;
+    const payload = req.body || {};
+    const idemKey = payload?.session_id || payload?.order_id || null;
+    log("incoming", { idemKey, hasItems: Array.isArray(payload?.items) });
 
-    const values = [
-      customer_email,
-      plan,
-      JSON.stringify(bundle_ids),
-      status,
-      client_feedback,
-      rework_count || 0,
-      ai_assistant,
-      total_price,
-      approved || false,
-      delivered || false,
-      source_page,
-      internal_notes,
-      client_name,
-      revision_limit || 3,
-      JSON.stringify(assistant_output),
-      payment_status || 'unpaid',
-      source_campaign,
-      completion_time_ms,
-      priority_level || 'normal',
-      language || 'en',
-      review_notes,
-      recurring || false,
-      submitted_at || new Date(),
-      feedback_submitted_at || null,
-    ];
+    const dir = getOrdersDir();
 
-    await pool.query(query, values);
-
-    // 2️⃣ Save locally to /orders directory
-    try {
-      const ordersDir = path.join(process.cwd(), 'orders');
-      if (!fs.existsSync(ordersDir)) {
-        fs.mkdirSync(ordersDir, { recursive: true });
-      }
-
-      const fileName = `${Date.now()}_${client_name || 'order'}.json`;
-      const filePath = path.join(ordersDir, fileName);
-
-      const localOrder = {
-        order_id: fileName.replace('.json', ''),
-        customer_email,
-        plan,
-        bundle_ids,
-        status,
-        client_feedback,
-        rework_count: rework_count || 0,
-        ai_assistant,
-        total_price,
-        approved: approved || false,
-        delivered: delivered || false,
-        source_page,
-        internal_notes,
-        client_name,
-        revision_limit: revision_limit || 3,
-        assistant_output,
-        payment_status: payment_status || 'unpaid',
-        source_campaign,
-        completion_time_ms,
-        priority_level: priority_level || 'normal',
-        language: language || 'en',
-        review_notes,
-        recurring: recurring || false,
-        submitted_at: submitted_at || new Date(),
-        feedback_submitted_at: feedback_submitted_at || null
-      };
-
-      fs.writeFileSync(filePath, JSON.stringify(localOrder, null, 2));
-      console.log(`✅ Order saved locally: ${filePath}`);
-    } catch (localErr) {
-      console.error('⚠ Error saving local order file:', localErr);
+    const existing = findExistingByKey(dir, idemKey);
+    if (existing) {
+      log("duplicate detected:", existing);
+      res.status(200).json({ ok: true, duplicate: true });
+      return;
     }
 
-    res.status(200).json({ message: 'Order saved to PostgreSQL and locally' });
-
-  } catch (error) {
-    console.error('❌ Error saving order:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    writeOnce(dir, payload, idemKey || "order");
+    res.status(200).json({ ok: true });
+  } catch (err) {
+    const msg = err?.message || String(err);
+    console.error("[save-order] error:", msg);
+    res.status(500).json({
+      error: "Internal Server Error",
+      ...(isProd ? {} : { detail: msg })
+    });
   }
 }
