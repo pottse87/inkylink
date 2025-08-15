@@ -1,4 +1,20 @@
-import { pool } from "../../lib/db";
+let _pool;
+function getPool() {
+  if (_pool) return _pool;
+  // Lazy require to avoid crashing at import time
+  const { Pool } = require("pg");
+  const cs = process.env.DATABASE_URL;
+  if (!cs) {
+    const err = new Error("Missing DATABASE_URL");
+    err.status = 500;
+    throw err;
+  }
+  _pool = new Pool({
+    connectionString: cs,
+    ssl: { rejectUnauthorized: false },
+  });
+  return _pool;
+}
 
 function requireJson(req) {
   if (!req.headers["content-type"]?.includes("application/json")) {
@@ -29,7 +45,7 @@ async function fetchCatalogRows(client, ids) {
 }
 
 export default async function handler(req, res) {
-  const client = await pool.connect();
+  let client;
   try {
     if (req.method !== "POST") { res.setHeader("Allow", "POST"); return res.status(405).end("Method Not Allowed"); }
     requireJson(req);
@@ -38,6 +54,9 @@ export default async function handler(req, res) {
     const clientId = String(body.clientId || "").trim();
     const incoming  = Array.isArray(body.items) ? body.items : [];
     if (!clientId) return res.status(400).json({ error: "clientId required" });
+
+    const pool = getPool();
+    client = await pool.connect();
 
     if (incoming.length === 0) {
       await client.query(
@@ -51,7 +70,6 @@ export default async function handler(req, res) {
     }
 
     const ids = incoming.map(i => String(i.id ?? i.sku ?? "")).filter(Boolean);
-
     await client.query("BEGIN");
     const catalog = await fetchCatalogRows(client, ids);
     const catalogById = new Map(catalog.map(r => [String(r.id), r]));
@@ -77,16 +95,16 @@ export default async function handler(req, res) {
     await client.query("COMMIT");
     return res.status(200).json({ ok: true, items: merged });
   } catch (err) {
-    try { await client.query("ROLLBACK"); } catch {}
-    return res.status(err.status || 500).json({
+    try { if (client) await client.query("ROLLBACK"); } catch {}
+    // Always return JSON so we can see the real error
+    return res.status(err?.status || 500).json({
       error: String(err?.message || err),
       code: err?.code || null,
       detail: err?.detail || null,
       hint: err?.hint || null,
-      table: err?.table || null,
-      routine: err?.routine || null
+      where: "save-cloud-cart",
     });
   } finally {
-    client.release();
+    if (client) client.release();
   }
 }
