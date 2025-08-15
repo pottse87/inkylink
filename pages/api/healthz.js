@@ -6,7 +6,7 @@ export default function handler(req, res) {
     "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
   ];
   const missing = keys.filter(k => !process.env[k]);
-  res.status(missing.length ? 500 : 200).json({
+  const env = process.env.VERCEL_ENV || process.env.NODE_ENV || "development"; res.status(missing.length ? 500 : 200).json({ env,
     ok: missing.length === 0,
     missing,
     now: new Date().toISOString()
