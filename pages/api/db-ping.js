@@ -1,5 +1,21 @@
-// pages/api/db-ping.js — resilient ping (returns JSON even if DB missing)
-const { getPool } = require("../../lib/db");
+// pages/api/db-ping.js — DB round-trip with strict JSON and no-store
+
+function setHeaders(res) {
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Robots-Tag", "noindex");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+}
+
+function sslFromUrl(u) {
+  try {
+    const url = new URL(u);
+    const v = (url.searchParams.get("sslmode") || url.searchParams.get("ssl") || "").toLowerCase();
+    return !(v === "disable" || v === "off" || v === "0" || v === "false");
+  } catch {
+    return true;
+  }
+}
 
 function parseDbUrl(u) {
   try {
@@ -7,19 +23,25 @@ function parseDbUrl(u) {
     const user = (url.username || "").replace(/./g, "*");
     return {
       host: url.hostname,
-      port: url.port,
+      port: url.port || null,
       database: url.pathname.replace(/^\//, "") || null,
-      ssl: true,
-      user_masked: user,
+      ssl: sslFromUrl(u),
+      user_masked: user
     };
   } catch {
     return null;
   }
 }
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
+  setHeaders(res);
+
+  if (req.method === "HEAD") {
+    res.status(204).end();
+    return;
+  }
   if (req.method !== "GET") {
-    res.status(405).json({ error: "Method not allowed" });
+    res.status(405).json({ ok: false, error: "Method not allowed" });
     return;
   }
 
@@ -29,47 +51,43 @@ module.exports = async function handler(req, res) {
     env: process.env.VERCEL_ENV || process.env.NODE_ENV || "unknown",
     where: "api/db-ping",
     summary: { db_target: parseDbUrl(process.env.DATABASE_URL) },
-    timings_ms: {},
+    timings_ms: {}
   };
 
-  // Make sure we never cache diagnostics
-  res.setHeader("Cache-Control", "no-store");
-
-  // 1) Initialize pool (may throw if DATABASE_URL missing)
-  let pool;
+  let getPool;
   try {
-    const t0 = Date.now();
-    pool = getPool();
-    out.timings_ms.init = Date.now() - t0;
+    ({ getPool } = require("../../lib/db"));
   } catch (e) {
-    out.error = e.message;
+    out.error = "Failed to load DB module";
     out.code = e.code || null;
+    out.detail = e.message || String(e);
     out.timings_ms.total = Date.now() - started;
-    // Return 200 so you always see JSON instead of the HTML /500 page
     res.status(200).json(out);
     return;
   }
 
-  // 2) Lightweight round trip; also reveals ssl mode
   try {
-    const t1 = Date.now();
-    const r = await pool.query(
-      "select now() as now, coalesce(current_setting('ssl', true),'unknown') as ssl_mode;"
-    );
-    out.timings_ms.query = Date.now() - t1;
+    const pool = getPool();
+    const t0 = Date.now();
+
+    // Use missing_ok=true to avoid exceptions if the GUC is absent
+    const r = await pool.query("select now() as now, current_setting('ssl', true) as ssl_mode;");
+    out.timings_ms.query = Date.now() - t0;
+
     out.ok = true;
-    out.result = r.rows[0];
+    out.result = r.rows[0] || null;
+    out.timings_ms.total = Date.now() - started;
+    res.status(200).json(out);
   } catch (e) {
-    out.error = e.message;
+    out.error = e.message || String(e);
     out.code = e.code || null;
     out.detail = e.detail || null;
     out.hint = e.hint || null;
     out.routine = e.routine || null;
-  } finally {
     out.timings_ms.total = Date.now() - started;
-    res.status(200).json(out);
+    res.status(200).json(out); // never emit HTML 500
   }
-};
+}
 
-// Force Node runtime (not edge)
-module.exports.config = { runtime: "nodejs" };
+module.exports = handler;
+module.exports.config = { api: { bodyParser: true }, runtime: "nodejs" };

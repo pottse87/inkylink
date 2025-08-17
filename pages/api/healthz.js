@@ -1,14 +1,29 @@
-export default function handler(req, res) {
-  const keys = [
-    "DATABASE_URL",
-    "STRIPE_SECRET_KEY",
-    "STRIPE_WEBHOOK_SECRET",
-    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
-  ];
-  const missing = keys.filter(k => !process.env[k]);
-  const env = process.env.VERCEL_ENV || process.env.NODE_ENV || "development"; res.status(missing.length ? 500 : 200).json({ env,
-    ok: missing.length === 0,
-    missing,
+// pages/api/healthz.js — zero-dependency liveness
+
+function setHeaders(res) {
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Robots-Tag", "noindex");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+}
+
+module.exports = function handler(req, res) {
+  setHeaders(res);
+
+  if (req.method === "HEAD") {
+    res.status(204).end();
+    return;
+  }
+  if (req.method !== "GET") {
+    res.status(405).json({ ok: false, error: "Method not allowed" });
+    return;
+  }
+
+  res.status(200).json({
+    ok: true,
+    env: process.env.VERCEL_ENV || process.env.NODE_ENV || "unknown",
     now: new Date().toISOString()
   });
-}
+};
+
+module.exports.config = { api: { bodyParser: true }, runtime: "nodejs" };
