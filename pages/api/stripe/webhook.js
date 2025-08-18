@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { buffer } from "micro";
-// import { getPool } from "lib/db.js"; const pool = getPool(); // not needed yet
+// import { getPool } from "../../../lib/db.js"; const pool = getPool(); // not needed yet
 
 export const config = {
   api: { bodyParser: false },
@@ -33,6 +33,7 @@ export default async function handler(req, res) {
 
   return res.status(200).json({ received: true });
 }
+
 
 
 

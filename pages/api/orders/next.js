@@ -1,4 +1,4 @@
-import { getPool } from "lib/db.js"; const pool = getPool();
+import { getPool } from "../../../lib/db.js"; const pool = getPool();
 
 function auth(req) {
   const token = req.headers["x-desktop-token"];
@@ -71,6 +71,7 @@ export default async function handler(req, res) {
     return res.status(code).json({ error: err.message || "Internal error" });
   }
 }
+
 
 
 

@@ -7,7 +7,7 @@
  *  - No SSR issues (API route only)
  */
 
-import { getPool } from "lib/db.js"; const pool = getPool();
+import { getPool } from "../../../lib/db.js"; const pool = getPool();
 
 function bad(res, code, msg) {
   return res.status(code).json({ error: msg });
@@ -74,6 +74,7 @@ export default async function handler(req, res) {
     client.release();
   }
 }
+
 
 
 

@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { getPool } from "lib/db.js"; const pool = getPool();
+import { getPool } from "../../lib/db.js"; const pool = getPool();
 import { randomUUID } from "crypto";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });
@@ -110,6 +110,7 @@ export default async function handler(req, res) {
     return res.status(code).json({ error: err.message || "Internal error" });
   }
 }
+
 
 
 

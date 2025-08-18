@@ -1,4 +1,4 @@
-import { getPool } from "lib/db.js"; const pool = getPool();
+import { getPool } from "../../lib/db.js"; const pool = getPool();
 
 export default async function handler(req, res) {
   const out = {
@@ -39,5 +39,6 @@ export default async function handler(req, res) {
     res.status(500).json(out);
   }
 }
+
 
 
