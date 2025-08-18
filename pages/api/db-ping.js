@@ -1,6 +1,7 @@
 "use strict";
+export const config = { runtime: "nodejs" };
 
-const { getPool } = require("../../lib/db");
+import { getPool } from "../../lib/db.js";
 
 function parseDbUrl(u) {
   try {
@@ -19,7 +20,7 @@ function parseDbUrl(u) {
   }
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -64,4 +65,4 @@ module.exports = async function handler(req, res) {
     };
     try { return res.status(500).json(errOut); } catch {}
   }
-};
+}

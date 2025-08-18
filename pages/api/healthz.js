@@ -1,6 +1,7 @@
 "use strict";
+export const config = { runtime: "nodejs" };
 
-module.exports = function handler(req, res) {
+export default async function handler(req, res) {
   try {
     res.setHeader("Cache-Control", "no-store");
     res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -14,6 +15,7 @@ module.exports = function handler(req, res) {
       now: new Date().toISOString(),
     });
   } catch (e) {
+    console.error("healthz error:", e);
     try { return res.status(500).json({ ok:false, error: String(e?.message || e) }); } catch {}
   }
-};
+}
