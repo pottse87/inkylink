@@ -1,31 +1,38 @@
 // pages/api/db-ping.js
-const { quickCheck } = require("../../lib/db");
+// Hardened ping endpoint.
+// - HEAD -> 204 No Content (with no-store)
+// - GET  -> Always JSON (success or detailed JSON error)
+// - Never falls back to Next.js static /500 page
+
+const { getPool } = require("../../lib/db");
 
 function parseDbUrl(u) {
   try {
     const url = new URL(u);
-    const userMasked = (url.username || "").replace(/./g, "*");
+    const user = url.username || "";
     return {
       host: url.hostname,
       port: url.port || null,
-      database: url.pathname.replace(/^\//, "") || null,
-      ssl: true, // we always force ssl in lib/db
-      user_masked: userMasked,
+      database: (url.pathname || "").replace(/^\//, "") || null,
+      ssl: true,
+      user_masked: user ? user.replace(/./g, "*") : "",
     };
   } catch {
     return null;
   }
 }
 
-function noStore(res) {
-  res.setHeader("Cache-Control", "no-store");
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
+function truthy(v) {
+  if (!v) return false;
+  const s = String(v).trim().toLowerCase();
+  return s === "1" || s === "true" || s === "yes" || s === "y" || s === "on";
 }
 
 module.exports = async function handler(req, res) {
-  noStore(res);
+  // Do not cache this route
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Robots-Tag", "noindex");
 
-  // Allow fast HEAD to prove the route is alive without touching PG
   if (req.method === "HEAD") {
     res.status(204).end();
     return;
@@ -36,11 +43,12 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  if (process.env.ALLOW_DB_PING !== "true") {
-    res.status(200).json({
+  // Optional safety gate: set in Vercel → ALLOW_DB_PING = 1
+  if (!truthy(process.env.ALLOW_DB_PING)) {
+    res.status(403).json({
       ok: false,
-      disabled: true,
-      reason: "Set ALLOW_DB_PING=true to enable this endpoint.",
+      error:
+        "DB ping disabled. Set ALLOW_DB_PING=1 in Vercel (Production) to enable.",
     });
     return;
   }
@@ -48,28 +56,49 @@ module.exports = async function handler(req, res) {
   const started = Date.now();
   const out = {
     ok: false,
-    where: "api/db-ping",
     env: process.env.VERCEL_ENV || process.env.NODE_ENV || "unknown",
+    where: "api/db-ping",
     summary: { db_target: parseDbUrl(process.env.DATABASE_URL) },
     timings_ms: {},
   };
 
   try {
-    const q0 = Date.now();
-    const r = await quickCheck();
-    out.timings_ms.query = Date.now() - q0;
+    const pool = getPool();
+    if (!pool) {
+      out.error = "Missing DATABASE_URL or 'pg' module unavailable";
+      out.timings_ms.total = Date.now() - started;
+      res.status(500).json(out);
+      return;
+    }
+
+    const t0 = Date.now();
+    let row;
+    try {
+      // Try to read ssl mode (may not be exposed on some managed PGs)
+      const r = await pool.query(
+        "select now() as now, current_setting('ssl', true) as ssl_mode;"
+      );
+      row = r.rows[0];
+    } catch {
+      // Fallback: just get time
+      const r = await pool.query("select now() as now;");
+      row = r.rows[0];
+      row.ssl_mode = null;
+    }
+
+    out.timings_ms.query = Date.now() - t0;
     out.ok = true;
-    out.result = r;
-  } catch (e) {
-    // Return JSON **instead of** letting Next serve /500 HTML
-    out.error = e?.message || String(e);
-    out.code = e?.code || null;
-    out.detail = e?.detail || null;
-    out.hint = e?.hint || null;
-    out.routine = e?.routine || null;
-    out.stack = e?.stack ? String(e.stack).split("\n").slice(0, 6) : null;
-  } finally {
+    out.result = row;
     out.timings_ms.total = Date.now() - started;
     res.status(200).json(out);
+  } catch (e) {
+    out.error = e && e.message ? e.message : String(e);
+    out.code = e && e.code ? e.code : null;
+    out.detail = e && e.detail ? e.detail : null;
+    out.hint = e && e.hint ? e.hint : null;
+    out.routine = e && e.routine ? e.routine : null;
+    out.timings_ms.total = Date.now() - started;
+    // Critical: always return JSON so Next.js does NOT render static /500
+    res.status(500).json(out);
   }
 };
