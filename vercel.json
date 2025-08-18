@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/healthz.js": { "runtime": "nodejs20.x" },
-    "api/db-ping.js": { "runtime": "nodejs20.x" }
+    "api/healthz.js": { "runtime": "nodejs22.x" },
+    "api/db-ping.js": { "runtime": "nodejs22.x" }
   }
 }
