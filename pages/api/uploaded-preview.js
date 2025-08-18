@@ -1,3 +1,4 @@
+import { assertLocalOnly } from '../../lib/local-paths.js';
 import fs from "fs";
 import path from "path";
 import { getUploadDir } from "../../lib/storage";
@@ -10,6 +11,8 @@ const MIME_BY_EXT = {
 };
 
 export default async function handler(req, res) {
+  try { assertLocalOnly(); } catch (e) { return res.status(e.status || 501).json({ ok: false, error: e.message }); }
+
   try {
     const key = String(req.query.key || "");
     if (!key || key.includes("/") || key.includes("\\")) {
@@ -39,6 +42,7 @@ export default async function handler(req, res) {
     res.status(500).json({ error: "Preview failed" });
   }
 }
+
 
 
 

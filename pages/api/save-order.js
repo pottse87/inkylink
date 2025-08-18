@@ -1,3 +1,4 @@
+import { assertLocalOnly } from '../../lib/local-paths.js';
 import path from "path";
 import fs from "fs";
 
@@ -51,6 +52,8 @@ function writeOnce(dir, payload, key) {
 }
 
 export default async function handler(req, res) {
+  try { assertLocalOnly(); } catch (e) { return res.status(e.status || 501).json({ ok: false, error: e.message }); }
+
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
     return;
@@ -81,6 +84,7 @@ export default async function handler(req, res) {
     });
   }
 }
+
 
 
 

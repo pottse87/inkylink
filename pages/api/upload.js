@@ -1,3 +1,4 @@
+import { assertLocalOnly } from '../../lib/local-paths.js';
 import fs from "fs";
 import path from "path";
 import formidable from "formidable";
@@ -13,6 +14,8 @@ const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
 function rmSafe(p) { try { fs.existsSync(p) && fs.unlinkSync(p); } catch {} }
 
 export default async function handler(req, res) {
+  try { assertLocalOnly(); } catch (e) { return res.status(e.status || 501).json({ ok: false, error: e.message }); }
+
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
     return;
@@ -64,6 +67,7 @@ export default async function handler(req, res) {
     res.status(500).json({ error: "Upload failed." });
   }
 }
+
 
 
 
