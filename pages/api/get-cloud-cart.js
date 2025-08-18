@@ -13,3 +13,4 @@ export default async function handler(req, res) {
   return res.status(200).json({ items, updated_at: rows[0]?.updated_at || null });
 }
 
+
