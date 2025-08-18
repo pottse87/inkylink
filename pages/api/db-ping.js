@@ -1,4 +1,5 @@
 "use strict";
+exports.config = { runtime: "nodejs" };
 
 const { getPool } = require("../../lib/db");
 
@@ -34,9 +35,7 @@ module.exports = async function handler(req, res) {
     }
 
     const started = Date.now();
-    const allow = String(process.env.ALLOW_DB_PING || "")
-      .trim()
-      .toLowerCase();
+    const allow = String(process.env.ALLOW_DB_PING || "").trim().toLowerCase();
     const out = {
       ok: false,
       env: process.env.VERCEL_ENV || process.env.NODE_ENV || "unknown",
@@ -54,9 +53,7 @@ module.exports = async function handler(req, res) {
 
     const pool = getPool();
     const t0 = Date.now();
-    const r = await pool.query(
-      "select now() as now, current_setting('ssl') as ssl_mode;"
-    );
+    const r = await pool.query("select now() as now, current_setting('ssl') as ssl_mode;");
     out.timings_ms.query = Date.now() - t0;
     out.ok = true;
     out.result = r.rows[0];
@@ -73,10 +70,6 @@ module.exports = async function handler(req, res) {
       hint: e?.hint || null,
       routine: e?.routine || null,
     };
-    try {
-      res.status(500).end(JSON.stringify(errOut));
-    } catch {
-      // no-op
-    }
+    try { res.status(500).end(JSON.stringify(errOut)); } catch {}
   }
 };
