@@ -7,3 +7,4 @@ export default function handler(req, res) {
     now: new Date().toISOString(),
   });
 }
+

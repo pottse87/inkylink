@@ -31,3 +31,4 @@ module.exports = async function handler(req, res) {
   const target = parseDbUrl(process.env.DATABASE_URL);
   res.status(200).json({ ok: !!target, target });
 };
+

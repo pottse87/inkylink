@@ -1,4 +1,4 @@
-import { pool } from "../../lib/db";
+import { getPool } from "lib/db.js"; const pool = getPool();
 
 export default async function handler(req, res) {
   const out = {

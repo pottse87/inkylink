@@ -15,7 +15,7 @@
  *   - Fully parameterized queries. Limit is sanitized to integer 1..100.
  */
 
-import { pool } from "../../../lib/db";
+import { getPool } from "lib/db.js"; const pool = getPool();
 
 function assert(cond, msg, code = 400) {
   if (!cond) throw Object.assign(new Error(msg), { status: code });
@@ -142,3 +142,4 @@ export default async function handler(req, res) {
     return res.status(code).json({ error: err.message || "Internal error" });
   }
 }
+

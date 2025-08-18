@@ -1,4 +1,4 @@
-import { pool } from "../../lib/db";
+import { getPool } from "lib/db.js"; const pool = getPool();
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -12,3 +12,4 @@ export default async function handler(req, res) {
   const items = rows[0]?.items || [];
   return res.status(200).json({ items, updated_at: rows[0]?.updated_at || null });
 }
+
