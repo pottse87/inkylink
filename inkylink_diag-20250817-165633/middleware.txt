@@ -1,0 +1,2 @@
+node_modules\next\dist\build\templates\middleware.js
+node_modules\next\dist\esm\build\templates\middleware.js

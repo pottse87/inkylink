@@ -1,0 +1,19 @@
+
+16:56:48.46  ≡ƒÜ½  HEAD  ---  www.inkylink.com  ╞Æ  /api/db-ping
+Γ¿» Error: Page /api/db-ping does not export a default function.
+    at 8404 (.next/server/pages/api/db-ping.js:1:1803)
+    at <unknown> (.next/server/pages/api/db-ping.js:1:3500)
+    at <unknown> (.next/server/pages/api/db-ping.js:1:3486)
+    at Object.<anonymous> (.next/server/pages/api/db-ping.js:1:3531)
+16:56:48.53  ≡ƒÜ½  HEAD  ---  www.inkylink.com  ╞Æ  /api/db-ping
+16:56:48.54  Γä╣∩╕Å  HEAD  ---  www.inkylink.com  ╞Æ  /api/db-ping
+16:56:49.06  ≡ƒÜ½  GET  ---  www.inkylink.com  ╞Æ  /api/db-ping
+Γ¿» Error: Page /api/db-ping does not export a default function.
+    at 8404 (.next/server/pages/api/db-ping.js:1:1803)
+    at <unknown> (.next/server/pages/api/db-ping.js:1:3500)
+    at <unknown> (.next/server/pages/api/db-ping.js:1:3486)
+    at Object.<anonymous> (.next/server/pages/api/db-ping.js:1:3531)
+16:56:49.13  ≡ƒÜ½  GET  ---  www.inkylink.com  ╞Æ  /api/db-ping
+16:56:49.14  Γä╣∩╕Å  GET  ---  www.inkylink.com  ╞Æ  /api/db-ping
+16:56:49.14  Γä╣∩╕Å  GET  ---  www.inkylink.com  ╞Æ  /api/db-ping
+

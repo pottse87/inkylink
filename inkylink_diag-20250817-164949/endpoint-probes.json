@@ -1,0 +1,41 @@
+[
+  {
+    "name": "healthz",
+    "url": "/api/healthz",
+    "status": null,
+    "cacheControl": null,
+    "contentType": null,
+    "xMatchedPath": null,
+    "xVercelCache": null,
+    "isJson": false,
+    "jsonPreview": null,
+    "nonJsonSample": "",
+    "savedBody": "probe-healthz.txt"
+  },
+  {
+    "name": "db-ping",
+    "url": "/api/db-ping",
+    "status": null,
+    "cacheControl": null,
+    "contentType": null,
+    "xMatchedPath": null,
+    "xVercelCache": null,
+    "isJson": false,
+    "jsonPreview": null,
+    "nonJsonSample": "",
+    "savedBody": "probe-db-ping.txt"
+  },
+  {
+    "name": "env-inspect",
+    "url": "/api/env-inspect",
+    "status": null,
+    "cacheControl": null,
+    "contentType": null,
+    "xMatchedPath": null,
+    "xVercelCache": null,
+    "isJson": false,
+    "jsonPreview": null,
+    "nonJsonSample": "",
+    "savedBody": "probe-env-inspect.txt"
+  }
+]

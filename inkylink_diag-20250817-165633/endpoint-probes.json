@@ -1,0 +1,54 @@
+[
+  {
+    "name": "healthz",
+    "url": "https://www.inkylink.com/api/healthz",
+    "status": 200,
+    "cacheControl": "no-store",
+    "contentType": "application/json; charset=utf-8",
+    "xMatchedPath": "/api/healthz",
+    "xVercelCache": "MISS",
+    "isJson": true,
+    "jsonPreview": "{\r\n  \"env\": \"production\",\r\n  \"ok\": true,\r\n  \"missing\": [],\r\n  \"now\": \"2025-08-17T21:56:48.143Z\"\r\n}",
+    "nonJsonSample": null,
+    "savedBody": "probe-healthz.txt"
+  },
+  {
+    "name": "db-ping",
+    "url": "https://www.inkylink.com/api/db-ping",
+    "status": null,
+    "cacheControl": null,
+    "contentType": null,
+    "xMatchedPath": null,
+    "xVercelCache": null,
+    "isJson": false,
+    "jsonPreview": null,
+    "nonJsonSample": "",
+    "savedBody": "probe-db-ping.txt"
+  },
+  {
+    "name": "env-inspect",
+    "url": "https://www.inkylink.com/api/env-inspect",
+    "status": 200,
+    "cacheControl": "no-store",
+    "contentType": "application/json; charset=utf-8",
+    "xMatchedPath": "/api/env-inspect",
+    "xVercelCache": "MISS",
+    "isJson": true,
+    "jsonPreview": "{\r\n  \"env\": \"production\",\r\n  \"host\": \"aws-0-us-east-2.pooler.supabase.com\",\r\n  \"port\": \"6543\",\r\n  \"user\": \"**************************lnn\",\r\n  \"passwordLength\": 14,\r\n  \"hasTrailingSpace\": true,\r\n  \"query\": \"?sslmode=require\"\r\n}",
+    "nonJsonSample": null,
+    "savedBody": "probe-env-inspect.txt"
+  },
+  {
+    "name": "db-host",
+    "url": "https://www.inkylink.com/api/db-host",
+    "status": 200,
+    "cacheControl": "no-store",
+    "contentType": "application/json; charset=utf-8",
+    "xMatchedPath": "/api/db-host",
+    "xVercelCache": "MISS",
+    "isJson": true,
+    "jsonPreview": "{\r\n  \"hostFromUrl\": \"aws-0-us-east-2.pooler.supabase.com\",\r\n  \"envHost\": null,\r\n  \"hasDatabaseUrl\": true,\r\n  \"nodeEnv\": \"production\",\r\n  \"now\": \"2025-08-17T21:56:50.518Z\"\r\n}",
+    "nonJsonSample": null,
+    "savedBody": "probe-db-host.txt"
+  }
+]

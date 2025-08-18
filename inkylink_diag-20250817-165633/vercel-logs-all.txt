@@ -1,0 +1,64 @@
+Vercel CLI 44.5.0
+WARN! Did you mean to deploy the subdirectory "logs"? Use `vc --cwd logs` instead.
+The "--since" option was ignored because it is now deprecated. Please remove it.
+The "--limit" option was ignored because it is now deprecated. Please remove it.
+Fetching deployment "inkylink-website-448g6b6vq-ean-potts-projects.vercel.app" in ean-potts-projects
+WARN! This command now displays runtime logs. To access your build logs, run `vercel inspect --logs inkylink-website-448g6b6vq-ean-potts-projects.vercel.app`
+Displaying runtime logs for deployment inkylink-website-448g6b6vq-ean-potts-projects.vercel.app (dpl_4A3QuxvbPZ7YLJ4azpP9Hvqddcaj) starting from Aug Su 16:56:52.25
+
+waiting for new logs...
+16:56:48.46  ≡ƒÜ½  HEAD  ---  www.inkylink.com  ╞Æ  /api/db-ping
+-------------------------------------------------------------
+Γ¿» Error: Page /api/db-ping does not export a default function.
+    at 8404 (.next/server/pages/api/db-ping.js:1:1803)
+    at c (.next/server/webpack-api-runtime.js:1:189)
+    at <unknown> (.next/server/pages/api/db-ping.js:1:3500)
+    at c.X (.next/server/webpack-api-runtime.js:1:1730)
+    at <unknown> (.next/server/pages/api/db-ping.js:1:3486)
+    at Object.<anonymous> (.next/server/pages/api/db-ping.js:1:3531)
+    at Module.<anonymous> (../../opt/rust/bytecode.js:2:1435)
+    at A.l._compile (../../opt/rust/bytecode.js:2:3160)
+
+waiting for new logs...
+16:56:48.53  ≡ƒÜ½  HEAD  ---  www.inkylink.com  ╞Æ  /api/db-ping
+-------------------------------------------------------------
+Γ¿» Error: Failed to load static file for page: /500 ENOENT: no such file or directory, open '/var/task/.next/server/pages/500.html'
+    at async Object.handler (___next_launcher.cjs:58:5)
+
+waiting for new logs...
+16:56:48.54  Γä╣∩╕Å  HEAD  ---  www.inkylink.com  ╞Æ  /api/db-ping
+-------------------------------------------------------------
+Node.js process exited with exit status: 1. The logs above can help with debugging the issue.
+
+waiting for new logs...
+16:56:49.06  ≡ƒÜ½  GET  ---  www.inkylink.com  ╞Æ  /api/db-ping
+------------------------------------------------------------
+Γ¿» Error: Page /api/db-ping does not export a default function.
+    at 8404 (.next/server/pages/api/db-ping.js:1:1803)
+    at c (.next/server/webpack-api-runtime.js:1:189)
+    at <unknown> (.next/server/pages/api/db-ping.js:1:3500)
+    at c.X (.next/server/webpack-api-runtime.js:1:1730)
+    at <unknown> (.next/server/pages/api/db-ping.js:1:3486)
+    at Object.<anonymous> (.next/server/pages/api/db-ping.js:1:3531)
+    at Module.<anonymous> (../../opt/rust/bytecode.js:2:1435)
+    at A.l._compile (../../opt/rust/bytecode.js:2:3160)
+
+waiting for new logs...
+16:56:49.13  ≡ƒÜ½  GET  ---  www.inkylink.com  ╞Æ  /api/db-ping
+------------------------------------------------------------
+Γ¿» Error: Failed to load static file for page: /500 ENOENT: no such file or directory, open '/var/task/.next/server/pages/500.html'
+    at async Object.handler (___next_launcher.cjs:58:5)
+
+waiting for new logs...
+16:56:49.14  Γä╣∩╕Å  GET  ---  www.inkylink.com  ╞Æ  /api/db-ping
+------------------------------------------------------------
+Node.js process exited with exit status: 1. The logs above can help with debugging the issue.
+
+waiting for new logs...
+16:56:49.14  Γä╣∩╕Å  GET  ---  www.inkylink.com  ╞Æ  /api/db-ping
+------------------------------------------------------------
+Node.js process exited with exit status: 1. The logs above can help with debugging the issue.
+
+waiting for new logs...
+WARN! Exceeded query duration limit of 5 minutes
+

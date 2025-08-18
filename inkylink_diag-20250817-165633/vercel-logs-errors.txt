@@ -1,0 +1,6 @@
+
+Γ¿» Error: Page /api/db-ping does not export a default function.
+Γ¿» Error: Failed to load static file for page: /500 ENOENT: no such file or directory, open '/var/task/.next/server/pages/500.html'
+Γ¿» Error: Page /api/db-ping does not export a default function.
+Γ¿» Error: Failed to load static file for page: /500 ENOENT: no such file or directory, open '/var/task/.next/server/pages/500.html'
+

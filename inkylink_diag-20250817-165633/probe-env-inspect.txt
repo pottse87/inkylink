@@ -1,0 +1,1 @@
+{"env":"production","host":"aws-0-us-east-2.pooler.supabase.com","port":"6543","user":"**************************lnn","passwordLength":14,"hasTrailingSpace":true,"query":"?sslmode=require"}

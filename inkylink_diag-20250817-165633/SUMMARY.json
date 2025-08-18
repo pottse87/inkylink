@@ -1,0 +1,21 @@
+{
+  "baseUrl": "https://www.inkylink.com",
+  "deployment": "https://inkylink-website-448g6b6vq-ean-potts-projects.vercel.app",
+  "package": {
+    "hasPackageJson": true,
+    "type": null,
+    "engines_node": "22.x",
+    "dep_pg": "^8.16.3",
+    "devdep_pg": null,
+    "next_version": "^15.4.6"
+  },
+  "hasVercelJson": false,
+  "apiFileCount": 26,
+  "hasMiddleware": true,
+  "pgImportCount": 34,
+  "pingStatus": null,
+  "healthzStatus": 200,
+  "envInspectStatus": 200,
+  "nodeRuntimeGuess": null,
+  "reportFolder": "inkylink_diag-20250817-165633"
+}
