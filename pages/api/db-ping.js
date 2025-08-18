@@ -1,5 +1,4 @@
 "use strict";
-exports.config = { runtime: "nodejs" };
 
 const { getPool } = require("../../lib/db");
 
@@ -25,14 +24,8 @@ module.exports = async function handler(req, res) {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
 
   try {
-    if (req.method === "HEAD") {
-      res.status(204).end();
-      return;
-    }
-    if (req.method !== "GET") {
-      res.status(405).end(JSON.stringify({ error: "Method not allowed" }));
-      return;
-    }
+    if (req.method === "HEAD") return res.status(204).end();
+    if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
     const started = Date.now();
     const allow = String(process.env.ALLOW_DB_PING || "").trim().toLowerCase();
@@ -47,8 +40,7 @@ module.exports = async function handler(req, res) {
     if (!(allow === "1" || allow === "true" || allow === "yes")) {
       out.error = "db-ping disabled by ALLOW_DB_PING";
       out.timings_ms.total = Date.now() - started;
-      res.status(403).end(JSON.stringify(out));
-      return;
+      return res.status(403).json(out);
     }
 
     const pool = getPool();
@@ -58,7 +50,7 @@ module.exports = async function handler(req, res) {
     out.ok = true;
     out.result = r.rows[0];
     out.timings_ms.total = Date.now() - started;
-    res.status(200).end(JSON.stringify(out));
+    return res.status(200).json(out);
   } catch (e) {
     const errOut = {
       ok: false,
@@ -70,6 +62,6 @@ module.exports = async function handler(req, res) {
       hint: e?.hint || null,
       routine: e?.routine || null,
     };
-    try { res.status(500).end(JSON.stringify(errOut)); } catch {}
+    try { return res.status(500).json(errOut); } catch {}
   }
 };

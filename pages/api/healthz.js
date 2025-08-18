@@ -1,5 +1,4 @@
 "use strict";
-exports.config = { runtime: "nodejs" };
 
 module.exports = function handler(req, res) {
   try {
@@ -15,7 +14,6 @@ module.exports = function handler(req, res) {
       now: new Date().toISOString(),
     });
   } catch (e) {
-    console.error("healthz error:", e);
     try { return res.status(500).json({ ok:false, error: String(e?.message || e) }); } catch {}
   }
 };
