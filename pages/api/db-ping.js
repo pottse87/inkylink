@@ -22,9 +22,9 @@ function parseDbUrl(u) {
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-
-  try {
+  res.setHeader("X-Db-Host", (parseDbUrl(process.env.DATABASE_URL)?.host || "n/a"));
+res.setHeader("X-Debug-Has-NextUrl", String("nextUrl" in req));
+try {
     if (req.method === "HEAD") return res.status(204).end();
     if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
@@ -53,6 +53,7 @@ export default async function handler(req, res) {
     out.timings_ms.total = Date.now() - started;
     return res.status(200).json(out);
   } catch (e) {
+    console.error("db-ping error stack:\n", e?.stack || e);
     const errOut = {
       ok: false,
       env: process.env.VERCEL_ENV || process.env.NODE_ENV || "unknown",
@@ -63,9 +64,16 @@ export default async function handler(req, res) {
       hint: e?.hint || null,
       routine: e?.routine || null,
     };
+    
+    if ((process.env.NODE_ENV || "").toLowerCase() !== "production") {
+      errOut.stack = e?.stack || null;
+    }
     try { return res.status(500).json(errOut); } catch {}
   }
 }
+
+
+
 
 
 
