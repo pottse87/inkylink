@@ -228,5 +228,16 @@
       "question": "What changes are you hoping to test (headlines, descriptions, calls to action, etc.)?",
       "type": "text"
     }
+  ],
+  "seo-blog-post": [
+    {
+      "question": "Primary keyword (exact phrase) + 2–3 supporting keywords?"
+    },
+    {
+      "question": "Target reader (experience level, intent)?"
+    },
+    {
+      "question": "Any internal links or products to feature?"
+    }
   ]
 }

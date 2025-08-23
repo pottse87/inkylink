@@ -2,12 +2,10 @@ import React, { useEffect } from 'react';
 import { ensureClientId } from '../lib/clientId';
 import "../styles/globals.css";
 import Script from "next/script";
-
+import '../lib/env'; // Validate environment variables
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => { ensureClientId(); }, []);
-  const currentPath =
-    typeof window !== "undefined" ? window.location.pathname : "";
 
   useEffect(() => {
     if (typeof window !== "undefined") {

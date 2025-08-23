@@ -1,20 +1,3 @@
-/**
- * /api/orders/queue
- * Fetch newly "submitted" orders for desktop polling.
- * Optional query:
- *   - since: ISO timestamp (only orders created after this)
- *   - limit: 1..100 (default 50)
- *   - include_items: "true" to include order_items per order
- *
- * Auth:
- *   - If process.env.SKIP_QUEUE_AUTH === "true", no header required (dev only).
- *   - Otherwise must send: x-inkylink-key: process.env.QUEUE_SHARED_SECRET
- *
- * Notes:
- *   - Runs server-side only (Next.js API route). No SSR/static pitfalls.
- *   - Fully parameterized queries. Limit is sanitized to integer 1..100.
- */
-
 import { getPool } from "../../../lib/db.js"; const pool = getPool();
 
 function assert(cond, msg, code = 400) {
@@ -34,14 +17,12 @@ function parseSince(v) {
 }
 
 export default async function handler(req, res) {
-  // Method guard
   if (req.method !== "GET") {
     res.setHeader("Allow", ["GET"]);
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    // --- AUTH (shared secret OR skip via env) ---
     const skipAuth = String(process.env.SKIP_QUEUE_AUTH || "").toLowerCase() === "true";
     if (!skipAuth) {
       const secret = process.env.QUEUE_SHARED_SECRET;
@@ -50,12 +31,10 @@ export default async function handler(req, res) {
       assert(typeof provided === "string" && provided === secret, "Unauthorized", 401);
     }
 
-    // --- INPUTS ---
     const since = parseSince(req.query.since);
     const limit = parseLimit(req.query.limit);
     const includeItems = String(req.query.include_items || "").toLowerCase() === "true";
 
-    // --- DB ---
     const client = await pool.connect();
     try {
       const params = ["submitted"];
@@ -65,7 +44,8 @@ export default async function handler(req, res) {
         where += ` AND created_at > $2`;
       }
 
-      // Limit is a small integer we control; keep it inline
+      // SECURITY FIX: Use parameterized limit
+      params.push(limit);
       const ordersSql = `
         SELECT
           id::uuid,
@@ -79,7 +59,7 @@ export default async function handler(req, res) {
         FROM public.orders
         WHERE ${where}
         ORDER BY created_at ASC
-        LIMIT ${limit};
+        LIMIT $${params.length};
       `;
       const { rows: orders } = await client.query(ordersSql, params);
 
@@ -116,7 +96,6 @@ export default async function handler(req, res) {
         }, {});
       }
 
-      // Normalize created_at/updated_at to ISO, attach items if requested
       const out = orders.map(o => ({
         id: o.id,
         client_id: o.client_id,
@@ -142,7 +121,3 @@ export default async function handler(req, res) {
     return res.status(code).json({ error: err.message || "Internal error" });
   }
 }
-
-
-
-

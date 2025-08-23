@@ -1,23 +1,13 @@
-// components/BundleCard.js
-
 import React from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import bundleData from "../config/stripe-config-bundles";
 
-const stripePromise = loadStripe(
-  "pk_test_51RinIyC24XB4jGbR54BRNISol1W7NOLeVGuJrkb7sFic4VkmvKH4NdayHPFpFBfQyM5k4MAJtIPKpdvljLg2JHqV00tvuCVP8R"
-);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
-export default function BundleCard({ bundle }) {
-  const handleCheckout = async (priceId) => {
-    const stripe = await stripePromise;
-
-    await stripe.redirectToCheckout({
-      lineItems: [{ price: priceId, quantity: 1 }],
-      mode: "payment",
-      successUrl: "http://localhost:3000/thankyou",
-      cancelUrl: "http://localhost:3000/pricing"
-    });
+export default function BundleCard({ bundle, onAddToCart }) {
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(bundle);
+    }
   };
 
   return (
@@ -33,9 +23,9 @@ export default function BundleCard({ bundle }) {
     }}>
       <h3 style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>{bundle.name}</h3>
       <p style={{ marginBottom: "1rem", fontSize: "0.95rem" }}>{bundle.description}</p>
-      <p style={{ fontWeight: "bold", fontSize: "1.1rem", marginBottom: "1rem" }}>${bundle.price}</p>
+      <p style={{ fontWeight: "bold", fontSize: "1.1rem", marginBottom: "1rem" }}>${(bundle.price_cents / 100).toFixed(2)}</p>
       <button
-        onClick={() => handleCheckout(bundle.priceId)}
+        onClick={handleAddToCart}
         style={{
           backgroundColor: "#0070f3",
           color: "#fff",
@@ -46,7 +36,7 @@ export default function BundleCard({ bundle }) {
           fontWeight: "bold"
         }}
       >
-        Order Now
+        Add to Cart
       </button>
     </div>
   );

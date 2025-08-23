@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 
-/** helpers **/
 const isBrowser = () => typeof window !== "undefined";
 const getClientId = () => {
   if (!isBrowser()) return null;
@@ -22,7 +21,7 @@ const getClientId = () => {
 async function apiGetCloudCart(client_id) {
   const r = await fetch(`/api/get-cloud-cart?client_id=${encodeURIComponent(client_id)}`);
   if (!r.ok) throw new Error(`get-cloud-cart failed: ${r.status}`);
-  return r.json(); // { items, updated_at }
+  return r.json();
 }
 
 async function apiSaveCloudCart(client_id, items, mode = "merge") {
@@ -33,7 +32,7 @@ async function apiSaveCloudCart(client_id, items, mode = "merge") {
   });
   const data = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(data?.error || `save-cloud-cart failed: ${r.status}`);
-  return data; // { ok, items }
+  return data;
 }
 
 async function apiCheckout(client_id, session_id) {
@@ -44,26 +43,30 @@ async function apiCheckout(client_id, session_id) {
   });
   const data = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(data?.error || `checkout failed: ${r.status}`);
-  return data; // { ok, order_id, status, total_cents }
+  return data;
 }
 
 export default function ConfirmationPage() {
   const router = useRouter();
   const [clientId, setClientId] = useState(null);
-  const [items, setItems] = useState([]);            // [{id,name,description,icon,price_cents,quantity}]
+  const [mounted, setMounted] = useState(false);
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [checkoutStatus, setCheckoutStatus] = useState(null);
-  const [busyId, setBusyId] = useState(null);   // which item is being removed
-  const [clearing, setClearing] = useState(false); // when Clear All is running
+  const [busyId, setBusyId] = useState(null);
+  const [clearing, setClearing] = useState(false);
 
-
-  // establish client id
-  useEffect(() => { setClientId(getClientId()); }, []);
-
-  // load cart
+  // Fix SSR hydration
   useEffect(() => {
-    if (!clientId) return;
+    setMounted(true);
+    setClientId(getClientId());
+  }, []);
+
+  // Load cart only after client-side mount
+  useEffect(() => {
+    if (!mounted || !clientId) return;
+    
     let alive = true;
     (async () => {
       try {
@@ -80,11 +83,11 @@ export default function ConfirmationPage() {
       }
     })();
     return () => { alive = false; };
-  }, [clientId]);
+  }, [mounted, clientId]);
 
-  // finalize checkout if coming back from Stripe
+  // Handle Stripe return
   useEffect(() => {
-    if (!clientId) return;
+    if (!mounted || !clientId) return;
     const session_id = typeof router.query.session_id === "string" ? router.query.session_id : null;
     if (!session_id) return;
 
@@ -104,70 +107,64 @@ export default function ConfirmationPage() {
       }
     })();
     return () => { alive = false; };
-  }, [clientId, router.query.session_id]);
+  }, [mounted, clientId, router.query.session_id]);
 
   const totalCents = useMemo(
     () => items.reduce((sum, it) => sum + (Number(it.price_cents) || 0) * (Number(it.quantity) || 1), 0),
     [items]
   );
 
-// actions
-const handleRemove = async (id) => {
-  if (!clientId) return;
-  setBusyId(id);
-  try {
-    // Create updated list
-    const next = items
-      .map(it => {
-        if (it.id === id) {
-          const newQty = (Number(it.quantity) || 1) - 1;
-          if (newQty > 0) {
-            return { ...it, quantity: newQty };
+  const handleRemove = async (id) => {
+    if (!clientId) return;
+    setBusyId(id);
+    try {
+      const next = items
+        .map(it => {
+          if (it.id === id) {
+            const newQty = (Number(it.quantity) || 1) - 1;
+            if (newQty > 0) {
+              return { ...it, quantity: newQty };
+            }
+            return null;
           }
-          // If qty would hit 0, remove entirely
-          return null;
-        }
-        return it;
-      })
-      .filter(Boolean) // remove nulls
+          return it;
+        })
+        .filter(Boolean);
 
-    // Clear server cart first to avoid merge math
-    await apiSaveCloudCart(clientId, [], "replace");
+      await apiSaveCloudCart(clientId, [], "replace");
+      const res = await apiSaveCloudCart(clientId, next, "replace");
+      setItems(Array.isArray(res.items) ? res.items : []);
+      setError(null);
+    } catch (e) {
+      setError(e.message || "Remove failed");
+    } finally {
+      setBusyId(null);
+    }
+  };
 
-    // Then write updated cart
-    const res = await apiSaveCloudCart(clientId, next, "replace");
-
-    setItems(Array.isArray(res.items) ? res.items : []);
-    setError(null);
-  } catch (e) {
-    setError(e.message || "Remove failed");
-  } finally {
-    setBusyId(null);
-  }
-};
-
-
-
-  // clear BOTH DB and UI
   const handleClear = async () => {
-  if (!clientId) return;
-  setClearing(true);
-  try {
-    const res = await apiSaveCloudCart(clientId, [], "replace"); // empty array = clear
-    setItems(res.items || []);
-    setError(null);
-  } catch (e) {
-    setError(e.message || "Clear failed");
-  } finally {
-    setClearing(false);
-  }
-};
+    if (!clientId) return;
+    setClearing(true);
+    try {
+      const res = await apiSaveCloudCart(clientId, [], "replace");
+      setItems(res.items || []);
+      setError(null);
+    } catch (e) {
+      setError(e.message || "Clear failed");
+    } finally {
+      setClearing(false);
+    }
+  };
 
+  // Don't render until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return <div style={{ padding: 24 }}>Loading...</div>;
+  }
 
   return (
     <main style={{ maxWidth: 900, margin: "40px auto", padding: "0 16px", fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" }}>
       <h1 style={{ fontSize: "2rem", marginBottom: 8 }}>Order Confirmation</h1>
-      <p style={{ color: "#555", marginBottom: 16 }}>Review your items below. If you just paid with Stripe, we’ll finalize your order automatically.</p>
+      <p style={{ color: "#555", marginBottom: 16 }}>Review your items below. If you just paid with Stripe, we'll finalize your order automatically.</p>
 
       {error && (
         <div style={{ background: "#ffe8e8", border: "1px solid #f5b5b5", padding: 12, borderRadius: 8, marginBottom: 12 }}>
@@ -192,7 +189,7 @@ const handleRemove = async (id) => {
         </div>
       ) : (
         <>
-                    <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             {items.map((it) => {
               const isBusy = busyId === it.id || clearing;
               return (
