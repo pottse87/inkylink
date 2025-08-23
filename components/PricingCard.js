@@ -1,32 +1,52 @@
 // components/PricingCard.js
+// If you’re on Next.js App Router, add: 'use client';
 
 import React from "react";
 import { loadStripe } from "@stripe/stripe-js";
 
-const stripePromise = loadStripe(
-  "pk_test_51RinIyC24XB4jGbR54BRNISol1W7NOLeVGuJrkb7sFic4VkmvKH4NdayHPFpFBfQyM5k4MAJtIPKpdvljLg2JHqV00tvuCVP8R"
-);
+// ---- Stripe client init (publishable key only; never put secret keys in the client) ----
+const STRIPE_PK = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = STRIPE_PK ? loadStripe(STRIPE_PK) : Promise.resolve(null);
+
+// Resolve a safe origin for redirect URLs (works in dev & prod; SSR-safe)
+function getOrigin() {
+  if (typeof window !== "undefined" && window.location?.origin) return window.location.origin;
+  if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
+  return "http://localhost:3000"; // fallback for local dev
+}
 
 export default function PricingCard({ plan }) {
   const handleCheckout = async (priceId) => {
     const stripe = await stripePromise;
-    await stripe.redirectToCheckout({
-      lineItems: [{ price: priceId, quantity: 1 }],
-      mode: "subscription",
-      successUrl: "http://localhost:3000/thankyou",
-      cancelUrl: "http://localhost:3000/pricing",
-    });
+    if (!stripe) {
+      console.error("Stripe not initialised: missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY");
+      alert("Checkout is unavailable. Please try again later.");
+      return;
+    }
+    try {
+      const { error } = await stripe.redirectToCheckout({
+        lineItems: [{ price: priceId, quantity: 1 }],
+        mode: "subscription",
+        successUrl: `${getOrigin()}/thankyou`,
+        cancelUrl: `${getOrigin()}/pricing`,
+      });
+      if (error) console.error("Stripe redirect error:", error);
+    } catch (err) {
+      console.error("Stripe redirect failed:", err);
+    }
   };
 
   return (
-    <div style={{
-      backgroundColor: "#fff",
-      borderRadius: "8px",
-      boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-      padding: "2rem",
-      width: "280px",
-      textAlign: "center",
-    }}>
+    <div
+      style={{
+        backgroundColor: "#fff",
+        borderRadius: "8px",
+        boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+        padding: "2rem",
+        width: "280px",
+        textAlign: "center",
+      }}
+    >
       <h3 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>{plan.name}</h3>
       <p style={{ marginBottom: "1rem" }}>{plan.description}</p>
       <p style={{ fontSize: "1.2rem", fontWeight: "bold", marginBottom: "0.5rem" }}>
