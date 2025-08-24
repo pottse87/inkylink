@@ -1,0 +1,190 @@
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\components\PricingCard.js:27:       const { error } = await stripe.redirectToCheckout({
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\api\orders.d.ts:21:   amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\hosted-checkout.d.ts:1: export interface RedirectToCheckoutServerOptions {
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\hosted-checkout.d.ts:8: export interface RedirectToCheckoutClientOptions {
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\hosted-checkout.d.ts:110: export type RedirectToCheckoutOptions =
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\hosted-checkout.d.ts:111:   | RedirectToCheckoutServerOptions
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\hosted-checkout.d.ts:112:   | RedirectToCheckoutClientOptions;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\stripe.d.ts:16: import {CheckoutLocale, RedirectToCheckoutOptions} from './hosted-checkout';
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\stripe.d.ts:53:    * Use `stripe.redirectToCheckout` to redirect your customers to [Checkout](https://stripe.com/docs/payments/checkout), a Stripe-hosted page to securely collect payment information.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\stripe.d.ts:56:   redirectToCheckout(
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\stripe.d.ts:57:     options: RedirectToCheckoutOptions
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Checkout\Sessions.d.ts:56:         amount_total: number | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Checkout\Sessions.d.ts:505:           amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Checkout\Sessions.d.ts:2290:           amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Checkout\SessionsResource.d.ts:783:              * A non-negative integer in cents (or local equivalent) representing how much to charge. One of `unit_amount` or `unit_amount_decimal` is required.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Checkout\SessionsResource.d.ts:785:             unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Checkout\SessionsResource.d.ts:788:              * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Checkout\SessionsResource.d.ts:790:             unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Climate\Orders.d.ts:34:         amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Climate\OrdersResource.d.ts:145:          * provides 90 days advance notice and refunds the amount_total.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Climate\Products.d.ts:76:           amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Tax\Calculations.d.ts:25:         amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNoteLineItems.d.ts:77:       unit_amount: number | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNoteLineItems.d.ts:80:        * Same as `unit_amount`, but contains a decimal value with at most 12 decimal places.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNoteLineItems.d.ts:82:       unit_amount_decimal: string | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotes.d.ts:253:         amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:117:          * The integer unit amount in cents (or local equivalent) of the credit note line item. This `unit_amount` will be multiplied by the quantity to get the full amount to credit for this line item. Only valid when `type` is `custom_line_item`.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:119:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:122:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:124:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:339:          * The integer unit amount in cents (or local equivalent) of the credit note line item. This `unit_amount` will be multiplied by the quantity to get the full amount to credit for this line item. Only valid when `type` is `custom_line_item`.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:341:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:344:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:346:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:508:          * The integer unit amount in cents (or local equivalent) of the credit note line item. This `unit_amount` will be multiplied by the quantity to get the full amount to credit for this line item. Only valid when `type` is `custom_line_item`.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:510:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:513:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\CreditNotesResource.d.ts:515:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\index.d.ts:373:       sessions: Stripe.Checkout.SessionsResource;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItems.d.ts:47:        * Amount (in the `currency` specified) of the invoice item. This should always be equal to `unit_amount * quantity`.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItems.d.ts:184:         unit_amount_decimal: string | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItemsResource.d.ts:92:        * The decimal unit amount in cents (or local equivalent) of the charge to be applied to the upcoming invoice. This `unit_amount_decimal` will be multiplied by the quantity to get the full amount. Passing in a negative `unit_amount_decimal` will reduce the `amount_due` on the invoice. Accepts at most 12 decimal places.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItemsResource.d.ts:94:       unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItemsResource.d.ts:146:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItemsResource.d.ts:149:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItemsResource.d.ts:151:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItemsResource.d.ts:242:        * The decimal unit amount in cents (or local equivalent) of the charge to be applied to the upcoming invoice. This `unit_amount_decimal` will be multiplied by the quantity to get the full amount. Passing in a negative `unit_amount_decimal` will reduce the `amount_due` on the invoice. Accepts at most 12 decimal places.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItemsResource.d.ts:244:       unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItemsResource.d.ts:296:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItemsResource.d.ts:299:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceItemsResource.d.ts:301:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoiceLineItems.d.ts:277:         unit_amount_decimal: string | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Invoices.d.ts:1350:         amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:1653:            * A non-negative integer in cents (or local equivalent) representing how much to charge. One of `unit_amount` or `unit_amount_decimal` is required.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:1655:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:1658:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:1660:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2204:          * The integer unit amount in cents (or local equivalent) of the charge to be applied to the upcoming invoice. This unit_amount will be multiplied by the quantity to get the full amount. If you want to apply a credit to the customer's account, pass a negative unit_amount.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2206:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2209:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2211:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2263:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2266:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2268:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2514:               unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2517:                * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2519:               unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2732:               unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2735:                * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2737:               unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2969:             unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2972:              * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:2974:             unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:3270:            * A non-negative integer in cents (or local equivalent) representing how much to charge. One of `unit_amount` or `unit_amount_decimal` is required.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:3272:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:3275:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:3277:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:3552:          * A non-negative integer in cents (or local equivalent) representing how much to charge. One of `unit_amount` or `unit_amount_decimal` is required.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:3554:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:3557:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\InvoicesResource.d.ts:3559:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\LineItems.d.ts:37:       amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PaymentLinksResource.d.ts:603:            * A non-negative integer in cents (or local equivalent) representing how much to charge. One of `unit_amount` or `unit_amount_decimal` is required.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PaymentLinksResource.d.ts:605:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PaymentLinksResource.d.ts:608:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PaymentLinksResource.d.ts:610:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Plans.d.ts:161:         unit_amount: number | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Plans.d.ts:164:          * Same as `unit_amount`, but contains a decimal value with at most 12 decimal places.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Plans.d.ts:166:         unit_amount_decimal: string | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PlansResource.d.ts:152:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PlansResource.d.ts:155:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PlansResource.d.ts:157:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:50:        * Describes how to compute the price per period. Either `per_unit` or `tiered`. `per_unit` indicates that the fixed amount (specified in `unit_amount` or `unit_amount_decimal`) will be charged per unit in `quantity` (for prices with `usage_type=licensed`), or per unit of total usage (for prices with `usage_type=metered`). `tiered` indicates that the unit pricing will be computed using a tiering strategy as defined using the `tiers` and `tiers_mode` attributes.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:74:       custom_unit_amount: Price.CustomUnitAmount | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:139:       unit_amount: number | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:144:       unit_amount_decimal: string | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:154:         custom_unit_amount: CurrencyOptions.CustomUnitAmount | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:169:         unit_amount: number | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:174:         unit_amount_decimal: string | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:211:           unit_amount: number | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:214:            * Same as `unit_amount`, but contains a decimal value with at most 12 decimal places.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:216:           unit_amount_decimal: string | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:291:         unit_amount: number | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:294:          * Same as `unit_amount`, but contains a decimal value with at most 12 decimal places.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Prices.d.ts:296:         unit_amount_decimal: string | null;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:17:        * Describes how to compute the price per period. Either `per_unit` or `tiered`. `per_unit` indicates that the fixed amount (specified in `unit_amount` or `unit_amount_decimal`) will be charged per unit in `quantity` (for prices with `usage_type=licensed`), or per unit of total usage (for prices with `usage_type=metered`). `tiered` indicates that the unit pricing will be computed using a tiering strategy as defined using the `tiers` and `tiers_mode` attributes.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:31:       custom_unit_amount?: PriceCreateParams.CustomUnitAmount;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:94:        * A positive integer in cents (or local equivalent) (or 0 for a free price) representing how much to charge. One of `unit_amount`, `unit_amount_decimal`, or `custom_unit_amount` is required, unless `billing_scheme=tiered`.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:96:       unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:99:        * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:101:       unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:111:         custom_unit_amount?: CurrencyOptions.CustomUnitAmount;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:126:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:129:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:131:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:137:            * Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:173:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:176:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:178:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:189:          * Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:297:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:300:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:302:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:385:         custom_unit_amount?: CurrencyOptions.CustomUnitAmount;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:400:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:403:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:405:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:411:            * Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:447:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:450:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\PricesResource.d.ts:452:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:107:         custom_unit_amount?: DefaultPriceData.CustomUnitAmount;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:125:          * A positive integer in cents (or local equivalent) (or 0 for a free price) representing how much to charge. One of `unit_amount`, `unit_amount_decimal`, or `custom_unit_amount` is required.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:127:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:130:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:132:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:140:           custom_unit_amount?: CurrencyOptions.CustomUnitAmount;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:155:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:158:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:160:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:166:              * Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:202:             unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:205:              * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:207:             unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\ProductsResource.d.ts:218:            * Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Quotes.d.ts:28:       amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Quotes.d.ts:236:           amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\Quotes.d.ts:357:           amount_total: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\QuotesResource.d.ts:268:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\QuotesResource.d.ts:271:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\QuotesResource.d.ts:273:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\QuotesResource.d.ts:608:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\QuotesResource.d.ts:611:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\QuotesResource.d.ts:613:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionItemsResource.d.ts:137:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionItemsResource.d.ts:140:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionItemsResource.d.ts:142:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionItemsResource.d.ts:307:         unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionItemsResource.d.ts:310:          * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionItemsResource.d.ts:312:         unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:392:             unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:395:              * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:397:             unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:610:             unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:613:              * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:615:             unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:1031:             unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:1034:              * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:1036:             unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:1249:             unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:1252:              * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionSchedulesResource.d.ts:1254:             unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:256:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:259:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:261:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:491:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:494:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:496:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:1113:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:1116:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:1118:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:1351:           unit_amount?: number;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:1354:            * Same as `unit_amount`, but accepts a decimal value in cents (or local equivalent) with at most 12 decimal places. Only one of `unit_amount` and `unit_amount_decimal` can be set.
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\stripe\types\SubscriptionsResource.d.ts:1356:           unit_amount_decimal?: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\stripe\session.js:12:     const session = await stripe.checkout.sessions.retrieve(id, {
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\stripe\session.js:25:         unitAmount: price?.unit_amount != null ? price.unit_amount / 100 : null,
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\stripe\session.js:35:       amountTotal: session.amount_total != null ? session.amount_total / 100 : null, // dollars for display
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\create-checkout-session.js:42:         unit_amount: Math.round(bundle.price * 100),
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\create-checkout-session.js:47:     const session = await stripe.checkout.sessions.create({
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\webhook.js:91:       (session.amount_total || 0) / 100,

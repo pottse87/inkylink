@@ -27,7 +27,7 @@ export default function PricingCard({ plan }) {
       const { error } = await stripe.redirectToCheckout({
         lineItems: [{ price: priceId, quantity: 1 }],
         mode: "subscription",
-        successUrl: `${getOrigin()}/thankyou`,
+        successUrl: `${getOrigin()}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${getOrigin()}/pricing`,
       });
       if (error) console.error("Stripe redirect error:", error);
@@ -85,3 +85,6 @@ export default function PricingCard({ plan }) {
     </div>
   );
 }
+
+
+

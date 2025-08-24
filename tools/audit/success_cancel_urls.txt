@@ -1,0 +1,4 @@
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\components\PricingCard.js:30:         successUrl: `${getOrigin()}/confirmation?session_id={CHECKOUT_SESSION_ID}`,
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\components\PricingCard.js:31:         cancelUrl: `${getOrigin()}/pricing`,
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\hosted-checkout.d.ts:13:   successUrl: string;
+C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\node_modules\@stripe\stripe-js\dist\stripe-js\hosted-checkout.d.ts:18:   cancelUrl: string;

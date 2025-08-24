@@ -11,3 +11,8 @@ inkylink_diagnostics_*.log
 # Local env (do not commit).env*.local.env.local.env.development.local
 
 # Local env (do not commit).env*.local.env.local.env.development.local.env.production.local
+# Local env (never commit)
+.env*.local
+.env.local
+.env.development.local
+.env.production.local
