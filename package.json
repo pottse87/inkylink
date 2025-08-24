@@ -1,6 +1,6 @@
 {
   "name": "inkylink",
-  "version": "1.0.0",
+  "version": "1.0.0","engines":{"node":">=18.17 <21"},
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -30,3 +30,4 @@
     "node": "22.x"
   }
 }
+
