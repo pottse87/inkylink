@@ -1,0 +1,98 @@
+== Endpoint Verification Report ==
+When: 2025-08-31T17:19:47
+
+[Discovered API routes]
+ - /api/checkout    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\checkout.js)
+ - /api/cloud-cart    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\cloud-cart.js)
+ - /api/create-checkout-session    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\create-checkout-session.js)
+ - /api/create-plan-session    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\create-plan-session.js)
+ - /api/db-host    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\db-host.js)
+ - /api/db-ping    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\db-ping.js)
+ - /api/dev-token    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\dev-token.js)
+ - /api/diag    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\diag.js)
+ - /api/diag-cart    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\diag-cart.js)
+ - /api/echo    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\echo.js)
+ - /api/get-cloud-cart    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\get-cloud-cart.js)
+ - /api/get-previous-orders    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\get-previous-orders.js)
+ - /api/healthz    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\healthz.js)
+ - /api/load-cloud-cart    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\load-cloud-cart.js)
+ - /api/log-error    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\log-error.js)
+ - /api/orders/[id]/status    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\[id]\status.js)
+ - /api/orders/complete    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\complete.js)
+ - /api/orders/force-complete    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\force-complete.js)
+ - /api/orders/get    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\get.js)
+ - /api/orders/latest    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\latest.js)
+ - /api/orders/next    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\next.js)
+ - /api/orders/queue    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\queue.js)
+ - /api/save-cloud-cart    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\save-cloud-cart.js)
+ - /api/save-minimal-order    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\save-minimal-order.js)
+ - /api/save-order    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\save-order.js)
+ - /api/stripe/session    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\stripe\session.js)
+ - /api/stripe/webhook    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\stripe\webhook.js)
+ - /api/upload    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\upload.js)
+ - /api/uploaded-preview    (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\uploaded-preview.js)
+
+[Client calls to /api/* (unique)]
+ - /api/create-checkout-session
+ - /api/get-cloud-cart?client_id=${encodeURIComponent(cid)}
+ - /api/log-error
+ - /api/orders/get?id=${encodeURIComponent(id)}
+ - /api/orders/latest?client_id=${encodeURIComponent(cid)}
+ - /api/save-cloud-cart
+ - /api/save-order
+
+[Matches]
+ ✓ /api/create-checkout-session  →  /api/create-checkout-session   (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\create-checkout-session.js)
+ ✓ /api/get-cloud-cart?client_id=${encodeURIComponent(cid)}  →  /api/get-cloud-cart   (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\get-cloud-cart.js)
+ ✓ /api/log-error  →  /api/log-error   (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\log-error.js)
+ ✓ /api/orders/get?id=${encodeURIComponent(id)}  →  /api/orders/get   (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\get.js)
+ ✓ /api/orders/latest?client_id=${encodeURIComponent(cid)}  →  /api/orders/latest   (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\latest.js)
+ ✓ /api/save-cloud-cart  →  /api/save-cloud-cart   (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\save-cloud-cart.js)
+ ✓ /api/save-order  →  /api/save-order   (C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\save-order.js)
+
+[Unmatched calls]  none 🎉
+
+[API file warnings (read-only)]
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\checkout.js
+   Mixes require() with ESM export.
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\cloud-cart.js
+   Creates new pg Pool; prefer shared getPool()
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\cloud-cart.js
+   Mixes require() with ESM export.
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\create-checkout-session.js
+   Creates new pg Pool; prefer shared getPool()
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\create-plan-session.js
+   Creates new pg Pool; prefer shared getPool()
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\db-host.js
+   Uses CommonJS (module.exports).
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\dev-token.js
+   Uses CommonJS (module.exports).
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\load-cloud-cart.js
+   Creates new pg Pool; prefer shared getPool()
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\load-cloud-cart.js
+   Mixes require() with ESM export.
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\[id]\status.js
+   Calls getPool() but missing import from lib/db.js
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\[id]\status.js
+   Uses CommonJS (module.exports).
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\force-complete.js
+   Creates new pg Pool; prefer shared getPool()
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\get.js
+   Creates new pg Pool; prefer shared getPool()
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\latest.js
+   Calls getPool() but missing import from lib/db.js
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\latest.js
+   Mixes require() with ESM export.
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\next.js
+   Calls getPool() but missing import from lib/db.js
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\next.js
+   Uses CommonJS (module.exports).
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\orders\queue.js
+   Uses CommonJS (module.exports).
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\save-cloud-cart.js
+   Creates new pg Pool; prefer shared getPool()
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\save-cloud-cart.js
+   Mixes require() with ESM export.
+ - C:\Users\potts\Desktop\INKYLINK_SUITE\inkylink-website\pages\api\stripe\webhook.js
+   Creates new pg Pool; prefer shared getPool()
+

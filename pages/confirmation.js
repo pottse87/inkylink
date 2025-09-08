@@ -1,274 +1,168 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import CloudCartPersistBlock from "../components/CloudCartPersistBlock";
+import { ensureCidInUrl, getClientId } from '../lib/client-id';
+const fmt = (c) => `$${(Number(c||0)/100).toFixed(2)}`;
+const sum = (arr, f) => arr.reduce((s,x)=>s+f(x),0);
 
-const isBrowser = () => typeof window !== "undefined";
-const getClientId = () => {
-  if (!isBrowser()) return null;
-  let cid = localStorage.getItem("inkylink_client_id");
-  if (!cid) {
-    try {
-      cid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      );
-    } catch {
-      cid = `cid_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-    }
-    localStorage.setItem("inkylink_client_id", cid);
-  }
-  return cid;
-};
-
-async function apiGetCloudCart(client_id) {
-  const r = await fetch(`/api/get-cloud-cart?client_id=${encodeURIComponent(client_id)}`);
-  if (!r.ok) throw new Error(`get-cloud-cart failed: ${r.status}`);
-  return r.json();
-}
-
-async function apiSaveCloudCart(client_id, items, mode = "merge") {
-  const r = await fetch("/api/save-cloud-cart", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ client_id, items, mode })
-  });
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data?.error || `save-cloud-cart failed: ${r.status}`);
-  return data;
-}
-
-async function apiCheckout(client_id, session_id) {
-  const r = await fetch("/api/checkout", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ client_id, session_id })
-  });
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(data?.error || `checkout failed: ${r.status}`);
-  return data;
-}
-
-export default function ConfirmationPage() {
-  const router = useRouter();
-  const [clientId, setClientId] = useState(null);
-  const [mounted, setMounted] = useState(false);
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [checkoutStatus, setCheckoutStatus] = useState(null);
-  const [busyId, setBusyId] = useState(null);
-  const [clearing, setClearing] = useState(false);
-
-  // Fix SSR hydration
-  useEffect(() => {
-    setMounted(true);
-    setClientId(getClientId());
-  }, []);
-
-  // Load cart only after client-side mount
-  useEffect(() => {
-    if (!mounted || !clientId) return;
-    
-    let alive = true;
-    (async () => {
-      try {
-        setLoading(true);
-        const data = await apiGetCloudCart(clientId);
-        if (!alive) return;
-        setItems(Array.isArray(data.items) ? data.items : []);
-        setError(null);
-      } catch (e) {
-        if (!alive) return;
-        setError(e.message || "Failed to load cart");
-      } finally {
-        alive && setLoading(false);
-      }
-    })();
-    return () => { alive = false; };
-  }, [mounted, clientId]);
-
-  // Handle Stripe return
-  useEffect(() => {
-    if (!mounted || !clientId) return;
-    const session_id = typeof router.query.session_id === "string" ? router.query.session_id : null;
-    if (!session_id) return;
-
-    let alive = true;
-    (async () => {
-      try {
-        setLoading(true);
-        const data = await apiCheckout(clientId, session_id);
-        if (!alive) return;
-        setCheckoutStatus(data);
-        setError(null);
-      } catch (e) {
-        if (!alive) return;
-        setError(e.message || "Checkout failed");
-      } finally {
-        alive && setLoading(false);
-      }
-    })();
-    return () => { alive = false; };
-  }, [mounted, clientId, router.query.session_id]);
-
-  const totalCents = useMemo(
-    () => items.reduce((sum, it) => sum + (Number(it.price_cents) || 0) * (Number(it.quantity) || 1), 0),
-    [items]
+function IncludedList({items}) {
+  if (!items?.length) return null;
+  return (
+    <ul style={{margin:"8px 0 0 18px", color:"#555"}}>
+      {items.map((it,i)=><li key={i}>{it.name} × {it.quantity}</li>)}
+    </ul>
   );
+}
 
-  const handleRemove = async (id) => {
-    if (!clientId) return;
-    setBusyId(id);
-    try {
-      const next = items
-        .map(it => {
-          if (it.id === id) {
-            const newQty = (Number(it.quantity) || 1) - 1;
-            if (newQty > 0) {
-              return { ...it, quantity: newQty };
-            }
-            return null;
-          }
-          return it;
-        })
-        .filter(Boolean);
+export default function Confirmation({ serverClientId, cartItems }) {
+  React.useEffect(() => { ensureCidInUrl(); }, []);
+  const router = useRouter();
+  const [items, setItems] = useState(cartItems || []);
+  const client_id = serverClientId;
 
-      await apiSaveCloudCart(clientId, [], "replace");
-      const res = await apiSaveCloudCart(clientId, next, "replace");
-      setItems(Array.isArray(res.items) ? res.items : []);
-      setError(null);
-    } catch (e) {
-      setError(e.message || "Remove failed");
-    } finally {
-      setBusyId(null);
+// Snapshot: persist latest cart to localStorage (NO auto-restore)
+useEffect(() => {
+  try {
+    const key = "inkylink_last_cart";
+    if (Array.isArray(items) && items.length > 0) {
+      localStorage.setItem(key, JSON.stringify(items));
+    } else {
+      // optional: clear stale cache so old add-ons can't come back later
+      // localStorage.removeItem(key);
     }
-  };
+  } catch {}
+}, [items?.length]);
 
-  const handleClear = async () => {
-    if (!clientId) return;
-    setClearing(true);
-    try {
-      const res = await apiSaveCloudCart(clientId, [], "replace");
-      setItems(res.items || []);
-      setError(null);
-    } catch (e) {
-      setError(e.message || "Clear failed");
-    } finally {
-      setClearing(false);
-    }
-  };
 
-  // Don't render until mounted to prevent hydration mismatch
-  if (!mounted) {
-    return <div style={{ padding: 24 }}>Loading...</div>;
+  if (!client_id) {
+    return (
+      <main style={{maxWidth:900,margin:"40px auto",padding:"0 16px",fontFamily:"system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif"}}>
+        <h1>Review &amp; Submit</h1>
+        <div style={{color:"#c00"}}>Missing <code>client_id</code>.</div>
+        <div style={{marginTop:12}}><a href="/pricing">Back to Pricing</a></div>
+      <_CidAttachHook />
+<CloudCartPersistBlock />
+</main>
+    );
   }
+
+  const total = sum(items, (it) => (Number(it.price_cents)||0) * Math.max(1, Number(it.quantity)||1));
+  const plan = null; // forced off to hide plan summary block
+const included = false /* plan block removed */ ? items.filter(x => x !== plan) : [];
+
+  const goCheckout = async () => {
+    try {
+      const r = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ client_id })
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data?.error || "Failed to start checkout");
+      if (data?.url) window.location.href = data.url;
+      else alert("Stripe disabled / no URL returned.");
+    } catch (e) {
+      alert(e.message || "Checkout failed");
+    }
+  };
 
   return (
-    <main style={{ maxWidth: 900, margin: "40px auto", padding: "0 16px", fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" }}>
-      <h1 style={{ fontSize: "2rem", marginBottom: 8 }}>Order Confirmation</h1>
-      <p style={{ color: "#555", marginBottom: 16 }}>Review your items below. If you just paid with Stripe, we'll finalize your order automatically.</p>
+    <main style={{maxWidth:900,margin:"40px auto",padding:"0 16px",fontFamily:"system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif"}}>
+      <h1>Review &amp; Submit</h1>
+        <_CidAttachHook />
+<CloudCartPersistBlock
+  footer={
+    <div style={{display:"flex", justifyContent:"flex-end", gap:8}}>
+      <button
+        onClick={()=>router.push("/pricing")}
+        style={{padding:"10px 14px",borderRadius:8,border:"1px solid #ddd",background:"#111",color:"#fff",cursor:"pointer"}}
+      >
+        Back to Pricing
+      </button>
+      <button
+        onClick={goCheckout}
+        disabled={items.length===0}
+        style={{padding:"10px 14px",borderRadius:8,border:"1px solid #0fc24bff",background:"#0fc24bff",color:"#fff",cursor:items.length===0?"not-allowed":"pointer",opacity:items.length===0?0.7:1}}
+      >
+        Proceed to Checkout
+      </button>
+    </div>
+  }
+/>
 
-      {error && (
-        <div style={{ background: "#ffe8e8", border: "1px solid #f5b5b5", padding: 12, borderRadius: 8, marginBottom: 12 }}>
-          {String(error)}
-        </div>
-      )}
-
-      {checkoutStatus && (
-        <div style={{ background: "#e7f8ee", border: "1px solid #b7e2c9", padding: 12, borderRadius: 8, marginBottom: 12 }}>
-          <strong>Order received.</strong><br/>
-          Order ID: {checkoutStatus.order_id}<br/>
-          Status: {checkoutStatus.status}<br/>
-          Total: ${(checkoutStatus.total_cents/100).toFixed(2)}
-        </div>
-      )}
-
-      {loading ? (
-        <div>Loading…</div>
-      ) : items.length === 0 ? (
-        <div style={{ padding: 24, border: "1px dashed #bbb", borderRadius: 12, textAlign: "center" }}>
-          Your cart is empty.
-        </div>
-      ) : (
-        <>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {items.map((it) => {
-              const isBusy = busyId === it.id || clearing;
-              return (
-                <li
-                  key={it.id}
-                  style={{ display: "flex", alignItems: "center", gap: 12, padding: 12, borderBottom: "1px solid #eee" }}
-                >
-                  {it.icon ? (
-                    <img src={it.icon} alt="" width={32} height={32} />
-                  ) : (
-                    <div style={{ width: 32, height: 32, background: "#eee", borderRadius: 6 }} />
-                  )}
-
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
-                      <span>{it.name}</span>
-                      <span
-                        style={{
-                          fontSize: 12,
-                          background: "#eef2ff",
-                          color: "#3730a3",
-                          border: "1px solid #e5e7eb",
-                          padding: "2px 6px",
-                          borderRadius: 999
-                        }}
-                      >
-                        Qty: {it.quantity || 1}
-                      </span>
-                    </div>
-                    {it.description ? <div style={{ color: "#666", fontSize: 14 }}>{it.description}</div> : null}
-                  </div>
-
-                  <div style={{ fontWeight: 700 }}>
-                    {"$" + (((Number(it.price_cents) || 0) * (Number(it.quantity) || 1)) / 100).toFixed(2)}
-                  </div>
-
-                  <button
-                    onClick={() => handleRemove(it.id)}
-                    disabled={isBusy}
-                    style={{
-                      marginLeft: 12,
-                      padding: "8px 12px",
-                      borderRadius: 8,
-                      border: "1px solid #ddd",
-                      background: isBusy ? "#eee" : "#fafafa",
-                      color: "#111",
-                      cursor: isBusy ? "not-allowed" : "pointer"
-                    }}
-                  >
-                    {busyId === it.id ? "Removing…" : "Remove"}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16 }}>
-            <button
-              onClick={handleClear}
-              disabled={clearing || busyId !== null || loading}
-              style={{
-                padding: "10px 14px",
-                borderRadius: 10,
-                border: "1px solid #ddd",
-                background: (clearing || busyId !== null || loading) ? "#eee" : "#fff",
-                color: "#111",
-                cursor: (clearing || busyId !== null || loading) ? "not-allowed" : "pointer"
-              }}
-              title="Clear all items"
-            >
-              {clearing ? "Clearing…" : "Clear All"}
-            </button>
-
-            <div style={{ fontSize: 18 }}>
-              <strong>{"Total: $" + (totalCents / 100).toFixed(2)}</strong>
-            </div>
-          </div>
-        </>
-      )}
-    </main>
+</main>
   );
 }
+
+// ---- SSR: read cart by client_id from query OR cookie (PGSSLMODE-aware)
+export async function getServerSideProps(ctx) {
+  let client_id = ""; // make available in catch/fallbacks
+
+  try {
+    const cookieHeader = ctx.req.headers.cookie || "";
+    const cookies = Object.fromEntries(
+      cookieHeader
+        .split(/;\s*/).filter(Boolean)
+        .map(kv => {
+          const i = kv.indexOf("=");
+          if (i < 0) return [kv, ""];
+          return [decodeURIComponent(kv.slice(0, i)), decodeURIComponent(kv.slice(i + 1))];
+        })
+    );
+
+    const q = ctx.query || {};
+    client_id = String(q.client_id || cookies["inkylink_client_id"] || "");
+
+    const cs = process.env.DATABASE_URL;
+    if (!cs || !client_id) {
+      console.log("[CONFIRMATION_SSR_DIAG] missing client_id or DATABASE_URL; client_id=%s", client_id || "<none>");
+      return { props: { serverClientId: client_id || null, cartItems: [] } };
+    }
+
+    const { Pool } = await import("pg");
+    const pool = new Pool({
+      connectionString: cs,
+      ssl: (process.env.PGSSLMODE === "disable" || process.env.DB_SSL === "0" || process.env.DB_SSL === "false")
+        ? false
+        : { rejectUnauthorized: false }
+    });
+
+    const db = await pool.connect();
+    try {
+      const r = await db.query("SELECT items FROM public.carts WHERE client_id=$1", [client_id]);
+      const items = Array.isArray(r.rows?.[0]?.items) ? r.rows[0].items : [];
+      console.log("[CONFIRMATION_SSR_DIAG] client_id=%s items_len=%d", client_id, Array.isArray(items) ? items.length : -1);
+      return { props: { serverClientId: client_id, cartItems: items } };
+    } finally {
+      db.release();
+      await pool.end();
+    }
+  } catch (e) {
+    console.error("confirmation SSR error:", e?.message || e);
+    return { props: { serverClientId: client_id || null, cartItems: [] } };
+  }
+}
+
+function _CidAttachHook(){
+  const router = useRouter();
+  useEffect(() => {
+    if (!router?.isReady) return;
+    const hasCid = typeof router.query?.client_id === 'string' && router.query.client_id.length > 0;
+    if (hasCid) return;
+    if (typeof window === 'undefined') return;
+    const cid = localStorage.getItem('inkylink_client_id');
+    if (cid) {
+      const nextQuery = { ...router.query, client_id: cid };
+      router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: false });
+    }
+  }, [router?.isReady]);
+  return null;
+}
+
+
+
+
+
+
+
+

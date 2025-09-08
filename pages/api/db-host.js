@@ -14,8 +14,7 @@ function parseDbUrl(u) {
     return null;
   }
 }
-
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
 
@@ -31,6 +30,7 @@ module.exports = async function handler(req, res) {
   const target = parseDbUrl(process.env.DATABASE_URL);
   res.status(200).json({ ok: !!target, target });
 };
+
 
 
 

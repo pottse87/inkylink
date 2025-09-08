@@ -1,0 +1,28 @@
+== DB Scan Report ==
+When: 2025-08-31T16:16:29
+DATABASE_URL: present (redacted)
+Connection mode: non-SSL
+Server version: 17.4
+
+[public.carts columns]
+ - id  (uuid)  NULLABLE:NO
+ - client_id  (text)  NULLABLE:NO
+ - items  (jsonb)  NULLABLE:NO
+ - created_at  (timestamp with time zone)  NULLABLE:NO
+ - updated_at  (timestamp with time zone)  NULLABLE:NO
+
+[public.catalog_items columns]
+ - id  (text)  NULLABLE:NO
+ - title  (text)  NULLABLE:YES
+ - description  (text)  NULLABLE:YES
+ - icon  (text)  NULLABLE:YES
+ - price_cents  (integer)  NULLABLE:NO
+ - stripe_price_id  (text)  NULLABLE:YES
+ - includes  (jsonb)  NULLABLE:YES
+ - color  (text)  NULLABLE:YES
+
+catalog_items rows: 22
+carts rows:         6
+
+✅ No schema issues detected.
+

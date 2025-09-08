@@ -63,7 +63,7 @@ export default function Home() {
 
         <div style={{
           display: "flex",
-          gap: "1.5rem",
+          gap: "0.75rem",
           flexWrap: "wrap",
           justifyContent: "center"
         }}>
@@ -95,38 +95,6 @@ export default function Home() {
   }}
 >
   View Plans & Pricing
-</button>
-
-          </Link>
-
-          <Link href="/build-a-bundle">
-          <button
-  style={{
-    padding: "0.75rem 1.5rem",
-    backgroundColor: "#10b981", // our emerald green
-    color: "white",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "1rem",
-    fontFamily: "Lato, sans-serif",
-    textAlign: "center",
-    cursor: "pointer",
-    transition: "background-color 140ms ease, transform 140ms ease, box-shadow 140ms ease",
-    boxShadow: "0 1px 0 rgba(0,0,0,0.3)",
-    transform: "translateY(0)"
-  }}
-  onMouseOver={(e) => {
-    e.currentTarget.style.backgroundColor = "#059669"; // darker emerald
-    e.currentTarget.style.transform = "translateY(-2px)";
-    e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,0,0,0.35)";
-  }}
-  onMouseOut={(e) => {
-    e.currentTarget.style.backgroundColor = "#10b981";
-    e.currentTarget.style.transform = "translateY(0)";
-    e.currentTarget.style.boxShadow = "0 1px 0 rgba(0,0,0,0.3)";
-  }}
->
-  Build a Custom Bundle
 </button>
 
           </Link>

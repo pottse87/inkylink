@@ -1,0 +1,1 @@
+﻿{"type":"checkout.session.completed","data":{"object":{"object":"checkout.session","id":"cs_live_test_480b6beabaf24655","metadata":{"client_id":"5d6e5744-69c9-49e6-9eca-83dc14427dd2","order_id":"9962596b-ae04-4d51-8c02-7bc7a4784f4d"}}},"id":"evt_test_53676f0b736649"}

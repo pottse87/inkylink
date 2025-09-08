@@ -3,7 +3,7 @@ const { Client } = require("pg");
 async function main() {
   const cs = process.env.DATABASE_URL;
   if (!cs) throw new Error("Missing DATABASE_URL env");
-  const client = new Client({ connectionString: cs, ssl: { rejectUnauthorized: false } });
+  const client = new Client({ connectionString: cs, ssl: (process.env.PGSSLMODE==="disable"||process.env.DB_SSL==="0"||process.env.DB_SSL==="false") ? false : { rejectUnauthorized: false } });
   await client.connect();
 
   const ddl = `
@@ -31,3 +31,4 @@ main().catch(async (err) => {
   console.error("❌ Provision failed:", err.message || err);
   process.exit(1);
 });
+

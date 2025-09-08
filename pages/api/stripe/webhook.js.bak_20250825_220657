@@ -1,0 +1,132 @@
+import Stripe from "stripe";
+import { buffer } from "micro";
+
+export const config = { api: { bodyParser: false } };
+
+const stripeSecret = process.env.STRIPE_SECRET_KEY;
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+if (!stripeSecret) {
+  // Fail fast at import time in server environment to avoid silent 200s
+  console.error("[webhook] Missing STRIPE_SECRET_KEY");
+}
+const stripe = new Stripe(stripeSecret || "", { apiVersion: "2024-06-20" });
+
+// --- optional DB updater (works if DATABASE_URL + pg are available) ---
+async function markSubmitted({ clientId, session, email }) {
+  const dbUrl = process.env.DATABASE_URL;
+  if (!dbUrl) return { ok: true, skipped: "no_DATABASE_URL" };
+
+  let pg;
+  try { pg = require("pg"); } catch (e) {
+    console.warn("[webhook] pg not installed, skipping DB write");
+    return { ok: true, skipped: "pg_not_installed" };
+  }
+
+  const { Client } = pg;
+  const client = new Client({ connectionString: dbUrl, ssl: dbUrl.includes("amazonaws.com") ? { rejectUnauthorized: false } : undefined });
+  await client.connect();
+
+  const amount = Number(session?.amount_total) || 0; // Stripe cents
+  const sid = String(session?.id || "");
+  const em = email || session?.customer_details?.email || null;
+  const cid = clientId ? String(clientId) : null;
+
+  try {
+    if (!cid) {
+      console.warn("[webhook] No client_id found; DB update skipped");
+      return { ok: true, skipped: "no_client_id" };
+    }
+
+    const sql = `
+      WITH up AS (
+        UPDATE orders
+        SET status = 'submitted',
+            stripe_session_id = $1,
+            amount_cents = $2,
+            email = COALESCE($3, email),
+            updated_at = NOW()
+        WHERE client_id = $4
+        RETURNING id
+      )
+      INSERT INTO orders (client_id, status, stripe_session_id, amount_cents, email, created_at, updated_at)
+      SELECT $4, 'submitted', $1, $2, $3, NOW(), NOW()
+      WHERE NOT EXISTS (SELECT 1 FROM up)
+      RETURNING id
+    `;
+    const vals = [sid, amount, em, cid];
+    const r = await client.query(sql, vals);
+    return { ok: true, upserted_id: r?.rows?.[0]?.id || null };
+  } catch (e) {
+    console.error("[webhook] DB error:", e);
+    return { ok: false, error: e.message };
+  } finally {
+    try { await client.end(); } catch {}
+  }
+}
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  if (!webhookSecret) {
+    console.error("[webhook] Missing STRIPE_WEBHOOK_SECRET");
+    return res.status(500).json({ error: "STRIPE_WEBHOOK_SECRET not set" });
+  }
+
+  let event;
+  try {
+    const raw = await buffer(req);
+    const sig = req.headers["stripe-signature"];
+    if (!sig) {
+      return res.status(400).json({ error: "Missing stripe-signature header" });
+    }
+    event = stripe.webhooks.constructEvent(raw, sig, webhookSecret);
+  } catch (err) {
+    console.error("[webhook] Signature verify failed:", err);
+    return res.status(400).json({ error: `Webhook Error: ${err.message}` });
+  }
+
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data?.object || {};
+        // Prefer metadata.client_id; fall back to client_reference_id
+        const clientId = session?.metadata?.client_id || session?.client_reference_id || null;
+        const email =
+          session?.customer_details?.email ||
+          session?.customer_email ||
+          null;
+
+        // 🔑 IMPORTANT: set status to 'submitted' so the AI queue finds it
+        const dbResult = await markSubmitted({ clientId, session, email });
+        if (!dbResult.ok) {
+          // We still return 200 so Stripe won’t keep retrying forever,
+          // but log loudly for follow-up.
+          console.error("[webhook] markSubmitted failed:", dbResult.error);
+        } else if (dbResult.skipped) {
+          console.warn("[webhook] DB write skipped:", dbResult.skipped);
+        }
+
+        break;
+      }
+
+      // You can add more cases if/when needed:
+      // case "payment_intent.succeeded":
+      // case "charge.refunded":
+      default:
+        // no-op, but keep a light log in development
+        if (process.env.NODE_ENV !== "production") {
+          console.log("[webhook] Unhandled event:", event.type);
+        }
+    }
+
+    return res.status(200).json({ ok: true, handled: event.type });
+  } catch (err) {
+    console.error("[webhook] Handler error:", err);
+    // 200 with ok:false to avoid indefinite Stripe retries.
+    return res.status(200).json({ ok: false, error: err.message });
+  }
+}

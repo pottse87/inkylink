@@ -1,0 +1,4 @@
+BEGIN;
+ALTER TABLE public.orders
+  ALTER COLUMN ai_assistant DROP NOT NULL;
+COMMIT;

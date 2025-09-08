@@ -9,7 +9,7 @@
  *   - Else header must be present: x-inkylink-key: process.env.QUEUE_SHARED_SECRET
  */
 
-import { getPool } from "../../../lib/db.js"; const pool = getPool();
+import { getPool } from "../../../lib/db.mjs"; const pool = getPool();
 
 function assert(cond, msg, code = 400) {
   if (!cond) throw Object.assign(new Error(msg), { status: code });
@@ -90,6 +90,7 @@ export default async function handler(req, res) {
     return res.status(code).json({ error: err.message || "Internal error" });
   }
 }
+
 
 
 

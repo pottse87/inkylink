@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import { ensureClientId } from '../lib/clientId';
+import { getClientId } from "../lib/client-id";
 import "../styles/globals.css";
 import Script from "next/script";
 import '../lib/env'; // Validate environment variables
 
 function MyApp({ Component, pageProps }) {
-  useEffect(() => { ensureClientId(); }, []);
+  useEffect(() => { getClientId(); }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -51,3 +51,5 @@ function MyApp({ Component, pageProps }) {
 }
 
 export default MyApp;
+
+

@@ -1,5 +1,6 @@
+import { withClient } from '../../lib/db';
+
 "use strict";
-const { withClient } = require("../../lib/db.js");
 
 function bad(res, msg, code=400) { return res.status(code).json({ ok:false, error: msg }); }
 function jsonBody(req) {
@@ -20,27 +21,33 @@ export default async function handler(req, res) {
 
       const { rows: cartRows } = await db.query(
         "SELECT items FROM public.carts WHERE client_id = $1",
-        [clientId]
-      );
+        [clientId]);
       const items = Array.isArray(cartRows[0]?.items) ? cartRows[0].items : [];
       if (items.length === 0) { await db.query("ROLLBACK"); throw new Error("cart is empty"); }
 
-      const total = items.reduce((s,i)=> s + (Number(i.price_cents)||0) * (Number(i.quantity)||1), 0);
+      const total = items.reduce((s,i) => {
+        const cents = Math.max(0, Number(i?.price_cents) || 0);
+        const qty   = Math.max(1, Math.floor(Number(i?.quantity) || 1));
+        return s + (cents * qty);
+      }, 0);
 
       const { rows: ordRows } = await db.query(
         `INSERT INTO public.orders (id, client_id, total_cents, currency, status, source, created_at, updated_at)
-         VALUES (gen_random_uuid(), $1, $2, 'usd', 'queued', $3, NOW(), NOW())
+         VALUES (gen_random_uuid(), $1, $2, 'usd', 'submitted', $3, NOW(), NOW())
          RETURNING id`,
-        [clientId, total, sessionId ? "stripe" : "web"]
-      );
+        [clientId, total, sessionId ? "stripe" : "web"]);
       const orderId = ordRows[0].id;
 
       for (const it of items) {
         await db.query(
           `INSERT INTO public.order_items (order_id, item_id, name, price_cents, quantity, meta)
-           VALUES ($1,$2,$3,$4,$5,'{}'::jsonb)`,
-          [orderId, it.id, it.name ?? null, Number(it.price_cents)||0, Number(it.quantity)||1]
-        );
+           VALUES ($1,$2,$3,$4,$5,$6::jsonb)`, [orderId,
+       it.id,
+       it.name ?? null,
+       Math.max(0, Number(it?.price_cents) || 0),
+       Math.max(1, Math.floor(Number(it?.quantity) || 1)),
+       JSON.stringify({ description: it?.description ?? "", icon: it?.icon ?? "" })
+     ]);
       }
 
       // CRITICAL FIX: Commit first, THEN delete cart
@@ -57,3 +64,12 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok:false, error: err.message || String(err) });
   }
 }
+
+
+
+
+
+
+
+
+

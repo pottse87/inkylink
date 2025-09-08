@@ -1,21 +1,22 @@
 {
   "name": "inkylink",
   "version": "1.0.0",
-  "engines": {
-    "node": "22.x"
-  },
   "private": true,
   "scripts": {
+    "check:catalog": "node scripts/check-catalog.js",
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "build": "node ./scripts/verify-env.js && next build",
+    "start": "next start",
+    "smoke": "pwsh -NoLogo -NoProfile -File ./scripts/smoke.ps1",
+    "lint": "next lint || echo lint skipped",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "dependencies": {
     "@stripe/stripe-js": "^7.5.0",
     "formidable": "3.5.2",
     "framer-motion": "^10.16.1",
     "micro": "^10.0.1",
-    "next": "^15.4.6",
+    "next": "15.5.2",
     "pg": "^8.16.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -25,8 +26,13 @@
   "devDependencies": {
     "@playwright/test": "^1.54.2",
     "autoprefixer": "^10.4.15",
+    "dotenv": "^17.2.1",
     "fs": "^0.0.1-security",
     "postcss": "^8.4.25",
     "tailwindcss": "^3.4.1"
-  }
+  },
+  "engines": {
+    "node": ">=22.17.1 <23"
+  },
+  "type": "module"
 }

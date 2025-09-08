@@ -1,0 +1,2572 @@
+# INKYLINK CRITICAL FILES BUNDLE
+# Generated: 2025-09-03 15:56:39
+# 
+# This bundle contains ONLY the most critical files causing production issues.
+# All sensitive files (.env, credentials) have been excluded.
+#
+# CRITICAL ISSUES TO ANALYZE:
+# 1. Client-ID system conflicts (lib/client-id.js vs lib/clientId.js)
+# 2. Import/export inconsistencies in API routes  
+# 3. Tailwind configuration pointing to wrong directories
+# 4. Pricing logic conflicts between components and database
+# 5. Forms data flow from confirmation to completion
+# 6. Database schema mismatches
+# 7. Missing environment variable fallbacks
+#
+################################################################################
+
+# CRITICAL FILES INCLUDED:
+# ========================
+
+# ✅ package.json
+# ✅ tailwind.config.js
+# ✅ next.config.js
+# ✅ postcss.config.js
+# ✅ pages/_app.js
+# ✅ pages/_document.js
+# ✅ pages/index.js
+# ✅ pages/pricing.js
+# ✅ pages/confirmation.js
+# ✅ pages/forms.js
+# ✅ pages/checkout.js
+# ✅ lib/client-id.js
+# ❌ lib/clientId.js (MISSING)
+# ✅ lib/db.js
+# ✅ lib/env.js
+# ✅ pages/api/create-checkout-session.js
+# ✅ pages/api/save-cloud-cart.js
+# ✅ pages/api/get-cloud-cart.js
+# ✅ pages/api/webhook.js
+# ✅ pages/api/orders/next.js
+# ✅ pages/api/orders/latest.js
+# ✅ pages/api/orders/complete.js
+# ✅ components/PlansSection.jsx
+# ✅ components/CloudCartPersistBlock.jsx
+# ✅ components/FormSection.js
+# ✅ styles/globals.css
+
+# Total files found: 25 of 26
+################################################################################
+
+
+============================================================
+FILE: package.json
+SIZE: 0.8KB
+MODIFIED: 2025-08-30 19:13:04
+============================================================
+
+{
+  "name": "inkylink",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "check:catalog": "node scripts/check-catalog.js",
+    "dev": "next dev",
+    "build": "node ./scripts/verify-env.js && next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@stripe/stripe-js": "^7.5.0",
+    "formidable": "3.5.2",
+    "framer-motion": "^10.16.1",
+    "micro": "^10.0.1",
+    "next": "15.5.2",
+    "pg": "^8.16.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "stripe": "^18.4.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "autoprefixer": "^10.4.15",
+    "dotenv": "^17.2.1",
+    "fs": "^0.0.1-security",
+    "postcss": "^8.4.25",
+    "tailwindcss": "^3.4.1"
+  },
+  "engines": {
+    "node": ">=22.17.1 <23"
+  }
+}
+
+
+
+============================================================
+FILE: tailwind.config.js
+SIZE: 0.3KB
+MODIFIED: 2025-08-30 19:11:01
+============================================================
+
+module.exports = {
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./lib/**/*.{js,ts,jsx,tsx}",
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+
+
+============================================================
+FILE: next.config.js
+SIZE: 0.4KB
+MODIFIED: 2025-08-30 19:17:05
+============================================================
+
+const path = require('path');
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  poweredByHeader: false,
+  async headers() {
+    return [
+      {
+        source: "/api/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-store" },
+          { key: "X-Robots-Tag", value: "noindex" }
+        ]
+      }
+    ];
+  }
+};
+
+module.exports = nextConfig;
+
+
+
+============================================================
+FILE: postcss.config.js
+SIZE: 0.1KB
+MODIFIED: 2025-07-19 23:49:06
+============================================================
+
+module.exports = { plugins: { tailwindcss: {}, autoprefixer: {} } }
+
+
+
+============================================================
+FILE: pages/_app.js
+SIZE: 1.4KB
+MODIFIED: 2025-08-30 19:23:44
+============================================================
+
+import React, { useEffect } from 'react';
+import { getClientId } from "../lib/client-id";
+import "../styles/globals.css";
+import Script from "next/script";
+import '../lib/env'; // Validate environment variables
+
+function MyApp({ Component, pageProps }) {
+  useEffect(() => { getClientId(); }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.addEventListener("error", (event) => {
+        fetch("/api/log-error", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: event.message,
+            source: event.filename,
+            line: event.lineno,
+            col: event.colno,
+            error: event.error?.stack,
+          }),
+        });
+      });
+    }
+  }, []);
+
+   return (
+    <>
+      <Script
+        strategy="afterInteractive"
+        src="https://www.googletagmanager.com/gtag/js?id=G-ZGGM64VWRQ"
+      />
+      <Script
+        id="google-analytics"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-ZGGM64VWRQ', {
+              page_path: window.location.pathname,
+            });
+          `,
+        }}
+      />
+      <Component {...pageProps} />
+    </>
+  );
+}
+
+export default MyApp;
+
+
+
+============================================================
+FILE: pages/_document.js
+SIZE: 0.2KB
+MODIFIED: 2025-08-28 20:29:25
+============================================================
+
+import { Html, Head, Main, NextScript } from 'next/document';
+export default function Document() {
+  return (
+    <Html>
+      <Head />
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
+}
+
+
+
+============================================================
+FILE: pages/index.js
+SIZE: 2.7KB
+MODIFIED: 2025-08-30 23:31:25
+============================================================
+
+import React from "react";
+import Link from "next/link";
+import Head from "next/head";
+
+export default function Home() {
+  return (
+  <>
+    <Head>
+      <title>Welcome to Inkylink!</title>
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
+
+    <main
+      style={{
+        backgroundColor: "#a5f1f5ff",
+        color: "#0b0f0a",
+        fontFamily: "Lato, sans-serif",
+        padding: "2rem",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+      }}
+    >
+   <header
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: "2rem",
+  }}
+>
+  <img src="/logo.png" alt="Inkylink Logo" width={100} height={100} />
+  <h1 style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", lineHeight: 1.1, marginTop: "1rem", textAlign: "center" }}>
+    Welcome to Inkylink!
+  </h1>
+</header>
+
+
+
+        <h2 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>
+          Selling. Made Human.
+        </h2>
+
+       <p
+  style={{
+    maxWidth: "600px",
+    fontSize: "1.25rem",
+    lineHeight: 1.6,
+    marginBottom: "2.4rem",
+    textAlign: "center",
+    marginLeft: "auto",
+    marginRight: "auto"
+  }}
+>
+  We use advanced AI integration and analytics to deliver search engine-optimized
+  web and product content that gets your products seen and drives sales - delivered
+  automatically every month.
+</p>
+
+
+        <div style={{
+          display: "flex",
+          gap: "0.75rem",
+          flexWrap: "wrap",
+          justifyContent: "center"
+        }}>
+          <Link href="/pricing">
+           <button
+  style={{
+    padding: "0.75rem 1.5rem",
+    backgroundColor: "#26de81", // brand green
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    fontSize: "1rem",
+    fontFamily: "Lato, sans-serif",
+    textAlign: "center",
+    cursor: "pointer",
+    transition: "background-color 140ms ease, transform 140ms ease, box-shadow 140ms ease",
+    boxShadow: "0 1px 0 rgba(0,0,0,0.3)",
+    transform: "translateY(0)"
+  }}
+  onMouseOver={(e) => {
+    e.currentTarget.style.backgroundColor = "#21c874"; // darker brand green
+    e.currentTarget.style.transform = "translateY(-2px)";
+    e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,0,0,0.35)";
+  }}
+  onMouseOut={(e) => {
+    e.currentTarget.style.backgroundColor = "#26de81";
+    e.currentTarget.style.transform = "translateY(0)";
+    e.currentTarget.style.boxShadow = "0 1px 0 rgba(0,0,0,0.3)";
+  }}
+>
+  View Plans & Pricing
+</button>
+
+          </Link>
+        </div>
+      </main>
+    </>
+  );
+}
+
+
+
+============================================================
+FILE: pages/pricing.js
+SIZE: 7KB
+MODIFIED: 2025-08-31 02:54:09
+============================================================
+
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+// client helpers
+const isBrowser = () => typeof window !== "undefined";
+const toUSD = (cents) => `$${(Number(cents||0)/100).toFixed(2)}`;
+const displayName = (x) => (x?.name ?? x?.title ?? "").toString();
+
+const getClientId = () => {
+  if (!isBrowser()) return null;
+  let cid = localStorage.getItem("inkylink_client_id");
+  if (!cid) {
+    try {
+      cid = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
+    } catch {
+      cid = `cid_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    }
+    // removed: client_id is managed by lib/client-id
+  }
+  return cid;
+};
+
+async function saveCart(client_id, items) {
+  const r = await fetch("/api/save-cloud-cart", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ client_id, items })
+  });
+  const data = await r.json().catch(()=>({}));
+  if (!r.ok) throw new Error(data?.error || "Failed to save cart");
+  return data;
+}
+
+export default function Pricing({ catalog=[] }) {
+  const router = useRouter();
+  const [clientId, setClientId] = useState(null);
+  const [qty, setQty] = useState({}); // id -> quantity
+
+  useEffect(() => { setClientId(getClientId()); }, []);
+
+  const items = (Array.isArray(catalog)?catalog:[]).map(r => ({
+    id: String(r.id),
+    title: displayName(r) || String(r.title || r.id),
+    description: r.description || "",
+    icon: r.icon || "",
+    price_cents: Number(r.price_cents) || 0
+  }));
+
+  const inc = (id) => setQty((q)=>({ ...q, [id]: Math.max(1,(q[String(id)]||0)+1)}));
+  const dec = (id) => setQty((q)=>{ const n=Math.max(0,(q[String(id)]||0)-1); const c={...q}; if(n<=0) delete c[id]; else c[id]=n; return c; });
+
+  const selected = items.filter(i => (qty[String(i.id)]||0) > 0);
+  const total = selected.reduce((s,i)=> s + i.price_cents * (qty[String(i.id)]||0), 0);
+
+  const review = async () => {
+    if (!clientId) return;
+    if (selected.length === 0) { alert("Pick at least one item."); return; }
+    const cart = selected.map(i => ({
+      id: i.id, name: i.title, description: i.description, icon: i.icon,
+      price_cents: i.price_cents, quantity: Math.max(1, Math.floor(qty[String(i.id)]||1))
+    }));
+    console.log("[PRICING_SAVE]", "client_id=", clientId, "items=", cart); await saveCart(clientId, cart);
+    router.push(`/confirmation?client_id=${clientId}`);
+  };
+
+  return (
+   <main style={{maxWidth:1100,margin:"40px auto",padding:"2rem",fontFamily:"Lato, sans-serif",backgroundColor:"#a5f1f5ff",color:"#0b0f0a",minHeight:"100vh"}}>
+     <div style={{ textAlign: "center", marginBottom: 8 }}>
+  <h1 style={{ fontSize: 32, margin: "0 0 4px 0" }}>Pricing</h1>
+  <div style={{ fontSize: 12, color: "#777" }}>
+    Catalog items: {items.length}
+  </div>
+</div>
+
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",columnGap:34,rowGap:42,alignItems:"stretch"}}>
+        {items.map(it=>{
+          const q = qty[String(it.id)]||0;
+          return (
+                <div key={it.id} className="il-card-wrap" style={{ paddingBottom: 0 }}>
+            <div
+              className="il-card" tabIndex={0}
+              style={{
+                border:"1px solid #e3cfa6",
+                background:"#ffedd6",
+                borderRadius:12,
+                padding:16,
+                display:"flex",
+                flexDirection:"column",
+                height:"100%"
+              }}
+            >
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                {it.icon ? <img src={it.icon} width={28} height={28} alt="" /> : <div style={{width:28,height:28,background:"#eee",borderRadius:6}}/>}
+                <strong>{it.title}</strong>
+              </div>
+              <p className="il-desc" style={{color:"#555", margin:"8px 0 0 0"}}>{it.description}</p>
+              <div style={{flexGrow:1}} />
+              <div style={{margin:"8px 0",fontWeight:700}}>{toUSD(it.price_cents)}</div>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <button onClick={()=>dec(it.id)} style={{width:34,height:34,borderRadius:8,border:"1px solid #ddd",background:"#111",color:"#fff"}}>-</button>
+                <div style={{minWidth:28,textAlign:"center"}}>{q}</div>
+                <button onClick={()=>inc(it.id)} style={{width:34,height:34,borderRadius:8,border:"1px solid #ddd",background:"#111",color:"#fff"}}>+</button>
+              </div>
+            </div>
+          </div>
+
+          );
+        })}
+      </div>
+
+    <div style={{display:"flex", justifyContent:"flex-end", alignItems:"center", gap:12, marginTop:18}}>
+  <div style={{fontWeight:700}}>Selected total: {toUSD(total)}</div>
+  <button
+    onClick={review}
+    style={{padding:"10px 14px",borderRadius:10,border:"1px solid #0fc24bff",background:"#111",color:"#fff",cursor:"pointer"}}
+  >
+    Review & Submit
+  </button>
+</div>
+    <style jsx>{`
+      .il-card {
+        transform: translateY(0);
+        transition: transform 140ms ease, box-shadow 140ms ease;
+        will-change: transform;
+      }
+      .il-card:hover,
+      .il-card:focus-within {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+        position: relative;
+        z-index: 1;
+      }
+      /* New: remove default focus outline (we already elevate on focus) */
+      .il-card:focus { outline: none; }
+
+      .il-desc {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;           /* show 3 lines by default */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        max-height: 4.6em;               /* ~3 lines */
+        transition: max-height 160ms ease;
+        word-break: break-word;          /* New: prevent overflow on long words/URLs */
+      }
+      .il-card:hover .il-desc,
+      .il-card:focus-within .il-desc {
+        -webkit-line-clamp: unset;       /* expand */
+        max-height: 200vh;               /* allow growth */
+      }
+    `}</style>
+    </main> 
+  );
+}
+
+// SSR: load catalog from DB (PGSSLMODE-aware)
+export async function getServerSideProps() {
+  try {
+    const { Pool } = require("pg");
+    const cs = process.env.DATABASE_URL;
+    if (!cs) return { props: { catalog: [] } };
+    const pool = new Pool({
+      connectionString: cs,
+      ssl: (process.env.PGSSLMODE==="disable"||process.env.DB_SSL==="0"||process.env.DB_SSL==="false") ? false : { rejectUnauthorized:false }
+    });
+    const db = await pool.connect();
+    try {
+      const r = await db.query("SELECT id,title,description,icon,price_cents FROM public.catalog_items ORDER BY title ASC");
+      const catalog = r.rows.map(x=>({
+        id: String(x.id ?? ""), title: String(x.title ?? ""), name: String(x.title ?? ""), description: String(x.description ?? ""), icon: String(x.icon ?? ""), price_cents: Number(x.price_cents ?? 0) || 0
+      }));
+      return { props: { catalog } };
+    } finally { db.release(); await pool.end(); }
+  } catch(e) {
+    console.error("pricing SSR error:", e?.message || e);
+    return { props: { catalog: [] } };
+  }
+}
+
+
+
+============================================================
+FILE: pages/confirmation.js
+SIZE: 5.7KB
+MODIFIED: 2025-09-01 16:30:19
+============================================================
+
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import CloudCartPersistBlock from "../components/CloudCartPersistBlock";
+import { ensureCidInUrl, getClientId } from '../lib/client-id';
+const fmt = (c) => `$${(Number(c||0)/100).toFixed(2)}`;
+const sum = (arr, f) => arr.reduce((s,x)=>s+f(x),0);
+
+function IncludedList({items}) {
+  if (!items?.length) return null;
+  return (
+    <ul style={{margin:"8px 0 0 18px", color:"#555"}}>
+      {items.map((it,i)=><li key={i}>{it.name} × {it.quantity}</li>)}
+    </ul>
+  );
+}
+
+export default function Confirmation({ serverClientId, cartItems }) {
+  React.useEffect(() => { ensureCidInUrl(); }, []);
+  const router = useRouter();
+  const [items, setItems] = useState(cartItems || []);
+  const client_id = serverClientId;
+
+// Snapshot: persist latest cart to localStorage (NO auto-restore)
+useEffect(() => {
+  try {
+    const key = "inkylink_last_cart";
+    if (Array.isArray(items) && items.length > 0) {
+      localStorage.setItem(key, JSON.stringify(items));
+    } else {
+      // optional: clear stale cache so old add-ons can't come back later
+      // localStorage.removeItem(key);
+    }
+  } catch {}
+}, [items?.length]);
+
+
+  if (!client_id) {
+    return (
+      <main style={{maxWidth:900,margin:"40px auto",padding:"0 16px",fontFamily:"system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif"}}>
+        <h1>Review &amp; Submit</h1>
+        <div style={{color:"#c00"}}>Missing <code>client_id</code>.</div>
+        <div style={{marginTop:12}}><a href="/pricing">Back to Pricing</a></div>
+      <_CidAttachHook />
+<CloudCartPersistBlock />
+</main>
+    );
+  }
+
+  const total = sum(items, (it) => (Number(it.price_cents)||0) * Math.max(1, Number(it.quantity)||1));
+  const plan = null; // forced off to hide plan summary block
+const included = false /* plan block removed */ ? items.filter(x => x !== plan) : [];
+
+  const goCheckout = async () => {
+    try {
+      const r = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ client_id })
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data?.error || "Failed to start checkout");
+      if (data?.url) window.location.href = data.url;
+      else alert("Stripe disabled / no URL returned.");
+    } catch (e) {
+      alert(e.message || "Checkout failed");
+    }
+  };
+
+  return (
+    <main style={{maxWidth:900,margin:"40px auto",padding:"0 16px",fontFamily:"system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif"}}>
+      <h1>Review &amp; Submit</h1>
+        <_CidAttachHook />
+<CloudCartPersistBlock
+  footer={
+    <div style={{display:"flex", justifyContent:"flex-end", gap:8}}>
+      <button
+        onClick={()=>router.push("/pricing")}
+        style={{padding:"10px 14px",borderRadius:8,border:"1px solid #ddd",background:"#111",color:"#fff",cursor:"pointer"}}
+      >
+        Back to Pricing
+      </button>
+      <button
+        onClick={goCheckout}
+        disabled={items.length===0}
+        style={{padding:"10px 14px",borderRadius:8,border:"1px solid #0fc24bff",background:"#0fc24bff",color:"#fff",cursor:items.length===0?"not-allowed":"pointer",opacity:items.length===0?0.7:1}}
+      >
+        Proceed to Checkout
+      </button>
+    </div>
+  }
+/>
+
+</main>
+  );
+}
+
+// ---- SSR: read cart by client_id from query OR cookie (PGSSLMODE-aware)
+export async function getServerSideProps(ctx) {
+  let client_id = ""; // make available in catch/fallbacks
+
+  try {
+    const cookieHeader = ctx.req.headers.cookie || "";
+    const cookies = Object.fromEntries(
+      cookieHeader
+        .split(/;\s*/).filter(Boolean)
+        .map(kv => {
+          const i = kv.indexOf("=");
+          if (i < 0) return [kv, ""];
+          return [decodeURIComponent(kv.slice(0, i)), decodeURIComponent(kv.slice(i + 1))];
+        })
+    );
+
+    const q = ctx.query || {};
+    client_id = String(q.client_id || cookies["inkylink_client_id"] || "");
+
+    const cs = process.env.DATABASE_URL;
+    if (!cs || !client_id) {
+      console.log("[CONFIRMATION_SSR_DIAG] missing client_id or DATABASE_URL; client_id=%s", client_id || "<none>");
+      return { props: { serverClientId: client_id || null, cartItems: [] } };
+    }
+
+    const { Pool } = require("pg");
+    const pool = new Pool({
+      connectionString: cs,
+      ssl: (process.env.PGSSLMODE === "disable" || process.env.DB_SSL === "0" || process.env.DB_SSL === "false")
+        ? false
+        : { rejectUnauthorized: false }
+    });
+
+    const db = await pool.connect();
+    try {
+      const r = await db.query("SELECT items FROM public.carts WHERE client_id=$1", [client_id]);
+      const items = Array.isArray(r.rows?.[0]?.items) ? r.rows[0].items : [];
+      console.log("[CONFIRMATION_SSR_DIAG] client_id=%s items_len=%d", client_id, Array.isArray(items) ? items.length : -1);
+      return { props: { serverClientId: client_id, cartItems: items } };
+    } finally {
+      db.release();
+      await pool.end();
+    }
+  } catch (e) {
+    console.error("confirmation SSR error:", e?.message || e);
+    return { props: { serverClientId: client_id || null, cartItems: [] } };
+  }
+}
+
+function _CidAttachHook(){
+  const router = useRouter();
+  useEffect(() => {
+    if (!router?.isReady) return;
+    const hasCid = typeof router.query?.client_id === 'string' && router.query.client_id.length > 0;
+    if (hasCid) return;
+    if (typeof window === 'undefined') return;
+    const cid = localStorage.getItem('inkylink_client_id');
+    if (cid) {
+      const nextQuery = { ...router.query, client_id: cid };
+      router.replace({ pathname: router.pathname, query: nextQuery }, undefined, { shallow: false });
+    }
+  }, [router?.isReady]);
+  return null;
+}
+
+
+
+============================================================
+FILE: pages/forms.js
+SIZE: 4.1KB
+MODIFIED: 2025-08-20 19:45:51
+============================================================
+
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+
+export default function IntakeForm() {
+  const router = useRouter();
+  const [order, setOrder] = useState(null);
+  const [templates, setTemplates] = useState({});
+  const [formData, setFormData] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  useEffect(() => {
+    fetch('/form_templates.json')
+      .then((res) => res.json())
+      .then((loadedTemplates) => {
+        setTemplates(loadedTemplates);
+
+        if (router.query && router.query.order) {
+          try {
+            const decoded = decodeURIComponent(router.query.order);
+            const parsedOrder = JSON.parse(decoded);
+            setOrder(parsedOrder);
+
+            // 💵 Calculate total price
+            const calculatedTotal = parsedOrder.items.reduce((sum, item) => {
+              return sum + (item.price || 0) * (item.quantity || 1);
+            }, 0);
+            setTotalPrice(calculatedTotal);
+
+            // Set up empty answer slots
+            const initial = {};
+            parsedOrder.items.forEach(item => {
+              const questions = loadedTemplates[item.id.replace(/-/g, " ")] || [];
+              initial[item.id] = questions.map(q => ({
+                question: q.question,
+                answer: ''
+              }));
+            });
+            setFormData(initial);
+          } catch (err) {
+            console.error('Order parsing failed:', err);
+          }
+        }
+      });
+  }, [router.query]);
+
+  const handleChange = (itemId, index, value) => {
+    const updated = { ...formData };
+    updated[itemId][index].answer = value;
+    setFormData(updated);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formPayload = {
+      order_id: order?.order_id || `${Date.now()}_${order?.client_name || 'order'}`,
+      customer_email: order?.customer_email || '',
+      plan: order?.plan || '',
+      bundle_ids: JSON.stringify(order?.items.map(item => ({ ...item, id: item.id.replace(/-/g, " ") })) || []),
+      client_feedback: '',
+      rework_count: 0,
+      ai_assistant: 'ChatGPT', 
+      total_price: totalPrice,
+      approved: false,
+      delivered: false,
+      source_page: 'forms',
+      internal_notes: '',
+      client_name: order?.client_name || '',
+      revision_limit: order?.revision_limit || 3,
+      assistant_output: formData || {},
+      payment_status: 'unpaid',
+      source_campaign: order?.source_campaign || 'organic',
+      completion_time_ms: 0,
+      priority_level: 'normal',
+      language: 'en',
+      review_notes: '',
+      recurring: false,
+      submitted_at: new Date().toISOString(),
+      feedback_submitted_at: null,
+      status: 'ready_for_ai' // 🚀 ready for local AI watcher
+    };
+
+    try {
+      const response = await fetch('/api/save-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formPayload)
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        router.push('/thankyou');
+      } else {
+        console.error('Failed to save order:', await response.text());
+        alert('There was an issue submitting your form.');
+      }
+    } catch (err) {
+      console.error('Submission error:', err);
+      alert('Something went wrong. Please try again later.');
+    }
+  };
+
+  if (!order) {
+    return <p>Loading...</p>;
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {order.items.map((item) => (
+        <div key={item.id}>
+          <h3>{item.name}</h3>
+          {(formData[item.id] || []).map((entry, index) => (
+            <div key={index}>
+              <label>{entry.question}</label>
+              <input
+                type="text"
+                value={entry.answer}
+                onChange={(e) =>
+                  handleChange(item.id, index, e.target.value)
+                }
+                required
+              />
+            </div>
+          ))}
+        </div>
+      ))}
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+
+
+============================================================
+FILE: pages/checkout.js
+SIZE: 4.5KB
+MODIFIED: 2025-07-28 15:06:34
+============================================================
+
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+export default function CheckoutPage() {
+  const router = useRouter();
+  const [orderData, setOrderData] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const { data, bundles } = router.query;
+    const encoded = data || bundles;
+
+    if (!encoded) {
+      setError("No order data found.");
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(decodeURIComponent(encoded));
+      const fullData = Array.isArray(parsed)
+        ? { bundles: parsed, recurring: parsed.some((b) => b.recurring) }
+        : parsed;
+
+      setOrderData(fullData);
+    } catch (err) {
+      console.error("Failed to parse checkout data:", err);
+      setError("Invalid order data.");
+    }
+  }, [router.isReady, router.query]);
+
+  const totalPrice = orderData?.bundles.reduce(
+    (sum, b) => sum + b.price * (b.quantity || 1),
+    0
+  );
+
+  const handleStripeCheckout = async () => {
+    try {
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.url) {
+        const stripe = await stripePromise;
+        window.location.href = data.url;
+      } else {
+        console.error("Stripe session error:", data);
+        alert("Failed to initiate Stripe checkout.");
+      }
+    } catch (err) {
+      console.error("Unexpected error during Stripe checkout:", err);
+      alert("An error occurred. Please try again.");
+    }
+  };
+
+  if (error) {
+    return (
+      <div style={{ padding: "2rem", fontFamily: "Lato, sans-serif" }}>
+        <h1>Error</h1>
+        <p>{error}</p>
+        <button
+          onClick={() => router.push("/pricing")}
+          style={{
+            padding: "0.5rem 1rem",
+            fontSize: "1rem",
+            cursor: "pointer",
+          }}
+        >
+          Return to Pricing
+        </button>
+      </div>
+    );
+  }
+
+  if (!orderData) {
+    return (
+      <div style={{ padding: "2rem", fontFamily: "Lato, sans-serif" }}>
+        <h1>Loading checkout...</h1>
+      </div>
+    );
+  }
+
+  return (
+    <main
+      style={{
+        padding: "2rem",
+        fontFamily: "Lato, sans-serif",
+        maxWidth: "700px",
+        margin: "0 auto",
+      }}
+    >
+      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>Checkout</h1>
+
+      <p style={{ fontSize: "1.2rem", marginBottom: "1rem" }}>
+        Recurring Subscription:{" "}
+        <strong>{orderData.recurring ? "Yes" : "No"}</strong>
+      </p>
+
+      <h2 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Items:</h2>
+      <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+        {orderData.bundles.map((bundle) => (
+          <li
+            key={bundle.id}
+            style={{
+              marginBottom: "1rem",
+              padding: "1rem",
+              border: "1px solid #ccc",
+              borderRadius: "6px",
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+            }}
+          >
+            <img
+              src={bundle.icon}
+              alt={`${bundle.name} icon`}
+              style={{ width: "60px", height: "60px", objectFit: "contain" }}
+            />
+            <div>
+              <h3 style={{ margin: 0 }}>{bundle.name}</h3>
+              <p style={{ margin: "0.2rem 0" }}>{bundle.description}</p>
+              <p style={{ fontWeight: "bold" }}>
+                Quantity: {bundle.quantity || 1} × ${bundle.price} = $
+                {bundle.price * (bundle.quantity || 1)}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <h2 style={{ fontSize: "1.8rem" }}>
+        Total: <strong>${totalPrice}</strong>
+      </h2>
+
+      <button
+        onClick={handleStripeCheckout}
+        style={{
+          padding: "0.75rem 2rem",
+          fontSize: "1.2rem",
+          backgroundColor: "#0070f3",
+          color: "#fff",
+          border: "none",
+          borderRadius: "6px",
+          cursor: "pointer",
+          marginTop: "2rem",
+          width: "100%",
+        }}
+      >
+        Pay with Stripe
+      </button>
+    </main>
+  );
+}
+
+
+
+============================================================
+FILE: lib/client-id.js
+SIZE: 0.9KB
+MODIFIED: 2025-08-28 19:37:38
+============================================================
+
+export function getClientId() {
+  if (typeof window === "undefined") return null;
+  let cid = localStorage.getItem("inkylink_client_id");
+  if (!cid || cid.length < 8) {
+    try {
+      cid = (typeof crypto !== "undefined" && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : `cid_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    } catch {
+      cid = `cid_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    }
+    // IMPORTANT: persist it
+    localStorage.setItem("inkylink_client_id", cid);
+  }
+  return cid;
+}
+
+export function ensureCidInUrl() {
+  if (typeof window === "undefined") return null;
+  const cid = getClientId();
+  const qs = new URLSearchParams(window.location.search);
+  if (!qs.get("client_id") && cid) {
+    qs.set("client_id", cid);
+    const next = `${window.location.pathname}?${qs.toString()}`;
+    window.history.replaceState({}, "", next);
+  }
+  return cid;
+}
+
+
+
+============================================================
+FILE: lib/db.js
+SIZE: 0.6KB
+MODIFIED: 2025-08-31 20:04:31
+============================================================
+
+import { Pool } from 'pg';
+
+let _pool;
+/**
+ * Shared Postgres pool.
+ * Uses DATABASE_URL; set PGSSLMODE=disable or DB_SSL=0/false to turn off SSL.
+ */
+export function getPool() {
+  if (_pool) return _pool;
+  const cs = process.env.DATABASE_URL;
+  if (!cs) throw new Error('DATABASE_URL not configured');
+
+  const ssl = (process.env.PGSSLMODE === 'disable'
+            || process.env.DB_SSL === '0'
+            || process.env.DB_SSL === 'false')
+    ? false
+    : { rejectUnauthorized: false };
+
+  _pool = new Pool({ connectionString: cs, ssl });
+  return _pool;
+}
+
+export default getPool;
+
+
+
+============================================================
+FILE: lib/env.js
+SIZE: 0.8KB
+MODIFIED: 2025-08-14 19:03:13
+============================================================
+
+const REQUIRED = [
+  "DATABASE_URL",
+  "STRIPE_SECRET_KEY",
+  "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+  "STRIPE_WEBHOOK_SECRET",
+  "NEXT_PUBLIC_SITE_URL"
+];
+
+export const VERCEL_ENV = process.env.VERCEL_ENV || process.env.NODE_ENV || "development";
+
+for (const key of REQUIRED) {
+  if (!process.env[key]) {
+    const msg = `[env] Missing ${key} in ${VERCEL_ENV}`;
+    if (VERCEL_ENV === "production") throw new Error(msg);
+  }
+}
+
+export const ENV = {
+  DATABASE_URL: process.env.DATABASE_URL || "",
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || "",
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || "",
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "",
+  VERCEL_ENV,
+};
+
+
+
+============================================================
+FILE: pages/api/create-checkout-session.js
+SIZE: 9KB
+MODIFIED: 2025-09-01 12:46:58
+============================================================
+
+import Stripe from "stripe";
+import { getPool } from "../../lib/db.js";
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
+const STRIPE_ENABLED = /^sk_/.test(STRIPE_SECRET_KEY);
+const stripe = STRIPE_ENABLED ? new Stripe(STRIPE_SECRET_KEY) : null;
+
+function dollarsToCents(x) {
+  const n = Number(x);
+  if (!Number.isFinite(n) || n < 0) throw new Error(`Invalid price: ${x}`);
+  return Math.round(n * 100);
+}
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
+  const { bundles, client_id } = req.body || {};
+  if (!client_id || typeof client_id !== "string") {
+    return res.status(400).json({ error: "client_id is required" });
+  }
+  if (!process.env.DATABASE_URL) {
+    return res.status(500).json({ error: "DATABASE_URL not configured" });
+  }
+
+  const pool = getPool();
+  const db = await pool.connect();
+
+  try {
+    // Load items from cloud cart; fall back to request bundles
+    let items = [];
+    try {
+      const cart = await db.query(
+        "SELECT items FROM public.carts WHERE client_id=$1",
+        [client_id]
+      );
+      if (Array.isArray(cart?.rows?.[0]?.items)) {
+        items = cart.rows[0].items;
+      }
+    } catch {
+      // ignore (missing table/row etc.) and use bundles fallback
+    }
+
+    if (items.length === 0 && Array.isArray(bundles)) {
+      items = bundles.map((b) => ({
+        id: String(b.id ?? b.name ?? "item"),
+        name: String(b.name ?? b.title ?? b.id),
+        description: b.description ? String(b.description) : "",
+        price_cents: dollarsToCents(b.price),
+        quantity: Math.max(1, Math.floor(Number(b.quantity) || 1)),
+        kind: b.kind || b.type || undefined,
+        plan_id: b.plan_id || undefined,
+        stripe_price_id: b.stripe_price_id || undefined,
+        billing: b.billing || undefined,
+      }));
+    }
+
+    const inferredOrigin =
+      (req.headers.origin && String(req.headers.origin)) ||
+      (req.headers["x-forwarded-proto"]
+        ? `${req.headers["x-forwarded-proto"]}://${req.headers.host}`
+        : `https://${req.headers.host || "localhost:3000"}`);
+
+    // ===== SUBSCRIPTION BRANCH (if any plan-like item exists) =====
+    const plan =
+      items.find(
+        (i) => i?.kind === "plan" || i?.type === "plan" || i?.plan_id
+      ) || null;
+
+    if (plan) {
+      if (!STRIPE_ENABLED) {
+        return res
+          .status(500)
+          .json({ error: "Stripe not configured for subscriptions" });
+      }
+
+      const billing = plan.billing === "yearly" ? "yearly" : "monthly";
+      const priceId = plan.stripe_price_id || null;
+      const estTotal = Number(plan.price_cents) || 0;
+
+      if (!priceId) {
+        return res
+          .status(400)
+          .json({ error: "Plan selected but missing stripe_price_id" });
+      }
+
+      await db.query("BEGIN");
+      try {
+        const ins = await db.query(
+          `INSERT INTO public.orders (id, client_id, total_cents, currency, status, source, created_at, updated_at)
+           VALUES (gen_random_uuid(), $1, $2, 'usd', 'submitted', 'web-plan', NOW(), NOW())
+           RETURNING id`,
+          [client_id, estTotal]
+        );
+        const order_id = ins.rows?.[0]?.id;
+        if (!order_id) throw new Error("Failed to create order id");
+
+        // Save any included items for recordkeeping
+        for (const r of items.filter((x) => x !== plan)) {
+          await db.query(
+            `INSERT INTO public.order_items (order_id, item_id, name, price_cents, quantity, meta)
+             VALUES ($1,$2,$3,$4,$5,$6::jsonb)`,
+            [
+              order_id,
+              String(r.id || "inc"),
+              String(r.name || "Included"),
+              Math.max(0, Number(r.price_cents) || 0),
+              Math.max(1, Math.floor(Number(r.quantity) || 1)),
+              JSON.stringify({ included: true, description: r.description || "" }),
+            ]
+          );
+        }
+
+        const session = await stripe.checkout.sessions.create({
+          mode: "subscription",
+          payment_method_types: ["card"],
+          line_items: [{ price: priceId, quantity: 1 }],
+          metadata: {
+            client_id,
+            order_id,
+            plan_id: String(plan.plan_id || plan.id || "plan"),
+            billing,
+          },
+          success_url: `${inferredOrigin}/payment-success?order_id=${order_id}&client_id=${encodeURIComponent(
+            client_id
+          )}`,
+          cancel_url: `${inferredOrigin}/pricing`,
+        });
+
+        await db.query(
+          `UPDATE public.orders SET stripe_session_id=$1, updated_at=NOW() WHERE id=$2`,
+          [session.id, order_id]
+        );
+        await db.query(
+          `INSERT INTO public.order_events (order_id, event_type, status, note)
+           VALUES ($1,'status_update','submitted','stripe: subscription checkout created')`,
+          [order_id]
+        );
+        await db.query("COMMIT");
+
+        return res.status(200).json({ ok: true, url: session.url, order_id });
+      } catch (e) {
+        try {
+          await db.query("ROLLBACK");
+        } catch {}
+        throw e;
+      }
+    }
+
+    // ===== ONE-TIME PAYMENT BRANCH =====
+    const ids = [...new Set(items.map((i) => String(i.id)))];
+    let resolved = items;
+
+    try {
+      if (ids.length > 0) {
+        const cat = await db.query(
+          `SELECT id, title, price_cents, stripe_price_id
+             FROM public.catalog_items
+            WHERE id = ANY($1::text[])`,
+          [ids]
+        );
+        const byId = new Map(cat.rows.map((r) => [String(r.id), r]));
+        resolved = items.map((i) => {
+          const c = byId.get(String(i.id));
+          return {
+            id: String(i.id),
+            name: c?.title || String(i.name || i.title || i.id),
+            description: i.description ? String(i.description) : "",
+            price_cents:
+              (c && Number(c.price_cents)) ||
+              Math.max(0, Number(i.price_cents) || 0),
+            quantity: Math.max(1, Math.floor(Number(i.quantity) || 1)),
+            stripe_price_id: c?.stripe_price_id || i.stripe_price_id || null,
+          };
+        });
+      }
+    } catch {
+      // If catalog lookup fails, proceed with given items
+      resolved = items.map((i) => ({
+        id: String(i.id),
+        name: String(i.name || i.title || i.id),
+        description: i.description ? String(i.description) : "",
+        price_cents: Math.max(0, Number(i.price_cents) || 0),
+        quantity: Math.max(1, Math.floor(Number(i.quantity) || 1)),
+        stripe_price_id: i.stripe_price_id || null,
+      }));
+    }
+
+    const total = resolved.reduce(
+      (s, r) => s + Number(r.price_cents || 0) * Number(r.quantity || 1),
+      0
+    );
+
+    let order_id;
+    await db.query("BEGIN");
+    try {
+      const ins = await db.query(
+        `INSERT INTO public.orders (id, client_id, total_cents, currency, status, source, created_at, updated_at)
+         VALUES (gen_random_uuid(), $1, $2, 'usd', 'submitted', 'web', NOW(), NOW())
+         RETURNING id`,
+        [client_id, total]
+      );
+      order_id = ins.rows?.[0]?.id;
+      if (!order_id) throw new Error("Failed to create order id");
+
+      for (const r of resolved) {
+        await db.query(
+          `INSERT INTO public.order_items (order_id, item_id, name, price_cents, quantity, meta)
+           VALUES ($1,$2,$3,$4,$5,$6::jsonb)`,
+          [
+            order_id,
+            r.id,
+            r.name,
+            r.price_cents,
+            r.quantity,
+            JSON.stringify({ description: r.description || "" }),
+          ]
+        );
+      }
+      await db.query("COMMIT");
+    } catch (e) {
+      try {
+        await db.query("ROLLBACK");
+      } catch {}
+      throw e;
+    }
+
+    if (!STRIPE_ENABLED) {
+      return res
+        .status(200)
+        .json({ ok: true, order_id, stripe: "disabled", url: null });
+    }
+
+    const line_items = resolved.map((r) =>
+      r.stripe_price_id
+        ? { price: r.stripe_price_id, quantity: r.quantity }
+        : {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: r.name,
+                description: r.description || undefined,
+              },
+              unit_amount: r.price_cents,
+            },
+            quantity: r.quantity,
+          }
+    );
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items,
+      metadata: { client_id, order_id },
+      success_url: `${inferredOrigin}/payment-success?order_id=${order_id}&client_id=${encodeURIComponent(
+        client_id
+      )}`,
+      cancel_url: `${inferredOrigin}/pricing`,
+    });
+
+    try {
+      await db.query(
+        `UPDATE public.orders SET stripe_session_id=$1, updated_at=NOW() WHERE id=$2`,
+        [session.id, order_id]
+      );
+    } catch {}
+
+    return res.status(200).json({ ok: true, url: session.url, order_id });
+  } catch (err) {
+    console.error("create-checkout-session error:", err?.message || err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    try { db.release(); } catch {}
+  }
+}
+
+
+
+============================================================
+FILE: pages/api/save-cloud-cart.js
+SIZE: 6.6KB
+MODIFIED: 2025-08-31 19:10:00
+============================================================
+
+import { getPool } from '../../lib/db';
+
+/**
+ * POST /api/save-cloud-cart
+ * Body: { client_id: string, items?: any[], mode?: "merge" | "replace", clear?: boolean }
+ *
+ * Behavior:
+ *  - Ensures carts table exists
+ *  - Canonicalizes deliverables by DB catalog id (fallback to normalized title) and merges by (canon id + unit price)
+ *  - Plans are deduped by (plan_id + billing) with last-write-wins (quantity=1 per plan line)
+ *  - Modes:
+ *      merge (default): merge current + incoming (incoming empty => no-op)
+ *      replace: overwrite with incoming (empty incoming => empty cart)
+ *      clear: empty cart regardless of incoming
+ *  - UPSERTs by client_id
+ *  - Sets a recoverable client_id cookie (non-HttpOnly) for SSR/client
+ *  - Returns { ok, client_id, count, items, mode }
+ */
+export default async function handler(req, res) {
+  try {
+    if (req.method !== "POST") {
+      res.setHeader("Allow", ["POST"]);
+      return res.status(405).json({ error: "Method Not Allowed" });
+    }
+
+    const body = req.body || {};
+    const client_id = String(body?.client_id || "").trim();
+    if (!client_id) return res.status(400).json({ error: "client_id required" });
+
+    const clearFlag = body?.clear === true;
+    const modeIn = String(body?.mode || "").toLowerCase();
+    const mode = clearFlag ? "clear" : (modeIn === "replace" ? "replace" : "merge"); // default merge
+    const rawItems = Array.isArray(body?.items) ? body.items : [];
+
+    // Recoverable cookie ~90 days
+    res.setHeader(
+      "Set-Cookie",
+      `inkylink_client_id=${encodeURIComponent(client_id)}; Path=/; Max-Age=7776000; SameSite=Lax`);
+    res.setHeader("Cache-Control", "no-store");
+
+    const pool = getPool();
+
+    const db = await pool.connect();
+    try {
+      // Ensure carts table
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS public.carts (
+          client_id  text PRIMARY KEY,
+          items      jsonb NOT NULL DEFAULT '[]'::jsonb,
+          updated_at timestamptz NOT NULL DEFAULT NOW());
+      `);
+
+      // Catalog map: title -> id (for canonicalization)
+      const cat = await db.query(`SELECT id, title FROM public.catalog_items;`).catch(() => ({ rows: [] }));
+      const norm = (s) => String(s || "").toLowerCase().replace(/\s+/g, " ").trim();
+      const titleToId = new Map();
+      for (const r of cat.rows || []) titleToId.set(norm(r.title), String(r.id));
+
+      // Load current items for merge semantics
+      const cur = await db.query("SELECT items FROM public.carts WHERE client_id=$1", [client_id]);
+      const currentItems = Array.isArray(cur?.rows?.[0]?.items) ? cur.rows[0].items : [];
+
+      // ---------- Helpers ----------
+      const sanitize = (it) => {
+        const q = Math.max(1, Number(it?.quantity ?? 1) || 1);
+        const price = Number(it?.price_cents) || 0;
+        const name =
+          typeof it?.name === "string"
+            ? it.name
+            : (typeof it?.title === "string" ? it.title : "");
+        return {
+          ...it,
+          name,
+          price_cents: price,
+          quantity: q,
+        };
+      };
+
+      const canonForItem = (raw) => {
+        if (!raw) return null;
+        const it = sanitize(raw);
+
+        // Plans: dedicated namespace, quantity always 1 per plan line
+        if (it.kind === "plan" || it.type === "plan" || it.plan_id) {
+          const billing = String(it.billing || "monthly").toLowerCase();
+          const planId = String(it.plan_id || it.id || "").trim() || `plan:${norm(it.name || "")}`;
+          return {
+            key: `plan:${planId}:${billing}`,
+            payload: {
+              kind: "plan",
+              plan_id: planId,
+              billing,
+              name: it.name || "Plan",
+              price_cents: Number(it.price_cents) || 0,
+              stripe_price_id: it.stripe_price_id || it.stripePriceId || null,
+              quantity: 1,
+            },
+          };
+        }
+
+        // Deliverables: canon by DB catalog id (or fallback to normalized title), and separate by unit price
+        let canonId = String(it.sku || it.id || "").trim();
+        if (!canonId) {
+          const t = norm(it.name || it.title);
+          canonId = titleToId.get(t) || t;
+        }
+        const unit = Number(it.price_cents) || 0;
+        return {
+          key: `sku:${canonId}::unit:${unit}`,
+          payload: {
+            id: canonId,
+            sku: canonId,
+            name: it.name || it.title || "",
+            description: it.description || "",
+            icon: it.icon || "",
+            price_cents: unit,
+            quantity: Math.max(1, Number(it.quantity) || 1),
+            stripe_price_id: it.stripe_price_id || it.stripePriceId || null,
+          },
+        };
+      };
+
+      const mergeLines = (base, incoming) => {
+        const map = new Map(); // key -> payload
+        const add = (arr) => {
+          for (const r of arr || []) {
+            const c = canonForItem(r);
+            if (!c) continue;
+            const prev = map.get(c.key);
+            if (c.payload.kind === "plan") {
+              // Last one wins per (plan_id + billing)
+              map.set(c.key, { ...c.payload });
+            } else if (prev) {
+              prev.quantity += c.payload.quantity;
+              prev.name = c.payload.name || prev.name;
+              prev.description = c.payload.description || prev.description;
+              prev.icon = c.payload.icon || prev.icon;
+            } else {
+              map.set(c.key, { ...c.payload });
+            }
+          }
+        };
+        add(base);
+        add(incoming);
+        return Array.from(map.values());
+      };
+      // ------------------------------
+
+      let nextItems;
+      if (mode === "clear") {
+        nextItems = [];
+      } else if (mode === "replace") {
+        nextItems = (rawItems || []).map(sanitize).map(r => (canonForItem(r)?.payload)).filter(Boolean);
+      } else {
+        // merge (default). If incoming empty => preserve current
+        nextItems = (Array.isArray(rawItems) && rawItems.length > 0)
+          ? mergeLines(currentItems, rawItems)
+          : currentItems;
+      }
+
+      await db.query(
+        `
+        INSERT INTO public.carts (client_id, items, updated_at)
+        VALUES ($1, $2::jsonb, NOW())
+        ON CONFLICT (client_id)
+        DO UPDATE SET items = EXCLUDED.items, updated_at = NOW();
+        `,
+        [client_id, JSON.stringify(nextItems)]);
+
+      return res.status(200).json({
+        ok: true,
+        client_id,
+        mode,
+        count: Array.isArray(nextItems) ? nextItems.length : 0,
+        items: nextItems,
+      });
+    } finally {
+      db.release();
+      
+    }
+  } catch (e) {
+    console.error("save-cloud-cart error:", e?.stack || e?.message || String(e));
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+
+
+============================================================
+FILE: pages/api/get-cloud-cart.js
+SIZE: 0.6KB
+MODIFIED: 2025-08-31 19:31:09
+============================================================
+
+import { getPool } from "../../lib/db.js"; const pool = getPool();
+
+export default async function handler(req, res) {
+  if (req.method !== "GET") {
+    res.setHeader("Allow", ["GET"]);
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+  const client_id = String(req.query.client_id || "").trim();
+  if (!client_id) return res.status(400).json({ error: "client_id is required" });
+
+  const { rows } = await pool.query("SELECT items, updated_at FROM carts WHERE client_id = $1", [client_id]);
+  const items = rows[0]?.items || [];
+  return res.status(200).json({ items, updated_at: rows[0]?.updated_at || null });
+}
+
+
+
+============================================================
+FILE: pages/api/webhook.js
+SIZE: 3.1KB
+MODIFIED: 2025-09-01 17:16:25
+============================================================
+
+// pages/api/stripe/webhook.js
+import Stripe from "stripe";
+import { getPool } from "../../../lib/db.js"; // from /pages/api/stripe to /lib
+
+export const config = {
+  api: { bodyParser: false }, // needed to verify signatures
+};
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || "";
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || "";
+const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
+
+// helper: read raw request body (no extra deps)
+function readRawBody(req) {
+  return new Promise((resolve, reject) => {
+    try {
+      const chunks = [];
+      req.on("data", (c) => chunks.push(Buffer.isBuffer(c) ? c : Buffer.from(c)));
+      req.on("end", () => resolve(Buffer.concat(chunks)));
+      req.on("error", reject);
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
+  if (!stripe || !STRIPE_WEBHOOK_SECRET) {
+    return res.status(500).json({ error: "Stripe webhook not configured" });
+  }
+
+  let event;
+  try {
+    const raw = await readRawBody(req);
+    const sig = req.headers["stripe-signature"];
+    event = stripe.webhooks.constructEvent(raw, sig, STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    console.error("webhook signature verify failed:", err?.message || err);
+    return res.status(400).json({ error: "Invalid signature" });
+  }
+
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object;
+        const meta = session?.metadata || {};
+        const order_id = meta.order_id || null;
+        const client_id = meta.client_id || null;
+
+        if (order_id) {
+          const pool = getPool();
+          const db = await pool.connect();
+          try {
+            // Minimal, safe update: only touch known columns
+            await db.query(
+              `UPDATE public.orders
+                 SET status='paid', updated_at=NOW()
+               WHERE id = $1`,
+              [order_id]
+            );
+
+            // Best-effort event log if table exists (ignore if it doesn't)
+            try {
+              await db.query(
+                `INSERT INTO public.order_events (order_id, event_type, status, note)
+                 VALUES ($1,$2,$3,$4)`,
+                [order_id, "webhook", "paid", "stripe: checkout.session.completed"]
+              );
+            } catch (_) {}
+          } finally {
+            db.release();
+          }
+        }
+        break;
+      }
+
+      // (Optional) handle other events as you need
+      // case "payment_intent.succeeded":
+      // case "invoice.paid":
+      //   break;
+
+      default:
+        // ignore others
+        break;
+    }
+
+    return res.status(200).json({ received: true });
+  } catch (e) {
+    console.error("webhook handler error:", e?.stack || e?.message || e);
+    // Let Stripe retry if DB is temporarily down
+    return res.status(500).json({ error: "Webhook processing error" });
+  }
+}
+
+
+
+============================================================
+FILE: pages/api/orders/next.js
+SIZE: 2.5KB
+MODIFIED: 2025-08-31 18:38:30
+============================================================
+
+import { getPool } from '../../../lib/db';
+
+"use strict";
+
+const TOKEN = String(process.env.INKYLINK_DESKTOP_TOKEN || "").trim();
+const CLAIMABLE = new Set(["submitted","paid"]); // states eligible to be claimed
+const EVENT_TYPE = "claim";
+
+async function handler(req, res) {
+  if (req.method !== "GET" && req.method !== "POST") {
+    res.setHeader("Allow", "GET, POST");
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
+  const headerToken = String(req.headers["x-desktop-token"] || "").trim();
+  if (!TOKEN || headerToken !== TOKEN) {
+    return res.status(401).json({ error: "unauthorized" });
+  }
+
+  const pool = getPool();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    // Lock a single claimable order deterministically, skipping locked rows.
+    const found = await client.query(
+      `
+      SELECT id, client_id, total_cents, currency
+      FROM public.orders
+      WHERE status = ANY($1::text[])
+      ORDER BY created_at ASC NULLS LAST, id ASC
+      FOR UPDATE SKIP LOCKED
+      LIMIT 1
+      `,
+      [[...CLAIMABLE]]
+    );
+
+    if (found.rowCount === 0) {
+      await client.query("COMMIT");
+      return res.status(200).json({ order: null, claimed: false });
+    }
+
+    const o = found.rows[0];
+
+    // Load items for the order
+    const items = await client.query(
+      `
+      SELECT item_id, name, price_cents, quantity
+      FROM public.order_items
+      WHERE order_id = $1
+      ORDER BY id ASC
+      `,
+      [o.id]
+    );
+
+    // Transition to processing and journal the claim
+    await client.query(
+      "UPDATE public.orders SET status='processing', updated_at=NOW() WHERE id=$1",
+      [o.id]
+    );
+    await client.query(
+      "INSERT INTO public.order_events (order_id, event_type, status, note) VALUES ($1,$2,$3,$4)",
+      [o.id, EVENT_TYPE, "processing", "claimed by desktop"]
+    );
+
+    await client.query("COMMIT");
+
+    return res.status(200).json({
+      claimed: true,
+      order: {
+        id: o.id,
+        client_id: o.client_id || null,
+        status: "processing",
+        total_cents: Number(o.total_cents || 0),
+        currency: o.currency || "usd",
+        items: items.rows.map(r => ({
+          id: r.item_id,
+          name: r.name,
+          price_cents: Number(r.price_cents || 0),
+          quantity: Number(r.quantity || 1),
+        })),
+      }
+    });
+  } catch (e) {
+    try { await client.query("ROLLBACK"); } catch {}
+    return res.status(500).json({ error: e.message || String(e) });
+  } finally {
+    client.release();
+  }
+}
+export default handler;
+
+
+
+============================================================
+FILE: pages/api/orders/latest.js
+SIZE: 0.9KB
+MODIFIED: 2025-08-31 18:46:11
+============================================================
+
+import { getPool } from '../../../lib/db';
+
+"use strict";
+
+export default async function handler(req, res) {
+  if (req.method !== "GET") { res.setHeader("Allow","GET"); return res.status(405).json({ error:"Method Not Allowed" }); }
+  const clientId = String(req.query.client_id ?? req.query.clientId ?? "").trim();
+  if (!clientId) return res.status(400).json({ error: "client_id required" });
+
+  const pool = getPool();
+  try {
+    const { rows } = await pool.query(
+      `SELECT id, total_cents, currency, status, created_at
+         FROM public.orders
+        WHERE client_id = $1
+        ORDER BY created_at DESC
+        LIMIT 1`,
+      [clientId]
+    );
+    if (!rows.length) return res.status(404).json({ error: "no order found for client_id" });
+    return res.status(200).json({ ok:true, order: rows[0] });
+  } catch (e) {
+    return res.status(500).json({ error: e.message || String(e) });
+  }
+}
+
+
+
+============================================================
+FILE: pages/api/orders/complete.js
+SIZE: 3.1KB
+MODIFIED: 2025-08-18 00:29:38
+============================================================
+
+/**
+ * /api/orders/complete
+ * POST { order_id: UUID, note?: string }
+ *
+ * Marks an order as completed, writes an order_events record, returns { ok, order_id }.
+ *
+ * Auth:
+ *   - If process.env.SKIP_QUEUE_AUTH === "true", no header required (dev only).
+ *   - Else header must be present: x-inkylink-key: process.env.QUEUE_SHARED_SECRET
+ */
+
+import { getPool } from "../../../lib/db.js"; const pool = getPool();
+
+function assert(cond, msg, code = 400) {
+  if (!cond) throw Object.assign(new Error(msg), { status: code });
+}
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  try {
+    // --- AUTH (same as queue) ---
+    const skipAuth = String(process.env.SKIP_QUEUE_AUTH || "").toLowerCase() === "true";
+    if (!skipAuth) {
+      const secret = process.env.QUEUE_SHARED_SECRET;
+      const provided = req.headers["x-inkylink-key"];
+      assert(secret, "Server misconfigured: missing QUEUE_SHARED_SECRET", 500);
+      assert(typeof provided === "string" && provided === secret, "Unauthorized", 401);
+    }
+
+    // --- INPUTS ---
+    const { order_id, note } = req.body || {};
+    assert(typeof order_id === "string" && order_id.length > 0, "order_id is required");
+
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      // Lock the order row so concurrent updates don't conflict
+      const { rows: existingRows } = await client.query(
+        `SELECT id, status FROM public.orders WHERE id = $1 FOR UPDATE`,
+        [order_id]
+      );
+      assert(existingRows.length === 1, "Order not found", 404);
+
+      const fromStatus = existingRows[0].status ?? null;
+
+      // Update status + updated_at
+      await client.query(
+        `UPDATE public.orders
+           SET status = 'completed',
+               updated_at = NOW()
+         WHERE id = $1`,
+        [order_id]
+      );
+
+      // Event: status_change — cast $2 to text so PG knows the type even when NULL
+      await client.query(
+        `INSERT INTO public.order_events (order_id, event_type, payload, created_at)
+               VALUES ($1, 'status_change',
+                       jsonb_build_object('from', $2::text, 'to', 'completed'),
+                       NOW())`,
+        [order_id, fromStatus]
+      );
+
+      // Optional: note — also cast to text
+      if (note && typeof note === "string" && note.trim().length > 0) {
+        await client.query(
+          `INSERT INTO public.order_events (order_id, event_type, payload, created_at)
+                 VALUES ($1, 'completion_note',
+                         jsonb_build_object('note', $2::text),
+                         NOW())`,
+          [order_id, note.trim()]
+        );
+      }
+
+      await client.query("COMMIT");
+      return res.status(200).json({ ok: true, order_id });
+    } catch (e) {
+      await client.query("ROLLBACK");
+      throw e;
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    const code = err.status || 500;
+    return res.status(code).json({ error: err.message || "Internal error" });
+  }
+}
+
+
+
+============================================================
+FILE: components/PlansSection.jsx
+SIZE: 5.4KB
+MODIFIED: 2025-09-01 14:04:43
+============================================================
+
+"use client";
+import React, { useEffect, useMemo, useState } from "react";
+import { getClientId, ensureCidInUrl } from "../lib/client-id";
+
+async function fetchCatalog() {
+  const r = await fetch("/api/catalog");
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j?.error || "Failed to load catalog");
+  return Array.isArray(j.items) ? j.items : [];
+}
+
+async function saveCart(client_id, items) {
+  const r = await fetch("/api/save-cloud-cart", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    // merge so repeated adds increment/accumulate, not overwrite
+    body: JSON.stringify({ client_id, items, mode: "merge" }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j?.error || "Failed to save cart");
+  return j;
+}
+
+export default function PlansSection() {
+  // Keep original clientId + URL behavior
+  const clientId = useMemo(() => {
+    try { return getClientId(); } catch { return null; }
+  }, []);
+
+  useEffect(() => { try { ensureCidInUrl(); } catch {} }, []);
+
+  const [items, setItems] = useState(null);      // catalog products
+  const [loading, setLoading] = useState(true);
+  const [addingId, setAddingId] = useState(null);
+  const [err, setErr] = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const list = await fetchCatalog();
+        if (alive) setItems(list);
+      } catch (e) {
+        if (alive) setErr(e?.message || "Failed to load catalog");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  async function addToCart(product) {
+    if (!clientId) return;
+    setAddingId(product.id);
+    try {
+      await saveCart(clientId, [{
+        id: product.id,
+        name: product.name,
+        description: product.description || "",
+        price_cents: Number(product.price_cents) || 0,
+        quantity: 1,
+        icon: product.icon || "",
+        stripe_price_id: product.stripe_price_id || null,
+      }]);
+      // Preserve your existing UX: after adding, go to confirmation
+      window.location.href = `/confirmation?client_id=${encodeURIComponent(clientId)}`;
+    } catch (e) {
+      alert(e?.message || "Failed to add to cart");
+    } finally {
+      setAddingId(null);
+    }
+  }
+
+  return (
+    <section style={{ margin: "20px 0" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        <h2 style={{ margin: 0, fontSize: 22 }}>Products</h2>
+        <div style={{ marginLeft: "auto", color: "#666", fontSize: 13 }}>
+          Data live from your catalog — no auto add-ons
+        </div>
+      </div>
+
+      {loading && (
+        <div style={{ padding: 12, border: "1px dashed #ddd", borderRadius: 8 }}>
+          Loading products…
+        </div>
+      )}
+
+      {err && !loading && (
+        <div style={{ padding: 12, border: "1px solid #f3c2c2", background: "#fff5f5", color: "#a30000", borderRadius: 8 }}>
+          {err}
+        </div>
+      )}
+
+      {!loading && !err && Array.isArray(items) && items.length === 0 && (
+        <div style={{ padding: 12, border: "1px dashed #ddd", borderRadius: 8 }}>
+          No products found. Add rows to <code>catalog_items</code>.
+        </div>
+      )}
+
+      {!loading && !err && Array.isArray(items) && items.length > 0 && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 16 }}>
+          {items.map(prod => (
+            <div key={prod.id} style={{ border: "1px solid #eee", borderRadius: 12, padding: 16, background: "#fff" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                {prod.icon ? (
+                  <img src={prod.icon} alt="" width={28} height={28} />
+                ) : (
+                  <div style={{ width: 28, height: 28, background: "#eee", borderRadius: 6 }} />
+                )}
+                <strong>{prod.name}</strong>
+              </div>
+
+              {prod.description ? (
+                <div style={{ marginTop: 6, color: "#555" }}>{prod.description}</div>
+              ) : null}
+
+              <div style={{ margin: "10px 0", fontSize: 28, fontWeight: 700 }}>
+                ${((Number(prod.price_cents) || 0) / 100).toFixed(2)}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => addToCart(prod)}
+                disabled={!clientId || addingId === prod.id}
+                aria-disabled={!clientId || addingId === prod.id}
+                style={{
+                  width: "100%", padding: "10px 14px", borderRadius: 10,
+                  border: "1px solid #0fc24bff",
+                  background: !clientId || addingId === prod.id ? "#999" : "#111",
+                  color: "#fff",
+                  cursor: !clientId || addingId === prod.id ? "not-allowed" : "pointer",
+                  opacity: !clientId || addingId === prod.id ? 0.7 : 1,
+                  transition: "transform 120ms ease, box-shadow 120ms ease",
+                }}
+                title={!clientId ? "Client ID not ready yet" : "Add to cart"}
+              >
+                {addingId === prod.id ? "Adding…" : "Add to Cart"}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!clientId && (
+        <p style={{ marginTop: 12, color: "#a00" }}>
+          Client ID is initializing. If buttons are disabled, try again in a moment or refresh.
+        </p>
+      )}
+    </section>
+  );
+}
+
+
+
+============================================================
+FILE: components/CloudCartPersistBlock.jsx
+SIZE: 7.9KB
+MODIFIED: 2025-08-30 22:57:56
+============================================================
+
+"use client";
+import React from "react";
+
+/** Non-cookie persistence for confirmation:
+ *  Reads client_id (query → localStorage), fetches /api/get-cloud-cart,
+ *  and shows the saved cart.
+ */
+export default function CloudCartPersistBlock({ footer }) {
+  const [cid, setCid] = React.useState(null);
+  const [items, setItems] = React.useState(null);
+  const [busyId, setBusyId] = React.useState(null);
+  const [clearing, setClearing] = React.useState(false);
+
+  // Resolve client_id from query or localStorage and canonicalize URL
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const qs = new URLSearchParams(window.location.search);
+    const fromQuery = qs.get("client_id");
+    const fromLS = localStorage.getItem("inkylink_client_id") || null;
+    const c = fromQuery || fromLS || null;
+    setCid(c);
+
+    if (!fromQuery && c) {
+      qs.set("client_id", c);
+      const next = `${window.location.pathname}?${qs.toString()}`;
+      window.history.replaceState({}, "", next);
+    }
+  }, []);
+
+  // Load cloud cart
+  React.useEffect(() => {
+    if (!cid) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch(`/api/get-cloud-cart?client_id=${encodeURIComponent(cid)}`);
+        const j = await r.json();
+        if (!cancelled) setItems(Array.isArray(j?.items) ? j.items : []);
+      } catch {
+        if (!cancelled) setItems([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [cid]);
+
+  // Replace entire cart in DB
+  async function saveCartReplace(next) {
+    const r = await fetch("/api/save-cloud-cart", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ client_id: cid, items: next, mode: "replace" }),
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data?.error || `save-cloud-cart failed: ${r.status}`);
+    return Array.isArray(data.items) ? data.items : [];
+  }
+
+  // Decrement one unit; remove if quantity hits 0
+  async function handleRemove(idOrIndex) {
+    if (!cid || !Array.isArray(items)) return;
+    setBusyId(idOrIndex);
+    try {
+      const next = items
+        .map((it, i) => {
+          const key = typeof it.id !== "undefined" ? it.id : i;
+          if (key !== idOrIndex) return it;
+          const q = Math.max(1, Number(it.quantity) || 1) - 1;
+          return q > 0 ? { ...it, quantity: q } : null;
+        })
+        .filter(Boolean);
+
+      const newItems = await saveCartReplace(next);
+      setItems(newItems);
+    } catch {
+      // no-op
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  // Clear all items
+  async function handleClear() {
+    if (!cid || !Array.isArray(items) || items.length === 0) return;
+    setClearing(true);
+    try {
+      const newItems = await saveCartReplace([]); // replace with empty cart
+      setItems(newItems);
+    } catch {
+      // no-op
+    } finally {
+      setClearing(false);
+    }
+  }
+
+  // Render once loaded, even if empty (to keep footer visible)
+if (!Array.isArray(items)) return null;
+
+  const total = items.reduce(
+    (s, i) => s + (Number(i.price_cents) || 0) * (Number(i.quantity) || 0),
+    0
+  );
+
+  return (
+    <section style={{ margin: "16px 0", border: "1px dashed #ddd", borderRadius: 8, padding: 12 }}>
+      <div style={{ fontWeight: 700, marginBottom: 8 }}>Your saved cart</div>
+
+  <div style={{ display: "flex", flexDirection: "column", gap: 8, margin: "6px 0 10px 0" }}>
+  {items.length === 0 ? (
+    <div style={{ padding: 16, border: "1px dashed #bbb", borderRadius: 8, textAlign: "center", color: "#555" }}>
+      Your cart is empty.
+    </div>
+  ) : (
+    items.map((it, idx) => {
+      const qty = Math.max(1, Number(it.quantity) || 1);
+      const price = Number(it.price_cents) || 0;
+      const lineTotal = (price * qty) / 100;
+      const key = typeof it.id !== "undefined" ? it.id : idx;
+      const isBusy = busyId === key;
+      const safeName =
+        typeof it.name === "string" && it.name.trim() ? it.name.trim() : "Item";
+
+      return (
+        <div
+          key={key}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "8px 0",
+            borderBottom: idx === items.length - 1 ? "none" : "1px solid #eee",
+          }}
+        >
+         {/* left: icon + name/qty */}
+<div style={{display:"flex", alignItems:"center", gap:10}}>
+  {typeof it.icon === "string" && it.icon.trim() ? (
+    <img
+      src={it.icon}
+      alt=""
+      width={32}
+      height={32}
+      style={{ borderRadius: 6, objectFit: "cover", display: "block" }}
+      loading="lazy"
+      decoding="async"
+      referrerPolicy="no-referrer"
+    />
+  ) : (
+    <div style={{ width: 32, height: 32, background: "#eee", borderRadius: 6 }} />
+  )}
+  <div style={{display:"flex", flexDirection:"column"}}>
+    <div style={{fontWeight:600}}>
+      {(typeof it.name === "string" && it.name.trim()) ? it.name.trim() : "Item"}
+    </div>
+    <div style={{fontSize:12, color:"#666"}}>Qty: {qty}</div>
+  </div>
+</div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ minWidth: 80, textAlign: "right" }}>${lineTotal.toFixed(2)}</div>
+            <button
+              type="button"
+              onClick={() => handleRemove(key)}
+              disabled={isBusy}
+              title="Remove (click again to decrement)"
+              className="inkylink-remove-btn"
+            >
+              {isBusy ? "Removing…" : "Remove"}
+            </button>
+          </div>
+        </div>
+      );
+    })
+  )}
+</div>
+
+      {/* Total row */}
+      <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 8, borderTop: "1px solid #eee" }}>
+        <strong>Total: ${(total / 100).toFixed(2)}</strong>
+      </div>
+
+      {/* Controls row: Clear All (left) + footer slot (right) */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+        <button
+          type="button"
+          onClick={handleClear}
+          disabled={clearing || busyId !== null || !items?.length}
+          aria-disabled={clearing || busyId !== null || !items?.length}  // SAFETY: explicit aria state
+          className="inkylink-clear-btn"
+          title="Remove all items from your cart"
+        >
+          {clearing ? "Clearing…" : "Clear All"}
+        </button>
+
+        <div>{footer ? footer : null}</div>
+      </div>
+
+      <style jsx>{`
+        .inkylink-remove-btn {
+          padding: 6px 10px;
+          border-radius: 6px;
+          border: 1px solid #ddd;
+          background: #fafafa;
+          color: #111;
+          cursor: pointer;
+          transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, color 120ms ease, border-color 120ms ease;
+        }
+        .inkylink-remove-btn:hover:not([disabled]) {
+          background: #ffecec;
+          color: #a30000;
+          border-color: #f0c0c0;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .inkylink-remove-btn:active:not([disabled]) {
+          transform: translateY(0);
+          box-shadow: none;
+        }
+        .inkylink-remove-btn[disabled] {
+          cursor: not-allowed;
+          background: #eee;
+          color: #999;
+        }
+
+        .inkylink-clear-btn {
+          padding: 10px 14px;
+          border-radius: 10px;
+          border: 1px solid #ddd;
+          background: #fff;
+          color: #111;
+          cursor: pointer;
+          transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease;
+        }
+        .inkylink-clear-btn:hover:not([disabled]) {
+          background: #fff7e6;
+          border-color: #f3c27a;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .inkylink-clear-btn[disabled] {
+          background: #eee;
+          color: #999;
+          cursor: not-allowed;
+        }
+      `}</style>
+    </section>
+  );
+}
+
+
+
+============================================================
+FILE: components/FormSection.js
+SIZE: 3KB
+MODIFIED: 2025-07-18 13:42:00
+============================================================
+
+// components/FormSection.js
+
+import React, { useState } from "react";
+
+export default function FormSection() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    businessName: "",
+    websiteUrl: "",
+    targetAudience: "",
+    toneStyle: "",
+    specialInstructions: "",
+    keywords: "",
+    consent: false,
+  });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.consent) {
+      alert("Please confirm consent before submitting.");
+      return;
+    }
+    console.log("Form submitted:", formData);
+    alert("Thanks! Your request has been submitted.");
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ maxWidth: "800px", margin: "0 auto", padding: "2rem" }}>
+      <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+        Kindly take a moment to complete each field below
+      </h2>
+
+      <label>Full Name</label>
+      <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
+
+      <label>Email Address</label>
+      <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+
+      <label>Business Name</label>
+      <input type="text" name="businessName" value={formData.businessName} onChange={handleChange} required />
+
+      <label>Website URL (if available)</label>
+      <input type="url" name="websiteUrl" value={formData.websiteUrl} onChange={handleChange} />
+
+      <label>Who is your target audience?</label>
+      <textarea name="targetAudience" value={formData.targetAudience} onChange={handleChange} rows={3} />
+
+      <label>What tone or style would you like the content to reflect?</label>
+      <textarea name="toneStyle" value={formData.toneStyle} onChange={handleChange} rows={3} />
+
+      <label>Special Instructions / Notes</label>
+      <textarea name="specialInstructions" value={formData.specialInstructions} onChange={handleChange} rows={3} />
+
+      <label>Keywords or phrases you'd like us to include</label>
+      <textarea name="keywords" value={formData.keywords} onChange={handleChange} rows={3} />
+
+      <div style={{ marginTop: "1rem" }}>
+        <label>
+          <input type="checkbox" name="consent" checked={formData.consent} onChange={handleChange} />
+          &nbsp;I consent to the processing of this data so Inkylink and its AI assistants can fulfill my order.
+        </label>
+      </div>
+
+      <button
+        type="submit"
+        style={{
+          marginTop: "1.5rem",
+          padding: "0.75rem 2rem",
+          fontSize: "1rem",
+          backgroundColor: "#0070f3",
+          color: "#fff",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+        }}
+      >
+        Submit Request
+      </button>
+    </form>
+  );
+}
+
+
+
+============================================================
+FILE: styles/globals.css
+SIZE: 0.8KB
+MODIFIED: 2025-07-27 14:49:02
+============================================================
+
+/* styles/globals.css */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Lato', sans-serif;
+  background-color: #f1f8fc;
+  color: #222;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Lato', sans-serif;
+  margin-top: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  background-color: #0070f3;
+  color: white;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #005bb5;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+
+================================================================================
+ANALYSIS INSTRUCTIONS FOR CLAUDE
+================================================================================
+
+PRIORITY 1 - CLIENT ID CONFLICTS:
+• Check if both lib/client-id.js AND lib/clientId.js exist
+• Verify which one _app.js imports from
+• Identify localStorage persistence issues
+
+PRIORITY 2 - API ROUTE CONSISTENCY:
+• Look for mixed module.exports and export default
+• Find import statements mixed with require()
+• Identify files needing ES module conversion
+
+PRIORITY 3 - CONFIGURATION ISSUES:
+• Check if tailwind.config.js points to wrong directories
+• Verify next.config.js exists and is properly configured
+• Look for missing environment variable fallbacks
+
+PRIORITY 4 - DATA FLOW ISSUES:
+• Trace order data flow from pricing → confirmation → forms
+• Check for broken URL parameter passing
+• Verify API endpoints match frontend calls
+
+PRIORITY 5 - PRICING CONFLICTS:
+• Look for hardcoded prices vs database prices
+• Check for multiple pricing sources causing conflicts
+• Verify Stripe price IDs match across all files
+
+PROJECT CONTEXT:
+• Month behind schedule, zero tolerance for errors
+• Deploying to Vercel with PostgreSQL + Electron desktop
+• Currently in backend debugging phase
+• User flow: Welcome → Pricing → Confirmation → Stripe → Forms → DB

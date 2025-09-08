@@ -1,7 +1,7 @@
 "use strict";
 export const config = { runtime: "nodejs" };
 
-import { getPool } from "../../lib/db.js";
+import { getPool } from "../../lib/db.mjs";
 
 function parseDbUrl(u) {
   try {
@@ -71,6 +71,7 @@ try {
     try { return res.status(500).json(errOut); } catch {}
   }
 }
+
 
 
 

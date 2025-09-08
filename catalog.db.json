@@ -1,0 +1,156 @@
+[
+    {
+        "id": "amazon-bullet-points-rewrite",
+        "icon": "/icons/amazon bullet point rewrite.png",
+        "title": "Amazon Bullet Points Rewrite",
+        "description": "High-performance bullet points...",
+        "price_cents": 3900
+    },
+    {
+        "id": "amazon-power-pack",
+        "icon": "/icons/amazon power pack.png",
+        "title": "Amazon Power Pack",
+        "description": "Amazon-optimized description...",
+        "price_cents": 12900
+    },
+    {
+        "id": "amazon-product-description",
+        "icon": "/icons/amazon product description.png",
+        "title": "Amazon Product Description",
+        "description": "Optimized for Amazon's algorithm...",
+        "price_cents": 4900
+    },
+    {
+        "id": "branding-voice-guidelines",
+        "icon": "/icons/branding voice guidelines.png",
+        "title": "Branding Voice Guidelines",
+        "description": "Define your unique voice...",
+        "price_cents": 8900
+    },
+    {
+        "id": "bullet-point-rewrite",
+        "icon": "/icons/bullet point rewrite.png",
+        "title": "Bullet Point Rewrite",
+        "description": "Optimize your bullet points...",
+        "price_cents": 3900
+    },
+    {
+        "id": "comparison-table",
+        "icon": "/icons/comparison table.png",
+        "title": "Comparison Table",
+        "description": "Make decision-making easy...",
+        "price_cents": 3900
+    },
+    {
+        "id": "conversion-booster",
+        "icon": "/icons/conversion booster.png",
+        "title": "Conversion Booster",
+        "description": "Revive sluggish listings...",
+        "price_cents": 12900
+    },
+    {
+        "id": "conversion-booster-pro",
+        "icon": "/icons/conversion booster pro.png",
+        "title": "Conversion Booster Pro",
+        "description": "Targeted improvements...",
+        "price_cents": 16900
+    },
+    {
+        "id": "enhanced-amazon-content",
+        "icon": "/icons/enhanced amazon content.png",
+        "title": "Enhanced Amazon Content",
+        "description": "Strategically crafted narratives...",
+        "price_cents": 5900
+    },
+    {
+        "id": "expansion-kit",
+        "icon": "/icons/expansion kit.png",
+        "title": "Expansion Kit",
+        "description": "A smart choice for stores...",
+        "price_cents": 14900
+    },
+    {
+        "id": "faq-section",
+        "icon": "/icons/faq section.png",
+        "title": "FAQ Section",
+        "description": "Answer buyer questions...",
+        "price_cents": 2900
+    },
+    {
+        "id": "full-site-audit",
+        "icon": "/icons/full site audit.png",
+        "title": "Full Site Audit",
+        "description": "We'll review your store...",
+        "price_cents": 17900
+    },
+    {
+        "id": "launch-kit",
+        "icon": "/icons/launch kit.png",
+        "title": "Launch Kit",
+        "description": "Everything you need to launch...",
+        "price_cents": 11900
+    },
+    {
+        "id": "ongoing-optimization",
+        "icon": "/icons/ongoing optimization.png",
+        "title": "Ongoing Optimization",
+        "description": "Structured to adapt...",
+        "price_cents": 14900
+    },
+    {
+        "id": "product-description",
+        "icon": "/icons/desc.png",
+        "title": "Product Description",
+        "description": "Stand out in search...",
+        "price_cents": 3900
+    },
+    {
+        "id": "product-drop-email",
+        "icon": "/icons/drop.png",
+        "title": "Product Drop Email",
+        "description": "Announce your new product...",
+        "price_cents": 3900
+    },
+    {
+        "id": "product-overview",
+        "icon": "/icons/overview.png",
+        "title": "Product Overview",
+        "description": "Highlight your product...",
+        "price_cents": 2900
+    },
+    {
+        "id": "seo-titles-metadata",
+        "icon": "/icons/seo.png",
+        "title": "SEO Titles & Metadata",
+        "description": "Keyword-smart titles...",
+        "price_cents": 3900
+    },
+    {
+        "id": "seo-blog-post",
+        "icon": "/icons/blog.png",
+        "title": "SEO-Optimized Blog Post",
+        "description": "A keyword-driven blog...",
+        "price_cents": 5900
+    },
+    {
+        "id": "split-test-variants",
+        "icon": "/icons/split test variants.png",
+        "title": "Split Test Variants",
+        "description": "Run A/B tests...",
+        "price_cents": 6900
+    },
+    {
+        "id": "store-revamp-kit",
+        "icon": "/icons/store revamp kit.png",
+        "title": "Store Revamp Kit",
+        "description": "Revitalize your store...",
+        "price_cents": 19900
+    },
+    {
+        "id": "welcome-email",
+        "icon": "/icons/welcome.png",
+        "title": "Welcome Email",
+        "description": "Make a lasting first impression...",
+        "price_cents": 3900
+    }
+]

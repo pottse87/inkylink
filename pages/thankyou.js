@@ -30,6 +30,7 @@ export default function ThankYou() {
         }
         if (!cid) { setNote("Thanks!"); setLoading(false); return; }
 
+        // Optional enhancement endpoints; page degrades gracefully if absent
         const r = await fetch(`/api/orders/latest?client_id=${encodeURIComponent(cid)}`);
         if (!r.ok) { setNote("Thanks!"); setLoading(false); return; }
         const data = await r.json();
@@ -86,4 +87,10 @@ export default function ThankYou() {
       </div>
     </main>
   );
+}
+
+// Add noindex so thank-you pages aren't indexed by search engines.
+export async function getServerSideProps({ res }) {
+  res.setHeader("X-Robots-Tag", "noindex");
+  return { props: {} };
 }
