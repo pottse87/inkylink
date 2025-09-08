@@ -1,4 +1,4 @@
-import { getPool } from '../../../lib/db';
+import { getPool } from '../../../lib/db.mjs';
 
 
 export default async function handler(req, res) {
@@ -9,10 +9,8 @@ export default async function handler(req, res) {
     const cs = process.env.DATABASE_URL;
     if (!cs) return res.status(500).json({ error: "DATABASE_URL not configured" });
 
-    const pool = getPool()
-        ? false : { rejectUnauthorized: false }
-    });
-    const db = await pool.connect();
+    const pool = await getPool();
+const db = await pool.connect();
     try {
       const r = await db.query(
         `select id,status,total_cents,currency,stripe_session_id,updated_at
@@ -24,6 +22,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 
 
 

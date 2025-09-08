@@ -1,4 +1,4 @@
-import { withClient } from '../../lib/db';
+import { withClient } from '../../lib/db.mjs';
 
 "use strict";
 
@@ -64,6 +64,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok:false, error: err.message || String(err) });
   }
 }
+
 
 
 

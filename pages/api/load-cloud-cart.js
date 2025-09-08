@@ -1,4 +1,4 @@
-import { getPool } from '../../lib/db';
+import { getPool } from '../../lib/db.mjs';
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -9,11 +9,8 @@ export default async function handler(req, res) {
   if (!client_id) return res.status(400).json({ error: "client_id required" });
 
   try {
-    const pool = getPool()
-        ? false
-        : { rejectUnauthorized: false }
-    });
-    const db = await pool.connect();
+    const pool = await getPool();
+const db = await pool.connect();
     try {
       await db.query(`
         CREATE TABLE IF NOT EXISTS public.carts (
@@ -33,4 +30,5 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
 

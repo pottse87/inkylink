@@ -3,10 +3,11 @@ import { getPool } from "../../../lib/db.mjs"; // pages/api/stripe → ../../../
 
 // Stripe needs the raw body for signature verification
 export const config = { api: { bodyParser: false } };
+export const runtime = 'nodejs';
 
 const stripeSecret  = process.env.STRIPE_SECRET_KEY || "";
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
-const stripe = new Stripe(stripeSecret);
+const stripe = new Stripe(stripeSecret, { apiVersion: '2024-06-20' });
 
 function json(res, code, obj){ return res.status(code).json(obj); }
 
@@ -39,7 +40,7 @@ export default async function handler(req, res){
     return json(res, 400, { error: "Invalid signature" });
   }
 
-  const pool = getPool();
+  const pool = await getPool();
   const db = await pool.connect();
 
   try {
@@ -74,12 +75,24 @@ export default async function handler(req, res){
         order_id = i?.metadata?.order_id || null;
         newStatus = "payment_failed";
         break;
+      }      case "checkout.session.async_payment_succeeded": {
+        const s = event.data.object;
+        order_id = s?.metadata?.order_id || null;
+        newStatus = "paid";
+        break;
       }
+      case "checkout.session.expired": {
+        const s = event.data.object;
+        order_id = s?.metadata?.order_id || null;
+        newStatus = "expired";
+        break;
+      }
+
       default: {
         // Log all other events for traceability, then return 200
         await db.query(
           `INSERT INTO public.order_events (order_id, event_type, status, note)
-           VALUES ($1,$2,$3,$4)`,
+           VALUES ($1,$2,$3,$4) ON CONFLICT (note) DO NOTHING`,
           [null, event.type, null, eventNote]
         );
         await db.query("COMMIT");
@@ -95,13 +108,13 @@ export default async function handler(req, res){
       );
       await db.query(
         `INSERT INTO public.order_events (order_id, event_type, status, note)
-         VALUES ($1,$2,$3,$4)`,
+         VALUES ($1,$2,$3,$4) ON CONFLICT (note) DO NOTHING`,
         [order_id, event.type, newStatus, eventNote]
       );
     } else {
       await db.query(
         `INSERT INTO public.order_events (order_id, event_type, status, note)
-         VALUES ($1,$2,$3,$4)`,
+         VALUES ($1,$2,$3,$4) ON CONFLICT (note) DO NOTHING`,
         [null, event.type, newStatus, eventNote]
       );
     }
@@ -116,3 +129,4 @@ export default async function handler(req, res){
     db.release(); // DO NOT pool.end()
   }
 }
+

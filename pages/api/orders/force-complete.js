@@ -1,4 +1,4 @@
-import { getPool } from '../../../lib/db';
+import { getPool } from '../../../lib/db.mjs';
 
 
 export default async function handler(req, res) {
@@ -24,9 +24,8 @@ export default async function handler(req, res) {
   const cs = process.env.DATABASE_URL;
   if (!cs) return res.status(500).json({ error: "DATABASE_URL not configured" });
 
-  const pool = getPool() ? false : { rejectUnauthorized: false }
-  });
-  const db = await pool.connect();
+  const pool = await getPool();
+const db = await pool.connect();
 
   try {
     const { order_id, note } = req.body || {};
@@ -58,4 +57,5 @@ export default async function handler(req, res) {
     db.release(); 
   }
 }
+
 
